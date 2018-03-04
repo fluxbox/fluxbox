@@ -58,7 +58,8 @@ TextBox::TextBox(int screen_num,
     m_start_pos(0),
     m_end_pos(0),
     m_select_pos(std::string::npos),
-    m_xic(0) {
+    m_padding(0),
+    m_xic(0){
 
     if (App::instance()->inputModule())
         m_xic = XCreateIC(App::instance()->inputModule(), XNInputStyle, XIMPreeditNothing | XIMStatusNothing, XNClientWindow, window(), NULL);
@@ -75,7 +76,8 @@ TextBox::TextBox(const FbWindow &parent,
     m_start_pos(0),
     m_end_pos(0),
     m_select_pos(std::string::npos),
-    m_xic(0) {
+    m_padding(0),
+    m_xic(0){
     if (App::instance()->inputModule())
         m_xic = XCreateIC(App::instance()->inputModule(), XNInputStyle, XIMPreeditNothing | XIMStatusNothing, XNClientWindow, window(), NULL);
     FbTk::EventManager::instance()->add(*this, *this);
@@ -96,6 +98,12 @@ void TextBox::setText(const FbTk::BiDiString &text) {
 
 void TextBox::setFont(const Font &font) {
     m_font = &font;
+}
+
+void TextBox::setPadding(int padding) {
+    m_padding = padding;
+    adjustPos();
+    clear();
 }
 
 void TextBox::setGC(GC gc) {
@@ -240,12 +248,24 @@ void TextBox::clear() {
     if (gc() == 0)
         setGC(DefaultGC(dpy, screenNumber()));
 
-
     int cursor_pos = font().textWidth(m_text.visual().c_str() + m_start_pos, m_cursor_pos);
+
+    int char_length = m_end_pos - m_start_pos;
+    int text_width = font().textWidth(m_text.visual().c_str() + m_start_pos, char_length);
+    int char_draw_length = char_length;
+    if (text_width > static_cast<signed>(width()) - 2*m_padding) {
+        // draw less text
+        int char_start_current = m_start_pos;
+        int char_end_current = m_end_pos;
+        adjustPos();
+        char_draw_length = m_end_pos - m_start_pos;
+        m_start_pos = char_start_current;
+        m_end_pos = char_end_current;
+    }
 
     font().drawText(*this, screenNumber(), gc(),
                     m_text.visual().c_str() + m_start_pos,
-                    m_end_pos - m_start_pos, -1, center_pos); // pos
+                    char_draw_length, m_padding, center_pos); // pos
 
     if (hasSelection()) {
         int select_pos = m_select_pos <= m_start_pos ? 0 :
@@ -253,14 +273,15 @@ void TextBox::clear() {
                                           m_select_pos - m_start_pos);
         int start = std::max(m_start_pos, std::min(m_start_pos + m_cursor_pos, m_select_pos));
         int length = std::max(m_start_pos + m_cursor_pos, m_select_pos) - start;
-        int x = std::min(select_pos, cursor_pos);
-        int width = std::abs(select_pos - cursor_pos);
+        length = std::min(length, char_draw_length);
+        int x = m_padding + std::min(select_pos, cursor_pos);
+        int select_width = std::min(std::abs(select_pos - cursor_pos), text_width);
 
         XGCValues backup;
         XGetGCValues(dpy, gc(), GCForeground|GCBackground, &backup);
         XSetForeground(dpy, gc(), backup.foreground);
 
-        fillRectangle(gc(), x, (height()-font().height())/2, width, font().height());
+        fillRectangle(gc(), x, (height()-font().height())/2, select_width, font().height());
 
         XColor c;
         c.pixel = backup.foreground;
@@ -275,7 +296,7 @@ void TextBox::clear() {
 
 
     // draw cursor position
-    drawLine(gc(), cursor_pos, height()/2 + font().ascent()/2, cursor_pos, height()/2 - font().ascent()/2);
+    drawLine(gc(), m_padding + cursor_pos, height()/2 + font().ascent()/2, m_padding + cursor_pos, height()/2 - font().ascent()/2);
 }
 
 void TextBox::moveResize(int x, int y,
@@ -302,7 +323,7 @@ void TextBox::buttonPressEvent(XButtonEvent &event) {
         int tmp = 0;
         for(i = m_start_pos; i <= m_end_pos; i++) {
             tmp = abs(static_cast<int>
-                      (event.x - font().textWidth(m_text.visual().c_str() + m_start_pos, i - m_start_pos)));
+                      (event.x - font().textWidth(m_text.visual().c_str() + m_start_pos, i - m_start_pos) - m_padding));
 
             if (tmp < delta) {
                 delta = tmp;
@@ -490,7 +511,7 @@ void TextBox::handleEvent(XEvent &event) {
 
 void TextBox::setCursorPosition(int pos) {
     m_cursor_pos = pos < 0 ? 0 : pos;
-    if (m_cursor_pos > text().size())
+    if (m_cursor_pos > text().size() - 2*m_padding)
         cursorEnd();
 }
 
@@ -498,7 +519,7 @@ void TextBox::adjustEndPos() {
     m_end_pos = text().size();
     m_start_pos = std::min(m_start_pos, m_end_pos);
     int text_width = font().textWidth(text().c_str() + m_start_pos, m_end_pos - m_start_pos);
-    while (text_width > static_cast<signed>(width())) {
+    while (text_width > (static_cast<signed>(width()) - 2*m_padding)) {
         m_end_pos--;
         text_width = font().textWidth(text().c_str() + m_start_pos, m_end_pos - m_start_pos);
     }
@@ -509,11 +530,11 @@ void TextBox::adjustStartPos() {
     const char* visual = m_text.visual().c_str();
 
     int text_width = font().textWidth(visual, m_end_pos);
-    if (m_cursor_pos >= 0 && text_width < static_cast<signed>(width()))
+    if (m_cursor_pos >= 0 && text_width < (static_cast<signed>(width()) - 2*m_padding))
         return;
 
     int start_pos = 0;
-    while (text_width > static_cast<signed>(width())) {
+    while (text_width > (static_cast<signed>(width()) - 2 * m_padding)) {
         start_pos++;
         text_width = font().textWidth(visual + start_pos, m_end_pos - start_pos);
     }
