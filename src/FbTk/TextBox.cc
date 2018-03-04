@@ -235,7 +235,7 @@ void TextBox::clear() {
         XGetGCValues(dpy, gc(), GCForeground|GCBackground, &backup);
         XSetForeground(dpy, gc(), backup.foreground);
 
-        fillRectangle(gc(), x, 0, width, height());
+        fillRectangle(gc(), x, (height()-font().height())/2, width, font().height());
 
         XColor c;
         c.pixel = backup.foreground;
