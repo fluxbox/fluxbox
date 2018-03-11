@@ -158,6 +158,10 @@ RootTheme::RootTheme(FbTk::ImageControl &image_control):
     m_opgc.setForeground(WhitePixel(disp, screenNum())^BlackPixel(disp, screenNum()));
     m_opgc.setFunction(GXxor);
     m_opgc.setSubwindowMode(IncludeInferiors);
+    m_opgc.setLineAttributes(3,
+			     FbTk::GContext::LINESOLID,
+			     FbTk::GContext::CAPBUTT,
+			     FbTk::GContext::JOINMITER);
     FbTk::ThemeManager::instance().loadTheme(*this);
 }
 
