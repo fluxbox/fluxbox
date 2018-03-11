@@ -175,7 +175,7 @@ FbTk::Command<void> *ExportCmd::parse(const string &command, const string &args,
     if (command != "setresourcevalue")
         FbTk::StringUtil::removeTrailingWhitespace(name);
     size_t pos = name.find_first_of(command == "export" ? "=" : " \t");
-    if (pos == string::npos || pos == name.size() || !trusted)
+    if (pos == string::npos || pos == name.size())
         return 0;
 
     string value = name.substr(pos + 1);
