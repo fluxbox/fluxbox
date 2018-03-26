@@ -13,13 +13,13 @@ toolbar.windowLabel.textColor:  grey85
 toolbar.clock:                  parentrelative
 toolbar.clock.textColor:        grey85
 toolbar.justify:                right
-toolbar.font:                   lucidasans-10
+toolbar.font: lucidasans-12
 
 menu.title:                     flat crossdiagonal gradient
 menu.title.color:               rgb:6/9/c
 menu.title.colorTo:             rgb:3/48/6
 menu.title.textColor:           white
-menu.title.font:                lucidasans-10
+menu.title.font: lucidasans-12
 menu.title.justify:             right
 
 menu.frame:                     flat crossdiagonal gradient
@@ -27,7 +27,7 @@ menu.frame.color:               grey50
 menu.frame.colorTo:             grey80
 menu.frame.textColor:           grey20
 menu.frame.disableColor:        grey40
-menu.frame.font:                lucidasans-10
+menu.frame.font: lucidasans-12
 menu.frame.justify:             center
 
 menu.bullet.position:           right
@@ -71,7 +71,7 @@ window.grip.unfocus:            parentrelative
 window.frame.focusColor:        rgb:6/9/c
 window.frame.unfocusColor:      grey50
 
-window.font:                    lucidasans-10
+window.font: lucidasans-12
 window.justify:                 right
 
 borderColor:                    rgb:2/3/4
@@ -81,13 +81,15 @@ borderWidth:                    1
 handleWidth:                    4
 
 *textColor:                     grey85
-*Font:                          lucidasans-10
+*Font: lucidasans-12
 
-background: flatcrossdiagonalgradient 
-background.color: rgb:4/6/8 
+background: flatcrossdiagonalgradient
+background.color: rgb:4/6/8
 background.colorTo: rgb:3/48/6
 
 bbpager.desktop.focus:          flat interlaced crossdiagonal gradient
 bbpager.desktop.focus.color:    rgb:6/9/c
 bbpager.desktop.focus.colorTo:  rgb:3/48/6
 
+
+! vim: ft=xdefaults
