@@ -593,7 +593,7 @@ void Toolbar::leaveNotifyEvent(XCrossingEvent &event) {
     if (menu().isVisible())
         return;
 
-    if (!m_hide_timer.isTiming() && (m_rc_auto_hide && !isHidden()) ||
+    if ((!m_hide_timer.isTiming() && (m_rc_auto_hide && !isHidden())) ||
        (m_rc_auto_raise && m_layeritem.getLayerNum() != m_rc_layernum->getNum()))
         m_hide_timer.start();
 
@@ -914,7 +914,7 @@ void Toolbar::rearrangeItems() {
     ItemList::iterator item_it_end = m_item_list.end();
     int bevel_width = theme()->bevelWidth();
     int fixed_width = bevel_width; // combined size of all fixed items
-    int relative_width = 0; // combined *desired* size of all relative items
+    unsigned relative_width = 0; // combined *desired* size of all relative items
     int stretch_items = 0;
     int relative_items = 0;
     int last_bw = 0; // we show the largest border of adjoining items

@@ -65,7 +65,7 @@ size_t search_str_bmh(const std::string& text, const std::string& pattern) {
         skip[p] = plen;
     }
     for (p = 0; p < pe; p++) {
-        skip[pattern[p]] = pe - p;
+        skip[static_cast<unsigned char>(pattern[p])] = pe - p;
     }
 
     // match

@@ -2472,7 +2472,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
 
 }
 
-const unsigned int DEADZONE = 4;
+const int DEADZONE = 4;
 
 void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
 
