@@ -23,7 +23,7 @@
 # DEALINGS IN THE SOFTWARE.
 
 BUILT_SOURCES = src/defaults.hh src/defaults.cc
-CONFIG_CLEAN_FILES = src/defaults.hh src/defaults.cc
+CLEANFILES += src/defaults.hh src/defaults.cc
 
 LDADD = libFbTk.a src/defaults.$(OBJEXT)
 
