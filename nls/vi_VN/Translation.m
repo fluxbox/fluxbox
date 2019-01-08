@@ -4,8 +4,7 @@ $set 1 #Align
 
 1 Phía dưới ở giữa
 2 Phía dưới bên trái
-3 Phía dưới bên trái
-4 Nằm ngang
+3 Phía dưới bên phải
 6 Bên trái phía dưới
 7 Bên trái ở giữa
 8 Bên trái ở trên
@@ -15,11 +14,10 @@ $set 1 #Align
 14 Bên trên ở giữa
 15 Bên trên phía trái
 16 Bên trên phía phải
-17 Thẳng đứng
 
 $set 2 #BaseDisplay
 
-1 Dừng...dumping core\n
+1 Dừng...tạo core\n
 2 Tắt máy\n
 3 %s:		bắt được tín hiệu %d\n
 
@@ -27,32 +25,54 @@ $set 3 #Common
 
 1 Độ trong suốt
 2 Tự động ẩn
-3 Được biên dịch
+3 Biên dịch lúc
 4 Tùy chọn được biên dịch
 5 Trình biên dịch
 6 Phiên bản trình biên dịch
-7 Xác lập cơ bản
-8 Phím nóng
-10 Thực đơn
-11 Sắc thái
+7       khởi động
+8       phím nóng
+9        ngôn ngữ
+10        thực đơn
+20 thực đơn cửa sổ
+11        sắc thái
 12 Mặc định
-13 Không chọn
+13 vô hiệu
 14 Lỗi
 15 Phiên bản fluxbox
 16 Phóng đại che hết màn hình
-18 Có thể nhìn thấy
+17 Phiên bản GIT
+18 Hiện thấy
+19 Chưa xác định tuỳ chọn nền cho sắc thái này.\n Vui lòng xem tài liệu hoặc đọc FAQ.
+21 Tự nâng
 
 $set 4 #Configmenu
 
-4 Tiêu điểm theo nhấn chuột
+2 Tự nâng
+3 Nhấn nâng lên
+4 Nhấn để chọn
 7 Làm tiêu điểm cửa sổ cuối cùng
 8 Mẫu tiêu điểm
 9 Đưa tiêu điểm lên cửa sổ mới
 10 Phóng đại hết cỡ
-11 Làm phẳng hình ảnh
-12 Hiện nội dung cửa sổ khi di chuyển 
+12 Không hiện nội dung cửa sổ khi di chuyển
+30 Tiêu điểm theo trỏ chuột (chính xác)
 14 Tiêu điểm theo trỏ chuột
-15 Di chuyển cửa sổ giữa các không gian làm việc
+15 Di chuyển cửa sổ giữa các vùng làm việc
+16 Buộc giả trong suốt
+17 Thực đơn Alpha
+18 Độ trong suốt
+19 Alpha cửa sổ được chọn
+20 Alpha cửa sổ không được chọn
+21 Tuỳ chọn tab
+22 Tab trên thanh tiêu đề
+23 Độ rộng tab ngoại
+24 Nhấn chọn tab
+25 Trỏ chuột chọn tab
+26 Tuỳ chọn phóng to
+27 Bỏ qua thay đổi kích thước từng bước
+28 Không cho di chuyển
+29 Không cho thay đổi kích thước
+31 Cùng màn hình
 
 $set 5 #Ewmh
 
@@ -75,14 +95,14 @@ $set 6 #FbTkError
 13 Đầy bộ nhớ khi phân phối cho bộ đệm Blue
 14 Đầy bộ nhớ khi phân phối cho bộ đệm Green
 15 Đầy bộ nhớ khi phân phối cho bộ đệm Red
-16 Lỗi đọc tệp tin sắc thái
+16 Lỗi đọc tập tin sắc thái
 17 Tùy chọn không được hỗ trợ
 18 Thiết lập giá trị mặc định
 
 $set 7 #Fluxbox
 
-1 Lỗi tên tệp tin rc!
-2 Lỗi nạp tệp tin nhóm
+1 Lỗi tên tập tin rc!
+2 Lỗi nạp tập tin nhóm
 3 Lỗi nạp cơ sở dữ liệu
 4 Thử lại với
 5 Cảnh báo! Không tìm thấy màn hình để hiển thị cửa sổ
@@ -107,27 +127,33 @@ $set 9 #Keys
 $set 10 #Menu
 
 1 Cấu hình
-2 Thực đơn mặc định
+2 Thực đơn gốc mặc định
 3 Thoát
-4 Cửa sổ thu nhỏ
-5 Lớp
+4 Biểu tượng
+5 Lớp...
+6 Trên màn hình...
 7 Vị trí
 8 Nạp lại cấu hình
 9 Khởi động lại
+10 Cảnh báo: thẻ [encoding] không cân đối
 
 $set 11 #Remember
 
 1 Trang trí
 2 Kích thước
-3 Nhảy tới không gian
+3 Nhảy tới vùng làm việc
 4 Lớp
 5 Nhớ...
 6 Vị trí
-7 Ghi nhớ khi đóng
+7 Lưu khi đóng
 8 Thu nhỏ vào tiêu đề
-9 Hiện trên mọn không gian
-10 Phím chưa được xác định
-11 Không gian
+9 Hiện trên mọn vùng làm việc
+11 Vùng làm việc
+12 Màn hình
+13 Độ trong suốt
+14 Đang thu nhỏ
+15 Phóng to
+16 Toàn màn hình
 
 $set 12 #Screen
 
@@ -144,43 +170,52 @@ $set 13 #Slit
 6 Slit trên Head
 7 Vị trí của Slit
 8 Slit
+9 Lưu danh sách Slit
 
 $set 14 #Toolbar
 
-1 Thay tên không gian hiện thời
+1 Đổi tên vùng làm việc hiện thời
 2 Chế độ thanh cửa sổ thu nhỏ
 3 Tất cả cửa sổ
 4 Biểu tượng
 5 Không dùng
-6 Không gian
-7 Biểu tượng không gian
+6 Vùng làm việc
+7 Biểu tượng vùng làm việc
 8 Lớp thanh tác vụ
 9 Thanh tác vụ trên Head
 10 Vị trí thanh tác vụ
 11 Thanh tác vụ
 12 Chiều rộng thanh tác vụ
+13 Đồng hồ: 24h
+14 Đồng hồ: 12h
+15 Sửa định dạng đồng hồ
+16 Hiện hình
+17 Không biểu tượng
+18 Vùng màn hình không biểu tượng
 
 $set 15 #Window
 
-1 Không có tên
+1 Không tên
 
 $set 16 #Windowmenu
 
 1 Đóng
 2 Thu nhỏ xuống thanh tác vụ
-4 Lên nền sau
-5 Phóng đại
-6 Lên nền trước
+3 Lớp
+4 Hạ xuống
+5 Phóng to
+6 Nâng lên
 7 Chuyển đến ...
 8 Thu nhỏ vào tiêu đề
-9 Trên mọi không gian
+9 Dính
+12 Đặt tên cửa sổ
 
 $set 17 #Workspace
 
-1 Không gian %d
-2 Không gian
-3 Không gian mới
-4 Xóa không gian cuối
+1 Vùng làm việc %d
+2 Vùng làm việc
+3 Vùng làm việc mới
+4 Xóa vùng làm việc cuối
 
 $set 18 #fbsetroot
 
@@ -205,22 +240,29 @@ $set 19 #main
 5 Lỗi runtime
 6 Sự loại trừ tiêu chuẩn
 7 Lỗi không rõ nguyên nhân
-8 lỗi: '-log' cần một đối số <tên tệp tin>
-9 Tệp tin sự kiện
+8 lỗi: '-log' cần một đối số <tên tập tin>
+9 tập tin sự kiện
 10 Ghi sự kiện vào
 11 lỗi: '-rc' cần đối số
-13 Fluxbox %s: (c) %s Fluxbox Team\n
+13 Fluxbox %s: (c) %s Fluxbox Team\n\
 Website: http://www.fluxbox.org/\n\n\
--display <string>\t\tsử dụng màn hình lựa chọn.\n\
--screen <all|int,int,int>\trun on specified screens only.\n\
--no-slit\t\t\tdo not provide a slit.\n\
--no-toolbar\t\t\tdo not provide a toolbar.\n\
--rc <string>\t\t\tsử dụng tệp tin tài nguyên khác.\n\
+-display <chuỗi>\t\tsử dụng màn hình lựa chọn.\n\
+-screen <all|số,số,số>\t\tchỉ chạy trên màn hình xác định.\n\
+-no-slit\t\t\tkhông dùng slit.\n\
+-no-toolbar\t\t\tkhông dùng thanh công cụ.\n\
+-rc <chuỗi>\t\t\tsử dụng tập tin tài nguyên khác.\n\
 -version\t\t\tđưa ra số phiên bản và thoát.\n\
 -info\t\t\t\thiển thị vài thông tin có ích.\n\
--list-commands\t\t\tlist all valid key commands.\n\
--sync\t\t\t\tsynchronize with X server for debugging.\n\
--log <filename>\t\t\ttên tệp tin sự kiện.\n\
+-list-commands\t\t\thiện tất cả các lệnh bàn phím hợp lệ.\n\
+-sync\t\t\t\tđồng bộ với máy chủ X để tìm lỗi.\n\
+-log <tên tập tin>\t\ttên tập tin sự kiện.\n\
 -help\t\t\t\thiển thị thông tin trợ giúp này và thoát.\n\n
 
+$set 20 #layers
 
+1 Trên Dock
+2 Đáy
+3 Màn hình nền
+4 Dock
+5 Bình thường
+6 Đỉnh
