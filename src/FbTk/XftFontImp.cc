@@ -79,7 +79,7 @@ bool XftFontImp::load(const std::string &name) {
     // number of glyphs by calculating the amount of 'WW' (pretending a 'wide'
     // glyph) fitting into 32k pixels 
     unsigned int tw = textWidth("WW", 2);
-    m_maxlength = 0x8000 / tw;
+    m_maxlength = 0x8000 / (tw == 0 ? 1 : tw);
 
     return true;
 }
