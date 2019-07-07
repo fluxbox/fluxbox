@@ -78,8 +78,8 @@ bool XftFontImp::load(const std::string &name) {
     // overflow'). to prevent something like this we detect the maximium
     // number of glyphs by calculating the amount of 'WW' (pretending a 'wide'
     // glyph) fitting into 32k pixels 
-    unsigned int tw = textWidth("WW", 2);
-    m_maxlength = 0x8000 / (tw == 0 ? 1 : tw);
+    unsigned int tw = std::max(textWidth("WW", 2), 1);
+    m_maxlength = 0x8000 / tw;
 
     return true;
 }
