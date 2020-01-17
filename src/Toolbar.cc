@@ -502,12 +502,6 @@ void Toolbar::reconfigure() {
     // we're done with all resizing and stuff now we can request a new
     // area to be reserved on screen
     updateStrut();
-
-#ifdef XINERAMA
-    if (m_xineramaheadmenu)
-        m_xineramaheadmenu->reloadHeads();
-#endif // XINERAMA
-
 }
 
 
