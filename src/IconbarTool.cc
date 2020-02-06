@@ -288,7 +288,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
     m_tracker.join(screen.reconfigureSig(),
             FbTk::MemFunIgnoreArgs(*this, &IconbarTool::updateIconifiedPattern));
 
-    m_resizeSig_timer.setTimeout(100 * FbTk::FbTime::IN_MILLISECONDS);
+    m_resizeSig_timer.setTimeout(IconButton::updateLaziness());
     m_resizeSig_timer.fireOnce(true);
     FbTk::RefCount<FbTk::Command<void> > ers(new FbTk::SimpleCommand<IconbarTool>(*this, &IconbarTool::emitResizeSig));
     m_resizeSig_timer.setCommand(ers);

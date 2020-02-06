@@ -1535,6 +1535,7 @@ void BScreen::setLayer(FbTk::LayerItem &item, int layernum) {
  Goes to the workspace "right" of the current
 */
 void BScreen::nextWorkspace(int delta) {
+    focusControl().stopCyclingFocus();
     if (delta)
         changeWorkspaceID( (currentWorkspaceID() + delta) % numberOfWorkspaces());
     else if (m_former_workspace)
@@ -1545,6 +1546,7 @@ void BScreen::nextWorkspace(int delta) {
  Goes to the workspace "left" of the current
 */
 void BScreen::prevWorkspace(int delta) {
+    focusControl().stopCyclingFocus();
     if (delta)
         changeWorkspaceID( (static_cast<signed>(numberOfWorkspaces()) + currentWorkspaceID() - (delta % numberOfWorkspaces())) % numberOfWorkspaces());
     else if (m_former_workspace)
@@ -1555,6 +1557,7 @@ void BScreen::prevWorkspace(int delta) {
  Goes to the workspace "right" of the current
 */
 void BScreen::rightWorkspace(int delta) {
+    focusControl().stopCyclingFocus();
     if (currentWorkspaceID()+delta < numberOfWorkspaces())
         changeWorkspaceID(currentWorkspaceID()+delta);
 }
@@ -1563,6 +1566,7 @@ void BScreen::rightWorkspace(int delta) {
  Goes to the workspace "left" of the current
 */
 void BScreen::leftWorkspace(int delta) {
+    focusControl().stopCyclingFocus();
     if (currentWorkspaceID() >= static_cast<unsigned int>(delta))
         changeWorkspaceID(currentWorkspaceID()-delta);
 }

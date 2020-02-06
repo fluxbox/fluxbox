@@ -248,7 +248,6 @@ options. Have fun.
    window.close.pixmap:            <filename>
    window.close.pressed.pixmap:    <filename>
    window.close.unfocus.pixmap:    <filename>
-   window.font:                    <font>
    window.frame.focusColor:        <color>
    window.frame.unfocusColor:      <color>
    window.grip.focus:              <texture type>
@@ -277,10 +276,12 @@ options. Have fun.
    window.label.focus:             <texture type>
    window.label.focus.color:       <color>
    window.label.focus.colorTo:     <color>
+   window.label.focus.font:        <font>
    window.label.focus.pixmap:      <filename>
    window.label.unfocus:           <texture type>
    window.label.unfocus.color:     <color>
    window.label.unfocus.colorTo:   <color>
+   window.label.unfocus.font:      <font>
    window.label.unfocus.pixmap:    <filename>
    window.label.focus.textColor:   <color>
    window.label.unfocus.textColor: <color>

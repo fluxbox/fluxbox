@@ -53,7 +53,7 @@ Fluxbox installs a default root menu file in \fB@pkgdatadir@/menu\fR\&. You can 
 .sp
 The second type is the \fBWINDOW MENU\fR, which defines the contents of the menu which appears when you right\-click on a window\(cqs titlebar or iconbar\&. This opens a menu file as defined by \fB~/\&.fluxbox/windowmenu\fR\&. If this file does not exist, fluxbox will copy in the default from \fB@pkgdatadir@/windowmenu\fR\&.
 .sp
-You do not need to \(lqreload\(rq fluxbox after editing the apps file, the changes should be taken into account the next time you open the menu\&.
+You do not need to \(lqreload\(rq fluxbox after editing either menu file, the changes should be taken into account the next time you open the menu\&.
 .SH "ROOT MENU"
 .sp
 The root menu must begin with a \fB[begin]\fR tag and end with an \fB[end]\fR tag, and every tag must be on its own line\&.
@@ -238,9 +238,9 @@ for more information\&.
 .RE
 .SH "WINDOW MENU"
 .sp
-Like the \fBROOT MENU\fR, this menu file must start with \fB[begin]\fR and end with \fB[end]\fR\&. However, this file consists of only one \fB[\fR\fItag\fR\fB]\fR per line with no labels, commands, or icons\&.
+The syntax for the Window Menu is mostly identical to that for the \fBROOT MENU\fR; it must start with \fB[begin]\fR and end with \fB[end]\fR, and may have any of the above tags\&. However, it may also contain any of the following window-specific \fB[\fR\fItag\fR\fB]\fRs, which each must be on a line by itself with no labels, commands, or icons\&.
 .sp
-The available tags in this menu are:
+The additional available tags in this menu are:
 .PP
 \fB[shade]\fR
 .RS 4

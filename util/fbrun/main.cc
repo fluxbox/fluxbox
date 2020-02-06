@@ -58,13 +58,13 @@ void showUsage(const char *progname) {
         "   -print                      Print result to stdout"<<endl<<
         "   -w [width]                  Window width in pixels"<<endl<<
         "   -h [height]                 Window height in pixels"<<endl<<
+        "   -pad [size]                 Padding size in pixels"<<endl<<
         "   -display [display string]   Display name"<<endl<<
         "   -pos [x] [y]                Window position in pixels"<<endl<<
         "   -nearmouse                  Window position near mouse"<<endl<<
         "   -center                     Window position on screen center"<<endl<<
         "   -fg [color name]            Foreground text color"<<endl<<
         "   -bg [color name]            Background color"<<endl<<
-        "   -na                         Disable antialias"<<endl<<
         "   -hf [history file]          History file to load (default ~/.fluxbox/fbrun_history)"<<endl<<
         "   -cf [completion file]       Complete contents of this file instead of $PATH binaries"<<endl<<
         "   -autocomplete               Complete on typing"<<endl<<
@@ -77,6 +77,7 @@ int main(int argc, char **argv) {
     int x = 0, y = 0; // default pos of window
     size_t width = 200, height = 32; // default size of window
     bool set_height = false, set_width=false; // use height/width of font by default
+    int padding = 0; // default horizontal padding for text
     bool set_pos = false; // set position
     bool near_mouse = false; // popup near mouse
     bool center = false;
@@ -108,6 +109,8 @@ int main(int argc, char **argv) {
         } else if (arg == "-h" && i+1 < argc) {
             height = atoi(argv[++i]);
             set_height = true; // mark true else the height of font will be used
+        } else if (arg == "-pad" && i+1 < argc) {
+            padding = atoi(argv[++i]);
         } else if ((arg == "-display" || arg == "--display") && i+1 < argc) {
             display_name = argv[++i];
         } else if ((arg == "-pos" || arg == "--pos") && i+2 < argc) {
@@ -181,8 +184,10 @@ int main(int argc, char **argv) {
                 cerr<<"FbRun Warning: Failed to load completion file: "<<expanded_filename<<endl;
         }
 
+        fbrun.setPadding(padding);
         fbrun.setTitle(title);
         fbrun.setText(text);
+
         if (preselect)
             fbrun.selectAll();
 

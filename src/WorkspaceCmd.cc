@@ -383,6 +383,7 @@ JumpToWorkspaceCmd::JumpToWorkspaceCmd(int workspace_num):m_workspace_num(worksp
 void JumpToWorkspaceCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen != 0) {
+        screen->focusControl().stopCyclingFocus();
         int num = screen->numberOfWorkspaces();
         int actual = m_workspace_num;
         // we need an extra +1, since it's subtracted in FbCommandFactory
