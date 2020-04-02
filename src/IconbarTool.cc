@@ -304,11 +304,21 @@ void IconbarTool::move(int x, int y) {
     m_icon_container.move(x, y);
 }
 
-void IconbarTool::resize(unsigned int width, unsigned int height) {
-    m_icon_container.resize(width, height);
+void IconbarTool::updateMaxSizes(unsigned int width, unsigned int height) {
     const unsigned int maxsize = (m_icon_container.orientation() & 1) ? height : width;
     m_icon_container.setMaxTotalSize(maxsize);
-    m_icon_container.setMaxSizePerClient(maxsize/std::max(1, m_icon_container.size()));
+
+    if(*m_rc_alignment == FbTk::Container::LEFT || *m_rc_alignment == FbTk::Container::RIGHT) {
+        *m_rc_client_width = FbTk::Util::clamp(*m_rc_client_width, 10, 400);
+        m_icon_container.setMaxSizePerClient(*m_rc_client_width);
+    } else {
+        m_icon_container.setMaxSizePerClient(maxsize/std::max(1, m_icon_container.size()));
+    }
+}
+
+void IconbarTool::resize(unsigned int width, unsigned int height) {
+    m_icon_container.resize(width, height);
+    updateMaxSizes(width, height);
     renderTheme();
 }
 
@@ -316,9 +326,7 @@ void IconbarTool::moveResize(int x, int y,
                              unsigned int width, unsigned int height) {
 
     m_icon_container.moveResize(x, y, width, height);
-    const unsigned int maxsize = (m_icon_container.orientation() & 1) ? height : width;
-    m_icon_container.setMaxTotalSize(maxsize);
-    m_icon_container.setMaxSizePerClient(maxsize/std::max(1, m_icon_container.size()));
+    updateMaxSizes(width, height);
     renderTheme();
 }
 
@@ -438,10 +446,8 @@ void IconbarTool::update(UpdateReason reason, Focusable *win) {
     }
 
     m_resizeSig_timer.start();
-    const unsigned int maxsize = (m_icon_container.orientation() & 1) ? height() : width();
-    m_icon_container.setMaxTotalSize(maxsize);
-    m_icon_container.setMaxSizePerClient(maxsize/std::max(1, m_icon_container.size()));
 
+    updateMaxSizes(width(), height());
     // unlock container and update graphics
     m_icon_container.setUpdateLock(false);
     m_icon_container.update();
