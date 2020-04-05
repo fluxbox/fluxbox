@@ -135,7 +135,7 @@ private:
     bool m_xembedded; // using xembed protocol? (i.e. unmap when done)
 };
 
-void TrayWindow::pinByClassname(const std::vector<std::string> &left,
+void SystemTray::TrayWindow::pinByClassname(const std::vector<std::string> &left,
         const std::vector<std::string> &right) {
     // based on the parsed order list and a given window sets m_order to
     // an ordinal used to sort the tray icons.
