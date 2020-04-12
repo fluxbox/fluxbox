@@ -8,10 +8,9 @@ etc.
 For simplicity the Makefile here is set up to refresh the man pages that will be
 installed with fluxbox.  Just run 'make dist' in this directory. It requires
 that you have a recent asciidoc package installed from
-http://www.methods.co.nz/asciidoc/ and xmlto from
-https://pagure.io/xmlto. The result will be new fluxbox.1.in
-files in the parent directory.  These and your altered .txt files should be
-checked into git.
+http://www.methods.co.nz/asciidoc/ and xmlto from https://pagure.io/xmlto. The
+result will be new fluxbox.1.in files in the parent directory. These and your
+altered .txt files should be checked into git.
 
 Here are the nuts and bolts to create other formats:
 
