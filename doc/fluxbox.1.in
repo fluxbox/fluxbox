@@ -199,6 +199,17 @@ The toolbar contains any combination of the following tools, by default in this 
 \fBClock\fR: Date and Time
 .RE
 .sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBButton\&.<name>\fR: A generic button with customizable label and mouse actions
+.RE
+.sp
 The contents and behavior of the toolbar can be configured, see the \fBTOOLBAR\fR section for details\&.
 .SS "Slit"
 .sp
@@ -1043,6 +1054,11 @@ The possible tools are:
 This will show an area to display a clock and the date according to the format specification listed in "man strtftime"
 .RE
 .PP
+\fBButton\&.<name>\fR
+.RS 4
+This displays a clickable label with custom text\&.
+.RE
+.PP
 \fBIconbar\fR
 .RS 4
 This is the area that contains all windows (all running applications, all minimized windows or maybe no window, all depending on the Toolbar Settings)\&.
@@ -1093,6 +1109,13 @@ Sets the toolbar either to visible or invisible\&.
 \fBAuto hide\fR
 .RS 4
 If this is enabled the toolbar will disappear after a defined time when the mouse pointer leaves the toolbar\&. It will slide in when the cursor hits the remaining edge of the toolbar\&. See the
+\fBsession\&.autoRaiseDelay\fR
+resource for the delay time\&.
+.RE
+.PP
+\fBAuto raise\fR
+.RS 4
+If this is enabled the toolbar will elevate after a defined time when the mouse pointer enters the it\&. It will fall back when the cursor leaves the toolbar\&. See the
 \fBsession\&.autoRaiseDelay\fR
 resource for the delay time\&.
 .RE
@@ -1221,6 +1244,11 @@ Click to focus windows\&.
 Window focus follows mouse\&.
 .RE
 .PP
+\fBMouse Focus (Strict)\fR
+.RS 4
+Like Mouse Focus, but no mouse movement is required, ie\&. the window is also focused if it moves below the mouse, eg\&. because it shows up or you change the virtual desktop\&.
+.RE
+.PP
 \fBClickTabFocus\fR
 .RS 4
 Click to focus tabs\&.
@@ -1324,6 +1352,13 @@ for details on the layer order\&.
 \fBAuto hide\fR
 .RS 4
 If this is enabled the slit will disappear after a defined time when the mouse pointer leaves the slit\&. It will slide in when the cursor hits the remaining edge of the slit\&. See the
+\fBsession\&.autoRaiseDelay\fR
+resource for the delay time\&.
+.RE
+.PP
+\fBAuto raise\fR
+.RS 4
+If this is enabled the slit will elevate after a defined time when the mouse pointer enters the it\&. It will fall back when the cursor leaves the slit\&. See the
 \fBsession\&.autoRaiseDelay\fR
 resource for the delay time\&.
 .RE
@@ -1450,6 +1485,16 @@ Default:
 \fBFalse\fR
 .RE
 .PP
+\fBsession\&.screen0\&.{slit|toolbar}\&.autoRaise\fR: \fIboolean\fR
+.RS 4
+If enabled, the respective item will elevate to the AboveDock layer when entered and fall back to its regular layer when left\&. Notice that this does
+\fBnot\fR
+implicitly alter the items regular layer or the workspace padding, ie\&. if the item is already set to AboveDock this does nothing and if a mximized window completely covers the item you won\(cqt be able to enter, thus elevate it\&.
+.sp
+Default:
+\fBFalse\fR
+.RE
+.PP
 \fBsession\&.screen0\&.{slit|toolbar}\&.layer\fR: \fIlayer\fR
 .RS 4
 With these two resources, you can set the layer you want the toolbar and the slit to appear on\&. Please read the LAYER section for more information\&.
@@ -1514,7 +1559,7 @@ character\&. They will appear in the order given\&.
 .PP
 Possible tools:
 .RS 4
-\fBclock iconbar nextwindow prevwindow nextworkspace prevworkspace systemtray workspacename\fR
+\fBclock iconbar nextwindow prevwindow nextworkspace prevworkspace systemtray workspacename button\&.<name>\fR
 .RE
 .PP
 Default:
@@ -1567,6 +1612,15 @@ Default:
 \fBsession\&.screen0\&.iconbar\&.alignment\fR: \fIposition\fR
 .RS 4
 This value should be changed in the Iconbar Mode menu\&.
+.RE
+.PP
+\fBsession\&.screen0\&.iconbar\&.iconifiedPattern\fR: \fIstring\fR
+.RS 4
+Allows to decorate the title of iconified (minimized) windows\&. The title is represented by "%t"\&.
+.sp
+Default:
+\fB( %t )\fR
+.RE
 .PP
 Available options:
 .RS 4
@@ -1605,9 +1659,7 @@ Available options:
 .RE
 .RE
 .sp
-Default:
-\fBRelative\fR
-.RE
++ Default: \fBRelative\fR
 .PP
 \fBsession\&.screen0\&.iconbar\&.iconWidth\fR: \fIinteger\fR
 .RS 4
@@ -1745,7 +1797,7 @@ Default:
 .PP
 \fBsession\&.screen0\&.edgeResizeSnapThreshold\fR: \fIinteger\fR
 .RS 4
-When resizing a window by grabbing a corner, fluxbox is able to have it \(oqsnap\(cq to the edges of the screen and other windows for easy placement\&. This variable tells fluxbox the distance (in pixels) at which the window corner will jump to the edge\&.
+When resizing a window by grabbing a corner, fluxbox is able to have it \(oqsnap\(cq to the edges of the screen and other windows for easy placement\&. This variable tells fluxbox the distance (in pixels) at which the window will jump to the edge\&.
 .sp
 Default:
 \fB0\fR
@@ -1801,6 +1853,39 @@ CascadePlacement: places windows below the titlebar of the previous one
 .\}
 UnderMousePlacement: places new windows underneath the mouse
 .RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+RowMinOverlapPlacement: place windows in rows with minimal overlapping
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+ColMinOverlapPlacement: place windows in columns with minimal overlapping
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+AutotabPlacement: tabs the window to the currently focused one
+.RE
 .RE
 .sp
 Default:
@@ -1845,6 +1930,31 @@ Set this to the number of workspaces the users wants\&.
 .sp
 Default:
 \fB4\fR
+.RE
+.PP
+\fBsession\&.screen0\&.struts\fR: \fIinteger\fR, \fIinteger\fR, \fIinteger\fR, \fIinteger\fR
+.RS 4
+Shrink the workspace by left, right, top, bottom pixels (positive integers) This allows you to add some padding to the workspace eg\&. to keep a fraction of the desktop visible against maximized windows\&. session\&.screen0\&.struts\&.<n> allows to control this for individual heads (<n> starts counting at 1)
+.sp
+Default:
+\fB0,0,0,0\fR
+.RE
+.PP
+\fBsession\&.screen0\&.toolbar\&.button\&.<name>\&.label\fR: \fIstring\fR
+.RS 4
+The label text for the toolbar button tool "button\&.<name>"
+.sp
+Default:
+\fBblank\fR
+.RE
+.PP
+\fBsession\&.screen0\&.toolbar\&.button\&.<name>\&.commands\fR: \fIstring\fR:\*(Aqstring\*(Aq:\*(Aqstring\*(Aq:\*(Aqstring\*(Aq:\*(Aqstring\*(Aq
+.RS 4
+A colon delimited list of commands, executed when the respective mouse button is pressed on the toolbar button tool "button\&.<name>" The commands are the same as those detailed in
+\fBfluxbox\-keys(5)\fR\&.
+.sp
+Default:
+\fBblank\fR
 .RE
 .PP
 \fBsession\&.cacheLife\fR: \fIminutes\fR
