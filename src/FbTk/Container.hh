@@ -39,7 +39,7 @@ class Container: public FbWindow, public EventHandler, private NotCopyable {
 public:
     // LEFT, RIGHT => fixed total width, fixed icon size
     // RELATIVE => fixed total width, relative/variable icon size
-    enum Alignment { LEFT, CENTER, RIGHT, RELATIVE };
+    enum Alignment { LEFT, CENTER, RIGHT, RELATIVE, RELATIVE_SMART };
     typedef Button * Item;
     typedef const Button * ConstItem;
     typedef std::list<Item> ItemList;
