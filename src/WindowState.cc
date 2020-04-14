@@ -113,8 +113,9 @@ void SizeHints::reset(const XSizeHints &sizehint) {
         min_width = min_height = 1;
 
     if (sizehint.flags & PBaseSize) {
-        base_width = sizehint.base_width;
-        base_height = sizehint.base_height;
+        base_width = std::max(sizehint.base_width, 0);
+        base_height = std::max(sizehint.base_height, 0);
+
         if (!(sizehint.flags & PMinSize)) {
             min_width = base_width;
             min_height = base_height;
