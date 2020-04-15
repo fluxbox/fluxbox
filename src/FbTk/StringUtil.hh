@@ -69,7 +69,7 @@ std::string findExtension(const std::string &filename);
 /// @return std::string::npos if nothing found
 std::string::size_type findCharFromAlphabetAfterTrigger(const std::string& in,
     char trigger,
-    const char alphabet[], size_t len_alphabet, size_t* found);
+    const char alphabet[], size_t len_alphabet, size_t* found, const char ignore_after_trigger[] = "", size_t len_ignore_after_trigger = 0);
 
 /// @return copy of original with find_string replaced with "replace"
 std::string replaceString(const std::string &original,

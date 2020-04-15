@@ -274,9 +274,16 @@ string findExtension(const string &filename) {
     return filename.substr(start_pos + 1);
 }
 
-string::size_type findCharFromAlphabetAfterTrigger(const std::string& in, char trigger, const char alphabet[], size_t len_alphabet, size_t* found) {
+    string::size_type findCharFromAlphabetAfterTrigger(const std::string& in, char trigger, const char alphabet[], size_t len_alphabet, size_t* found, const char ignore_after_trigger[], size_t len_ignore_after_trigger) {
     for (const char* s = in.c_str(); *s != '\0'; ) {
         if (*s++ == trigger && *s != '\0') {
+            auto end = ignore_after_trigger + len_ignore_after_trigger;
+            while (std::find(ignore_after_trigger, end, *s) != end)
+                s++;
+
+            if (*s == '\0')
+                return string::npos;
+
             for (const char* a = alphabet; (a - alphabet) < static_cast<ssize_t>(len_alphabet); ++a) {
                 if (*s == *a) {
                     if (found) {
