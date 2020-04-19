@@ -2044,9 +2044,12 @@ are buttons to quickly place a window into the left and right half of the curren
 .PP
 \fBsession\&.screen0\&.pin{Left|Right}\fR: \fIclasses\fR
 .RS 4
-Sort the system tray icons according to order specified in \fIclasses\fR, which is a comma\-separated list of CLASSCLASS properties of the X clients (The second field of WM_CLASS from the output of the \fBxprop(1)\fR utility)\&.
+Sort the system tray icons according to order specified in
+\fIclasses\fR, which is a comma\-separated list of CLASSCLASS properties of the X clients (The second field of WM_CLASS from the output of the
+\fBxprop(1)\fR
+utility)\&.
 .sp
-Consider a system tray "A C B D E F"\&. With pinRight set to "A, B" and pinLeft set to "E, F" it will look like "E F [C D] A B" while the icons in [] are unordered as usual.
+Consider a system tray "A C B D E F"\&. With pinRight set to "A, B" and pinLeft set to "E, F" it will look like "E F [C D] A B" while the icons in [] are unordered as usual\&.
 .RE
 .sp
 All of the \fIlocation\fR resources following require a pathname to their specific files\&. This is where you can specify different files\&. Most of the defaults will be located in the user\(cqs \fB~/\&.fluxbox\fR directory\&.
