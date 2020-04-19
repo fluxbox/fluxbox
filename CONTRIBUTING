@@ -10,7 +10,7 @@ Contents:
 Documentation
 -------------
 
-whats this? this is the attempt to write the documentation for 
+whats this? this is the attempt to write the documentation for
 fluxbox in ascii-doc format. how does it work?
 
 well, just edit fluxbox.txt from this directory. save it.
@@ -71,7 +71,7 @@ if (....) {
 }
 if the line needs to be splited up, right after an if-statement
 use { and }, so its clear when the if-statement ends.
-ex: 
+ex:
 if (...) {
     function(.....,
              ......, .... );
@@ -114,7 +114,7 @@ do {
 
 switch-statement:
 should always have a default value.
-Enum values is an exception, they should not have a default: , when you add 
+Enum values is an exception, they should not have a default: , when you add
 new values to an enum you might forget to add them to switch statement.
 
 switch (...) {
@@ -137,7 +137,7 @@ For files with namespace:
 #define NAMESPACE_FILENAME_HH
 ....
 
-#endif //NAMESPACE_FILENAME_HH 
+#endif //NAMESPACE_FILENAME_HH
 <eof>
 
 Without namespace:
@@ -150,7 +150,7 @@ Without namespace:
 <eof>
 
 preprocessors:
-The # of all preprocessor commands must always be in column 1, and never use 
+The # of all preprocessor commands must always be in column 1, and never use
 indentation for preprocessor directives
 
 They should always have a // PREPROCESSOR to mark where they end
@@ -159,7 +159,7 @@ They should always have a // PREPROCESSOR to mark where they end
 ...
 #endif //DEBUG
 
-Don't use preprocessors for constants or macro-functions, they can be 
+Don't use preprocessors for constants or macro-functions, they can be
 cryptic and sometime make it hard to debug.
 
 
@@ -184,31 +184,31 @@ Class:
 Order: public, protected and then private
 Class names always starts with a big letter.
 Class data members are prefixed by m_ , static data members are prefixed with s_ .
-Class member function will be organized according to creator, 
+Class member function will be organized according to creator,
 manipulator and accessors categories.
 
 class Classname:public AnotherClass {
 public:
     //1. public enums, structs
-    
+
     //2. constructors and destructor
-    
+
     //3. manipulators
-    
+
     //4. accessors
-    
+
 protected:
     //1. enums, structs
-    
+
     //2. functions
-    
+
     //3. variables
 
 private:
     //1. enums, structs
-    
+
     //2. functions
-    
+
     //3. variables
 };
 
@@ -234,7 +234,7 @@ try {
 }
 
 Variables:
-Avoid variables that contain mixtures of the numbers 0 & l and the letters O 
+Avoid variables that contain mixtures of the numbers 0 & l and the letters O
 and 1, because they are hard to tell apart.
 Having a type name and a variable differing in only in case (such as:
  String string;) is permitted, but discouraged.
