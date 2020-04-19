@@ -70,7 +70,7 @@ if (....) {
     ....
 }
 if the line needs to be splited up, right after an if-statement
-use { and }, so its clear when the if-statement ends.
+use { and }, so its clear when the if-statement ends.
 ex:
 if (...) {
     function(.....,
