@@ -1,4 +1,4 @@
-$ codeset=ISO-8859-15
+$ codeset=UTF-8
 
 $set 1 #Align
 
