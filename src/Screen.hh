@@ -95,7 +95,9 @@ public:
     bool isRootColormapInstalled() const { return root_colormap_installed; }
     bool isScreenManaged() const { return m_state.managed; }
     bool isWorkspaceWarping() const { return (m_workspaces_list.size() > 1) && *resource.workspace_warping; }
-    bool isWorkspaceWarpingVertical() const { return *resource.workspace_warping_vertical; }
+    bool isWorkspaceWarpingHorizontal() const { return isWorkspaceWarping() && *resource.workspace_warping_horizontal; }
+    bool isWorkspaceWarpingVertical() const { return isWorkspaceWarping() && *resource.workspace_warping_vertical; }
+    int getWorkspaceWarpingHorizontalOffset() const { return *resource.workspace_warping_horizontal_offset; }
     int getWorkspaceWarpingVerticalOffset() const { return *resource.workspace_warping_vertical_offset; }
     bool doAutoRaise() const { return *resource.auto_raise; }
     bool clickRaises() const { return *resource.click_raises; }
