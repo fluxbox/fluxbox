@@ -366,12 +366,12 @@ void FbRun::prevHistoryItem() {
 }
 
 void FbRun::nextHistoryItem() {
-    if (m_current_history_item == m_history.size()) {
+    if (m_current_history_item == static_cast<int>(m_history.size())) {
         XBell(m_display, 0);
     } else {
         m_current_history_item++;
         FbTk::BiDiString text("");
-        if (m_current_history_item == m_history.size()) {
+        if (m_current_history_item == static_cast<int>(m_history.size())) {
             m_current_history_item = m_history.size();
         } else
             text.setLogical((m_history[m_current_history_item]));
@@ -414,18 +414,19 @@ void FbRun::tabComplete(const std::vector<std::string> &list, int &currentItem, 
         ++split; // skip space
     std::string prefix = text().substr(split, m_completion_pos - split);
 
+    int listSize = list.size();
     if (currentItem < 0)
         currentItem = 0;
-    else if (currentItem >= list.size())
-        currentItem = list.size() - 1;
+    else if (currentItem >= listSize)
+        currentItem = listSize - 1;
     int item = currentItem;
 
     while (true) {
         if (reverse) {
             if (--item < 0)
-                item = list.size() - 1;
+                item = listSize - 1;
         } else {
-            if (++item >= list.size())
+            if (++item >= listSize)
                 item = 0;
         }
         if (list.at(item).find(prefix) == 0) {

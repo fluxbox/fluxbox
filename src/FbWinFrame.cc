@@ -1590,13 +1590,13 @@ int FbWinFrame::getContext(Window win, int x, int y, int last_x, int last_y, boo
     // handle() as border ??
     if (handle().window()    == win) {
         const int px = x - this->x() - window().borderWidth();
-        if (px < gripLeft().x() + gripLeft().width() || px > gripRight().x())
+        if (px < static_cast<int>(gripLeft().x() + gripLeft().width()) || px > gripRight().x())
             return context; // one of the corners
         return Keys::ON_WINDOWBORDER | Keys::ON_WINDOW;
     }
     if (titlebar().window()  == win) {
         const int px = x - this->x() - window().borderWidth();
-        if (px < label().x() || px > label().x() + label().width())
+        if (px < label().x() || px > static_cast<int>(label().x() + label().width()))
             return context; // one of the buttons, asked from a grabbed event
         return context | Keys::ON_TITLEBAR;
     }

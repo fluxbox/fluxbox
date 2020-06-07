@@ -199,7 +199,7 @@ void TextBox::deleteForward() {
     std::string::size_type pos = m_start_pos + m_cursor_pos;
     int length = 1;
     bool selected = false;
-    if (selected = hasSelection()) {
+    if ((selected = hasSelection())) {
         pos = std::min(m_start_pos + m_cursor_pos, m_select_pos);
         length = std::max(m_start_pos + m_cursor_pos, m_select_pos) - pos;
         m_cursor_pos = pos - m_start_pos;
@@ -591,7 +591,7 @@ void TextBox::adjustPos(){
 }
 
 
-void TextBox::select(std::string::size_type pos, int length)
+void TextBox::select(std::string::size_type pos, unsigned length)
 {
     if (length < 0) {
         length = -length;

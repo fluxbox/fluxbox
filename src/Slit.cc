@@ -1001,7 +1001,7 @@ void Slit::enterNotifyEvent(XCrossingEvent &ce) {
         toggleHidden();
     }
 
-    if (!m_timer.isTiming() && (m_rc_auto_hide && isHidden()) ||
+    if ((!m_timer.isTiming() && (m_rc_auto_hide && isHidden())) ||
        (m_rc_auto_raise && m_layeritem->getLayerNum() != ResourceLayer::ABOVE_DOCK))
         m_timer.start();
 }
@@ -1010,7 +1010,7 @@ void Slit::leaveNotifyEvent(XCrossingEvent &event) {
     if (m_slitmenu.isVisible())
         return;
 
-    if (!m_timer.isTiming() && (m_rc_auto_hide && !isHidden()) ||
+    if ((!m_timer.isTiming() && (m_rc_auto_hide && !isHidden())) ||
        (m_rc_auto_raise && m_layeritem->getLayerNum() != m_rc_layernum->getNum()))
         m_timer.start();
 
