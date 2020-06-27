@@ -7,7 +7,8 @@ check_PROGRAMS= \
 	testStringUtil \
 	testTexture
 
-testDemandAttention_LDFLAGS = \
+testDemandAttention_LDADD = \
+	libFbTk.a \
 	$(FONTCONFIG_LIBS) \
 	$(FRIBIDI_LIBS) \
 	$(XFT_LIBS) \
@@ -18,7 +19,8 @@ testDemandAttention_CPPFLAGS = \
 testDemandAttention_SOURCES = \
 	src/tests/testDemandAttention.cc
 
-testFont_LDFLAGS = \
+testFont_LDADD = \
+	libFbTk.a \
 	$(FONTCONFIG_LIBS) \
 	$(FRIBIDI_LIBS) \
 	$(XFT_LIBS) \
@@ -29,7 +31,8 @@ testFont_CPPFLAGS = \
 testFont_SOURCES = \
 	src/tests/testFont.cc
 
-testFullscreen_LDFLAGS = \
+testFullscreen_LDADD = \
+	libFbTk.a \
 	$(FONTCONFIG_LIBS) \
 	$(FRIBIDI_LIBS) \
 	$(XFT_LIBS) \
@@ -40,7 +43,8 @@ testFullscreen_CPPFLAGS = \
 testFullscreen_SOURCES = \
 	src/tests/fullscreentest.cc
 
-testKeys_LDFLAGS = \
+testKeys_LDADD = \
+	libFbTk.a \
 	$(FONTCONFIG_LIBS) \
 	$(FRIBIDI_LIBS) \
 	$(XFT_LIBS) \
@@ -64,7 +68,8 @@ testStringUtil_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-I$(src_incdir)
 
-testTexture_LDFLAGS = \
+testTexture_LDADD = \
+	libFbTk.a \
 	$(FONTCONFIG_LIBS) \
 	$(FRIBIDI_LIBS) \
 	$(IMLIB2_LIBS) \
