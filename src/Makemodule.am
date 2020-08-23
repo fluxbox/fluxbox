@@ -233,6 +233,8 @@ fluxbox_SOURCES = \
 	src/ScreenResource.hh \
 	src/SendToMenu.cc \
 	src/SendToMenu.hh \
+	src/ShortcutManager.cc \
+	src/ShortcutManager.hh \
 	src/Strut.hh \
 	src/StyleMenuItem.cc \
 	src/StyleMenuItem.hh \

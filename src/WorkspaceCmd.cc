@@ -39,6 +39,8 @@
 #include "FbTk/stringstream.hh"
 #include "FbTk/StringUtil.hh"
 
+#include "Debug.hh"
+
 #ifdef HAVE_CMATH
   #include <cmath>
 #else
@@ -751,3 +753,38 @@ FbTk::Command<void> *RelabelButtonCmd::parse(const std::string &command,
 
 REGISTER_COMMAND_PARSER(relabelbutton, RelabelButtonCmd::parse, void);
 
+void MarkWindowCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->keyScreen();
+    if (screen) {
+
+        FluxboxWindow* window = screen->focusControl().focusedFbWindow();
+        if (window) {
+            ShortcutManager &shortcutManager = Fluxbox::instance()->shortcutManager();
+            unsigned int key = shortcutManager.getLastPlaceHolderKey();
+            shortcutManager.mapKeyToWindow(key, window);
+            fbdbg << "Map window[" << window << "] to key[" << key << "]" << std::endl;
+        }
+    }
+}
+
+REGISTER_COMMAND(markwindow, MarkWindowCmd, void);
+
+void GotoMarkedWindowCmd::execute() {
+
+    ShortcutManager &shortcutManager = Fluxbox::instance()->shortcutManager();
+    unsigned int key = shortcutManager.getLastPlaceHolderKey();
+
+    FluxboxWindow *window = shortcutManager.getWindowForKey(key);
+    if (window) {
+
+        if (window->isIconic()) {
+            window->deiconify(false);
+        }
+        window->raiseAndFocus();
+
+        fbdbg << "Raise and focus window[" << window
+              << "] mapped to key[" << key << "]" << std::endl;
+    }
+}
+
+REGISTER_COMMAND(gotomarkedwindow, GotoMarkedWindowCmd, void);

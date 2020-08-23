@@ -272,7 +272,8 @@ Fluxbox::Fluxbox(int argc, char **argv,
       m_masked_window(0),
       m_argv(argv), m_argc(argc),
       m_showing_dialog(false),
-      m_server_grabs(0) {
+      m_server_grabs(0),
+      m_shortcut_manager(new ShortcutManager) {
 
     _FB_USES_NLS;
 

@@ -353,6 +353,7 @@ FluxboxWindow::~FluxboxWindow() {
     // no longer a valid window to do stuff with
     Fluxbox::instance()->removeWindowSearchGroup(frame().window().window());
     Fluxbox::instance()->removeWindowSearchGroup(frame().tabcontainer().window());
+    Fluxbox::instance()->shortcutManager().removeWindow(this);
 
     Client2ButtonMap::iterator it = m_labelbuttons.begin();
     Client2ButtonMap::iterator it_end = m_labelbuttons.end();
