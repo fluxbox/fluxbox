@@ -236,4 +236,14 @@ private:
     std::string m_button, m_label;
 };
 
+class MarkWindowCmd: public FbTk::Command<void> {
+public:
+    void execute();
+};
+
+class GotoMarkedWindowCmd: public FbTk::Command<void> {
+public:
+    void execute();
+};
+
 #endif // WORKSPACECMD_HH
