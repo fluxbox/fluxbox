@@ -17,7 +17,7 @@ unsigned int ShortcutManager::getLastPlaceHolderKey()
 
 void ShortcutManager::mapKeyToWindow(unsigned int key, FluxboxWindow* window)
 {
-    m_key_to_window_map.insert(std::make_pair(key, window));
+    m_key_to_window_map[key] = window;
 }
 
 void ShortcutManager::removeWindow(FluxboxWindow* window)
