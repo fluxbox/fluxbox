@@ -32,6 +32,7 @@
 #include "FbTk/MenuSearch.hh"
 
 #include "AttentionNoticeHandler.hh"
+#include "ShortcutManager.hh"
 
 #include <X11/Xresource.h>
 
@@ -185,6 +186,7 @@ public:
     const XEvent &lastEvent() const { return m_last_event; }
 
     AttentionNoticeHandler &attentionHandler() { return m_attention_handler; }
+    ShortcutManager &shortcutManager() { return *m_shortcut_manager; }
 
 private:
     std::string getRcFilename();
@@ -306,6 +308,7 @@ private:
     } m_state;
 
     int m_server_grabs;
+    std::unique_ptr<ShortcutManager> m_shortcut_manager;
 };
 
 

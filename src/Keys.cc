@@ -140,21 +140,35 @@ public:
     // constructor / destructor
     t_key(int type = 0, unsigned int mod = 0, unsigned int key = 0,
             const std::string &key_str = std::string(), int context = 0,
-            bool isdouble = false);
+            bool isdouble = false, bool isPlaceHolderArg = false);
 
     RefKey find(int type_, unsigned int mod_, unsigned int key_,
                 int context_, bool isdouble_) {
         // t_key ctor sets context_ of 0 to GLOBAL, so we must here too
         context_ = context_ ? context_ : GLOBAL;
+        keylist_t::iterator itPlaceHolder = keylist.end();
         keylist_t::iterator it = keylist.begin(), it_end = keylist.end();
         for (; it != it_end; ++it) {
+
+            if ((*it)->isPlaceHolderArg)
+                itPlaceHolder = it;
+
             if (*it && (*it)->type == type_ && (*it)->key == key_ &&
                 ((*it)->context & context_) > 0 &&
                 isdouble_ == (*it)->isdouble && (*it)->mod ==
                 FbTk::KeyUtil::instance().isolateModifierMask(mod_))
                 return *it;
         }
-        return RefKey();
+
+        // Could not find any matching key. If a placeholder was located then user
+        // is trying to pass in a value for the placeholder.
+        if (itPlaceHolder == keylist.end()) {
+            return RefKey();
+        }
+        else {
+            (*itPlaceHolder)->lastPlaceHolderArgValue = key_;
+            return *itPlaceHolder;
+        }
     }
 
     // member variables
@@ -165,6 +179,8 @@ public:
     std::string key_str; // key-symbol, needed for regrab()
     int context; // ON_TITLEBAR, etc.: bitwise-or of all desired contexts
     bool isdouble;
+    bool isPlaceHolderArg;
+    unsigned int lastPlaceHolderArgValue;
     FbTk::RefCount<FbTk::Command<void> > m_command;
 
     keylist_t keylist;
@@ -172,13 +188,15 @@ public:
 
 Keys::t_key::t_key(int type_, unsigned int mod_, unsigned int key_,
                    const std::string &key_str_,
-                   int context_, bool isdouble_) :
+                   int context_, bool isdouble_, bool isPlaceHolderArg_) :
     type(type_),
     mod(mod_),
     key(key_),
     key_str(key_str_),
     context(context_),
     isdouble(isdouble_),
+    isPlaceHolderArg(isPlaceHolderArg_),
+    lastPlaceHolderArgValue(0),
     m_command(0) {
 
     context = context_ ? context_ : GLOBAL;
@@ -385,6 +403,8 @@ bool Keys::addBinding(const string &linebuffer) {
 
         std::string arg = FbTk::StringUtil::toLower(val[argc]);
 
+        bool isPlaceHolderArg = false;
+
         if (arg[0] != ':') { // parse key(s)
 
             std::string key_str;
@@ -461,7 +481,11 @@ bool Keys::addBinding(const string &linebuffer) {
                     type = ButtonRelease;
                 } else if (extractKeyFromString(arg, "move", key)) {
                     type = MotionNotify;
-
+                } else if (arg == "arg") {
+                    isPlaceHolderArg = true;
+                    key = 0;
+                    mod = 0;
+                    type = 0;
                 } else if ((key = FbTk::KeyUtil::getKey(val[argc].c_str()))) { // convert from string symbol
                     type = KeyPress;
                     key_str = val[argc];
@@ -476,11 +500,16 @@ bool Keys::addBinding(const string &linebuffer) {
                     type = KeyPress;
                 }
 
-                if (key == 0 && (type == KeyPress || type == ButtonPress || type == ButtonRelease))
+                if (key == 0 && (type == KeyPress || type == ButtonPress || type == ButtonRelease) && !isPlaceHolderArg)
                     return false;
 
                 if (type != ButtonPress)
                     isdouble = false;
+
+                // Placeholder argument cannot be the first key
+                if (!first_new_key && isPlaceHolderArg) {
+                    return false;
+                }
 
                 if (!first_new_key) {
                     first_new_keylist = current_key;
@@ -488,13 +517,14 @@ bool Keys::addBinding(const string &linebuffer) {
                                                     isdouble);
                     if (!current_key) {
                         first_new_key.reset( new t_key(type, mod, key, key_str, context,
-                                                  isdouble) );
+                                                  isdouble, isPlaceHolderArg) );
                         current_key = first_new_key;
                     } else if (current_key->m_command) // already being used
                         return false;
                 } else {
+
                     RefKey temp_key( new t_key(type, mod, key, key_str, context,
-                                                isdouble) );
+                                                isdouble, isPlaceHolderArg) );
                     current_key->keylist.push_back(temp_key);
                     current_key = temp_key;
                 }
@@ -608,6 +638,15 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
 
     WinClient *old = WindowCmd<void>::client();
     WindowCmd<void>::setClient(current);
+
+    // The key is a placeholder, store the value of the entered key in the shortcut manager
+    // before executing the action
+    if (temp_key->isPlaceHolderArg) {
+        fbdbg << "Encountered placeholder key. Assign value[" << temp_key->lastPlaceHolderArgValue
+              << "] to the placeholder" << std::endl;
+        Fluxbox::instance()->shortcutManager().setLastPlaceHolderKey(temp_key->lastPlaceHolderArgValue);
+    }
+
     temp_key->m_command->execute();
     WindowCmd<void>::setClient(old);
 
