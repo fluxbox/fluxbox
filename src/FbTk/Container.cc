@@ -324,7 +324,7 @@ void Container::repositionItems() {
     // if we have a max total size, then we must also resize ourself
     // within that bound
     Alignment align = alignment();
-    if (m_max_total_size && align != RELATIVE) {
+    if (m_max_total_size && (align != RELATIVE && align != RELATIVE_SMART)) {
         total_width = (max_width_per_client + borderW) * num_items - borderW;
         if (total_width > m_max_total_size) {
             total_width = m_max_total_size;
@@ -379,7 +379,7 @@ void Container::repositionItems() {
     unsigned int totalDemands = 0;
     std::vector<unsigned int> buttonDemands;
 
-    if (align == RELATIVE || total_width == m_max_total_size) {
+    if (align == RELATIVE_SMART && total_width == m_max_total_size) {
         buttonDemands.reserve(num_items);
         for (it = begin(); it != it_end; ++it) {
             buttonDemands.push_back((*it)->preferredWidth());
@@ -440,7 +440,7 @@ void Container::repositionItems() {
         // rotate the x and y coords
         tmpx = next_x;
         tmpy = -borderW;
-        if (align == RELATIVE && totalDemands) {
+        if ((align == RELATIVE || align == RELATIVE_SMART) && totalDemands) {
             tmpw = buttonDemands.at(i)*total_width/totalDemands + extra;
         } else {
             tmpw = max_width_per_client + extra;
@@ -469,6 +469,7 @@ unsigned int Container::maxWidthPerClient() const {
     case LEFT:
         return m_max_size_per_client;
         break;
+    case RELATIVE_SMART:
     case RELATIVE:
         if (size() == 0)
             return width();
