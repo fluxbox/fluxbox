@@ -449,6 +449,12 @@ void FluxboxWindow::init() {
     m_tabActivationTimer.setCommand(activate_tab_cmd);
     m_tabActivationTimer.fireOnce(true);
 
+    m_resizeTimer.setTimeout(screen().opaqueResizeDelay() * FbTk::FbTime::IN_MILLISECONDS);
+    FbTk::RefCount<FbTk::Command<void> > resize_cmd(new FbTk::SimpleCommand<FluxboxWindow>(*this,
+                                                                                   &FluxboxWindow::updateResize));
+    m_resizeTimer.setCommand(resize_cmd);
+    m_resizeTimer.fireOnce(true);
+
     m_reposLabels_timer.setTimeout(IconButton::updateLaziness());
     m_reposLabels_timer.fireOnce(true);
     FbTk::RefCount<FbTk::Command<void> > elrs(new FbTk::SimpleCommand<FluxboxWindow>(*this, &FluxboxWindow::emitLabelReposSig));
@@ -2663,36 +2669,36 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         int old_resize_w = m_last_resize_w;
         int old_resize_h = m_last_resize_h;
 
-        int dx = me.x - m_button_grab_x;
-        int dy = me.y - m_button_grab_y;
+        int dx = me.x_root - m_button_grab_x;
+        int dy = me.y_root - m_button_grab_y;
 
         if (m_resize_corner == LEFTTOP || m_resize_corner == LEFTBOTTOM ||
                 m_resize_corner == LEFT) {
-            m_last_resize_w = frame().width() - dx;
-            m_last_resize_x = frame().x() + dx;
+            m_last_resize_w = resize_base_w - dx;
+            m_last_resize_x = resize_base_x + dx;
         }
         if (m_resize_corner == LEFTTOP || m_resize_corner == RIGHTTOP ||
                 m_resize_corner == TOP) {
-            m_last_resize_h = frame().height() - dy;
-            m_last_resize_y = frame().y() + dy;
+            m_last_resize_h = resize_base_h - dy;
+            m_last_resize_y = resize_base_y + dy;
         }
         if (m_resize_corner == LEFTBOTTOM || m_resize_corner == BOTTOM ||
                 m_resize_corner == RIGHTBOTTOM)
-            m_last_resize_h = frame().height() + dy;
+            m_last_resize_h = resize_base_h + dy;
         if (m_resize_corner == RIGHTBOTTOM || m_resize_corner == RIGHTTOP ||
                 m_resize_corner == RIGHT)
-            m_last_resize_w = frame().width() + dx;
+            m_last_resize_w = resize_base_w + dx;
         if (m_resize_corner == CENTER) {
             // dx or dy must be at least 2
             if (abs(dx) >= 2 || abs(dy) >= 2) {
                 // take max and make it even
                 int diff = 2 * (max(dx, dy) / 2);
 
-                m_last_resize_h =  frame().height() + diff;
+                m_last_resize_h =  resize_base_h + diff;
 
-                m_last_resize_w = frame().width() + diff;
-                m_last_resize_x = frame().x() - diff/2;
-                m_last_resize_y = frame().y() - diff/2;
+                m_last_resize_w = resize_base_w + diff;
+                m_last_resize_x = resize_base_x - diff/2;
+                m_last_resize_y = resize_base_y - diff/2;
             }
         }
 
@@ -2780,18 +2786,23 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                     }
                 }
 
-            // draw over old rect
-            parent().drawRectangle(screen().rootTheme()->opGC(),
-                    old_resize_x, old_resize_y,
-                    old_resize_w - 1 + 2 * frame().window().borderWidth(),
-                    old_resize_h - 1 + 2 * frame().window().borderWidth());
+            if (m_last_resize_w != old_resize_w || m_last_resize_h != old_resize_h) {
+                if (screen().doOpaqueResize()) {
+                    m_resizeTimer.start();
+                } else {
+                    // draw over old rect
+                    parent().drawRectangle(screen().rootTheme()->opGC(),
+                            old_resize_x, old_resize_y,
+                            old_resize_w - 1 + 2 * frame().window().borderWidth(),
+                            old_resize_h - 1 + 2 * frame().window().borderWidth());
 
-            // draw resize rectangle
-            parent().drawRectangle(screen().rootTheme()->opGC(),
-                    m_last_resize_x, m_last_resize_y,
-                    m_last_resize_w - 1 + 2 * frame().window().borderWidth(),
-                    m_last_resize_h - 1 + 2 * frame().window().borderWidth());
-
+                    // draw resize rectangle
+                    parent().drawRectangle(screen().rootTheme()->opGC(),
+                            m_last_resize_x, m_last_resize_y,
+                            m_last_resize_w - 1 + 2 * frame().window().borderWidth(),
+                            m_last_resize_h - 1 + 2 * frame().window().borderWidth());
+                }
+            }
         }
     }
 }
@@ -3320,29 +3331,33 @@ void FluxboxWindow::startResizing(int x, int y, ReferenceCorner dir) {
                 false, ButtonMotionMask | ButtonReleaseMask,
                 GrabModeAsync, GrabModeAsync, None, cursor, CurrentTime);
 
-    m_button_grab_x = x;
-    m_button_grab_y = y;
-    m_last_resize_x = frame().x();
-    m_last_resize_y = frame().y();
-    m_last_resize_w = frame().width();
-    m_last_resize_h = frame().height();
+    m_button_grab_x = x + frame().x();
+    m_button_grab_y = y + frame().y();
+    resize_base_x = m_last_resize_x = frame().x();
+    resize_base_y = m_last_resize_y = frame().y();
+    resize_base_w = m_last_resize_w = frame().width();
+    resize_base_h = m_last_resize_h = frame().height();
 
     fixSize();
     frame().displaySize(m_last_resize_w, m_last_resize_h);
 
-    parent().drawRectangle(screen().rootTheme()->opGC(),
+    if (!screen().doOpaqueResize()) {
+        parent().drawRectangle(screen().rootTheme()->opGC(),
                        m_last_resize_x, m_last_resize_y,
                        m_last_resize_w - 1 + 2 * frame().window().borderWidth(),
                        m_last_resize_h - 1 + 2 * frame().window().borderWidth());
+    }
 }
 
 void FluxboxWindow::stopResizing(bool interrupted) {
     resizing = false;
 
-    parent().drawRectangle(screen().rootTheme()->opGC(),
+    if (!screen().doOpaqueResize()) {
+        parent().drawRectangle(screen().rootTheme()->opGC(),
                            m_last_resize_x, m_last_resize_y,
                            m_last_resize_w - 1 + 2 * frame().window().borderWidth(),
                            m_last_resize_h - 1 + 2 * frame().window().borderWidth());
+    }
 
     screen().hideGeometry();
 
