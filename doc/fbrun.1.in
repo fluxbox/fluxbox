@@ -77,6 +77,11 @@ Window position in pixels
 Position the window under the mouse cursor
 .RE
 .PP
+\fB\-center\fR
+.RS 4
+Position the window on the screen center
+.RE
+.PP
 \fB\-fg\fR \fIcolor\fR
 .RS 4
 Foreground text color\&. The default is
@@ -100,9 +105,21 @@ History file to load\&. The default is
 \fB~/\&.fluxbox/fbrun_history\fR\&.
 .RE
 .PP
+\fB\-cf\fR \fIfilename\fR
+.RS 4
+Completion data to load\&. The default is empty\&. If no data can be loaded, completion defaults to executables in $PATH
+.RE
+.PP
 \fB\-preselect\fR
 .RS 4
-Select the preset text given by the \fB\&-text\fR\& parameter
+Select the preset text given by the
+\fB\-text\fR
+parameter
+.RE
+.PP
+\fB\-autocomplete\fR
+.RS 4
+Complete on typing\&. You can also set the FBRUN_AUTOCOMPLETE environment (to any value)
 .RE
 .PP
 \fB\-help\fR

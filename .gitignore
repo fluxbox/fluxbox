@@ -48,3 +48,6 @@ Makefile.in
 /util/fluxbox-generate_menu
 /util/startfluxbox
 /version.h
+
+# off source build directory
+build

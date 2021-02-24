@@ -1259,6 +1259,14 @@ Default right: *Shade Minimize Maximize Close*
 'LHalf' and 'RHalf' are buttons to quickly place a window into the left and
 right half of the current monitor.
 
+*session.screen0.pin{Left|Right}*: 'classes'::
+Sort the system tray icons according to order specified in 'classes', which is
+a comma-separated list of CLASSCLASS properties of the X clients (The second
+field of WM_CLASS from the output of the *xprop(1)* utility).
++
+Consider a system tray "A C B D E F". With pinRight set to "A, B" and pinLeft
+set to "E, F" it will look like "E F [C D] A B" while the icons in [] are
+unordered as usual.
 
 All of the 'location' resources following require a pathname to their specific
 files. This is where you can specify different files. Most of the defaults will

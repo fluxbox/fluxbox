@@ -238,9 +238,9 @@ for more information\&.
 .RE
 .SH "WINDOW MENU"
 .sp
-The syntax for the Window Menu is mostly identical to that for the \fBROOT MENU\fR; it must start with \fB[begin]\fR and end with \fB[end]\fR, and may have any of the above tags\&. However, it may also contain any of the following window-specific \fB[\fR\fItag\fR\fB]\fRs, which each must be on a line by itself with no labels, commands, or icons\&.
+The syntax for the Window Menu is mostly identical to that for the \fBROOT MENU\fR; it must start with \fB[begin]\fR and end with \fB[end]\fR, and may have any of the above tags\&. However, it may also contain any of the following window\-specific \fB[\fR\fItag\fR*]*s, which each must be on a line by itself with no labels, commands, or icons\&.
 .sp
-The additional available tags in this menu are:
+The additonal available tags in this menu are:
 .PP
 \fB[shade]\fR
 .RS 4
