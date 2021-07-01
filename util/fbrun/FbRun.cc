@@ -508,8 +508,8 @@ void FbRun::tabCompleteApps() {
             first_run = false;
             std::string path = getenv("PATH");
             FbTk::Directory dir;
-            for (unsigned int l = 0, r = 0; r < path.size(); ++r) {
-                if ((path.at(r) == ':' || r == path.size() - 1) && r - l > 1) {
+            for (unsigned int l = 0, r = 0; r <= path.size(); ++r) {
+                if ((r == path.size() || path.at(r) == ':') && r - l > 1) {
                     dir.open(path.substr(l, r - l).c_str());
                     prefix = dir.name() + (*dir.name().rbegin() == '/' ? "" : "/");
                     int n = dir.entries();
