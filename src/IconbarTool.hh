@@ -98,6 +98,7 @@ private:
     /// add icons to the list
     void updateList();
 
+    void updateMaxSizes(unsigned int width, unsigned int height);
     /// called when the list emits a signal
     void update(UpdateReason reason, Focusable *win);
 

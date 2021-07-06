@@ -73,6 +73,8 @@ string FbTk::Resource<FbTk::Container::Alignment>::getString() const {
         return string("Left");
     if (m_value == FbTk::Container::RIGHT)
         return string("Right");
+    if (m_value == FbTk::Container::RELATIVE_SMART)
+        return string("RelativeSmart");
     return string("Relative");
 }
 
@@ -84,6 +86,8 @@ void FbTk::Resource<FbTk::Container::Alignment>::setFromString(const char *str) 
         m_value = FbTk::Container::RIGHT;
     else if (strcasecmp(str, "Relative") == 0)
         m_value = FbTk::Container::RELATIVE;
+    else if (strcasecmp(str, "RelativeSmart") == 0)
+        m_value = FbTk::Container::RELATIVE_SMART;
     else
         setDefaultValue();
 }
@@ -143,6 +147,7 @@ enum {
 
     L_LEFT,
     L_RELATIVE,
+    L_RELATIVE_SMART,
     L_RIGHT,
 };
 
@@ -163,6 +168,7 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
 
         _FB_XTEXT(Align, Left, "Left", "Align to the left"),
         _FB_XTEXT(Align, Relative, "Relative", "Align relative to the width"),
+        _FB_XTEXT(Align, RelativeSmart, "Relative (Smart)", "Align relative to the width, but let elements vary according to size of title"),
         _FB_XTEXT(Align, Right, "Right", "Align to the right"),
     };
 
@@ -181,6 +187,7 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
 
     menu.insertItem(new ToolbarAlignMenuItem(_labels[L_LEFT], handler, FbTk::Container::LEFT, saverc_cmd));
     menu.insertItem(new ToolbarAlignMenuItem(_labels[L_RELATIVE], handler, FbTk::Container::RELATIVE, saverc_cmd));
+    menu.insertItem(new ToolbarAlignMenuItem(_labels[L_RELATIVE_SMART], handler, FbTk::Container::RELATIVE_SMART, saverc_cmd));
     menu.insertItem(new ToolbarAlignMenuItem(_labels[L_RIGHT], handler, FbTk::Container::RIGHT, saverc_cmd));
 
     menu.insertItem(new FbTk::MenuSeparator());
@@ -304,11 +311,21 @@ void IconbarTool::move(int x, int y) {
     m_icon_container.move(x, y);
 }
 
-void IconbarTool::resize(unsigned int width, unsigned int height) {
-    m_icon_container.resize(width, height);
+void IconbarTool::updateMaxSizes(unsigned int width, unsigned int height) {
     const unsigned int maxsize = (m_icon_container.orientation() & 1) ? height : width;
     m_icon_container.setMaxTotalSize(maxsize);
-    m_icon_container.setMaxSizePerClient(maxsize/std::max(1, m_icon_container.size()));
+
+    if(*m_rc_alignment == FbTk::Container::LEFT || *m_rc_alignment == FbTk::Container::RIGHT) {
+        *m_rc_client_width = FbTk::Util::clamp(*m_rc_client_width, 10, 400);
+        m_icon_container.setMaxSizePerClient(*m_rc_client_width);
+    } else {
+        m_icon_container.setMaxSizePerClient(maxsize/std::max(1, m_icon_container.size()));
+    }
+}
+
+void IconbarTool::resize(unsigned int width, unsigned int height) {
+    m_icon_container.resize(width, height);
+    updateMaxSizes(width, height);
     renderTheme();
 }
 
@@ -316,9 +333,7 @@ void IconbarTool::moveResize(int x, int y,
                              unsigned int width, unsigned int height) {
 
     m_icon_container.moveResize(x, y, width, height);
-    const unsigned int maxsize = (m_icon_container.orientation() & 1) ? height : width;
-    m_icon_container.setMaxTotalSize(maxsize);
-    m_icon_container.setMaxSizePerClient(maxsize/std::max(1, m_icon_container.size()));
+    updateMaxSizes(width, height);
     renderTheme();
 }
 
@@ -438,10 +453,8 @@ void IconbarTool::update(UpdateReason reason, Focusable *win) {
     }
 
     m_resizeSig_timer.start();
-    const unsigned int maxsize = (m_icon_container.orientation() & 1) ? height() : width();
-    m_icon_container.setMaxTotalSize(maxsize);
-    m_icon_container.setMaxSizePerClient(maxsize/std::max(1, m_icon_container.size()));
 
+    updateMaxSizes(width(), height());
     // unlock container and update graphics
     m_icon_container.setUpdateLock(false);
     m_icon_container.update();
