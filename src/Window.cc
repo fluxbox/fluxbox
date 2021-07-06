@@ -2578,6 +2578,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         const int  warp_pad            = screen().getEdgeSnapThreshold();
         const int  workspaces          = screen().numberOfWorkspaces();
         const bool is_warping          = screen().isWorkspaceWarping();
+        const bool is_warping_horzntal = screen().isWorkspaceWarpingHorizontal();
         const bool is_warping_vertical = screen().isWorkspaceWarpingVertical();
 
         if ((moved_x || moved_y) && is_warping) {
@@ -2590,12 +2591,13 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             int bt_top    = int(screen().height()) - warp_pad - 1;
             int bt_bottom = warp_pad;
 
-            if (moved_x) {
+            if (moved_x && is_warping_horzntal) {
+	        const int warp_offset = screen().getWorkspaceWarpingHorizontalOffset();
                 if (me.x_root >= bt_right && moved_x > 0) { //warp right
-                    new_id          = (cur_id + 1) % workspaces;
+                    new_id          = (cur_id + warp_offset) % workspaces;
                     m_last_resize_x = 0;
                 } else if (me.x_root <= bt_left && moved_x < 0) { //warp left
-                    new_id          = (cur_id +  -1) % workspaces;
+                    new_id          = (cur_id + workspaces - warp_offset) % workspaces;
                     m_last_resize_x = screen().width() - 1;
                 }
             }
