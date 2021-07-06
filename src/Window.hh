@@ -528,6 +528,7 @@ private:
     void moveResizeClient(WinClient &client);
     /// sends configurenotify to all clients
     void sendConfigureNotify();
+    void updateResize() { moveResize(m_last_resize_x, m_last_resize_y, m_last_resize_w, m_last_resize_h); }
 
     static void grabPointer(Window grab_window,
                      Bool owner_events,
@@ -553,6 +554,7 @@ private:
     uint64_t m_last_keypress_time;
     FbTk::Timer m_timer;
     FbTk::Timer m_tabActivationTimer;
+    FbTk::Timer m_resizeTimer;
 
     // Window states
     bool moving, resizing, m_initialized;
@@ -565,6 +567,7 @@ private:
     int m_last_resize_x, m_last_resize_y; // handles last button press event for resize
     int m_last_move_x, m_last_move_y; // handles last pos for non opaque moving
     int m_last_resize_h, m_last_resize_w; // handles height/width for resize "window"
+    int resize_base_x, resize_base_y, resize_base_w, resize_base_h; // opaque and transparent resize alignment
     int m_last_pressed_button;
 
     unsigned int m_workspace_number;

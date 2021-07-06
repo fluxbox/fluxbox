@@ -100,6 +100,8 @@ public:
     bool doAutoRaise() const { return *resource.auto_raise; }
     bool clickRaises() const { return *resource.click_raises; }
     bool doOpaqueMove() const { return *resource.opaque_move; }
+    bool doOpaqueResize() const { return *resource.opaque_resize; }
+    unsigned int opaqueResizeDelay() const { return *resource.opaque_resize_delay; }
     bool doFullMax() const { return *resource.full_max; }
     bool getMaxIgnoreIncrement() const { return *resource.max_ignore_inc; }
     bool getMaxDisableMove() const { return *resource.max_disable_move; }

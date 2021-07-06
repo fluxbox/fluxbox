@@ -83,6 +83,7 @@ ScreenResource::ScreenResource(FbTk::ResourceManager& rm,
         const std::string& scrname,
         const std::string& altscrname):
     opaque_move(rm, true, scrname + ".opaqueMove", altscrname+".OpaqueMove"),
+    opaque_resize(rm, false, scrname + ".opaqueResize", altscrname+".OpaqueResize"),
     full_max(rm, false, scrname+".fullMaximization", altscrname+".FullMaximization"),
     max_ignore_inc(rm, true, scrname+".maxIgnoreIncrement", altscrname+".MaxIgnoreIncrement"),
     max_disable_move(rm, false, scrname+".maxDisableMove", altscrname+".MaxDisableMove"),
@@ -110,6 +111,7 @@ ScreenResource::ScreenResource(FbTk::ResourceManager& rm,
     clientmenu_use_pixmap(rm, true, scrname+".clientMenu.usePixmap", altscrname+".ClientMenu.UsePixmap"),
     tabs_use_pixmap(rm, true, scrname+".tabs.usePixmap", altscrname+".Tabs.UsePixmap"),
     max_over_tabs(rm, false, scrname+".tabs.maxOver", altscrname+".Tabs.MaxOver"),
-    default_internal_tabs(rm, true /* TODO: autoconf option? */ , scrname+".tabs.intitlebar", altscrname+".Tabs.InTitlebar") {
+    default_internal_tabs(rm, true /* TODO: autoconf option? */ , scrname+".tabs.intitlebar", altscrname+".Tabs.InTitlebar"),
+    opaque_resize_delay(rm, 50, scrname + ".opaqueResizeDelay", altscrname+".OpaqueResizeDelay")    {
 
 }
