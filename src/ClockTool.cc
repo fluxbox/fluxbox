@@ -47,11 +47,13 @@ const char SWITCHES_SECONDS[] = "crsSTX+";
 const char SWITCHES_12_24H[] = "lIrkHT";
 const char SWITCHES_24_12H[] = "kHTlIr";
 const char SWITCH_AM_PM[] = "pP";
+const char IGNORE_AFTER_TRIGGER[] = "0123456789";
 
 int showSeconds(const std::string& fmt) {
 
     return FbTk::StringUtil::findCharFromAlphabetAfterTrigger(
-                    fmt, '%', SWITCHES_SECONDS, sizeof(SWITCHES_SECONDS), 0) != std::string::npos;
+        fmt, '%', SWITCHES_SECONDS, sizeof(SWITCHES_SECONDS), 0,
+        IGNORE_AFTER_TRIGGER, sizeof(IGNORE_AFTER_TRIGGER)) != std::string::npos;
 }
 
 uint64_t calcNextTimeout(const std::string& fmt) {
@@ -82,7 +84,8 @@ public:
         // does the current format string contain something with 24/12h?
         size_t found;
         size_t pos = FbTk::StringUtil::findCharFromAlphabetAfterTrigger(
-                m_tool.timeFormat(), '%', SWITCHES_24_12H, sizeof(SWITCHES_24_12H), &found);
+            m_tool.timeFormat(), '%', SWITCHES_24_12H, sizeof(SWITCHES_24_12H), &found,
+            IGNORE_AFTER_TRIGGER, sizeof(IGNORE_AFTER_TRIGGER));
 
         if (pos != std::string::npos) { // if so, exchange it with 12/24h
             std::string newformat = m_tool.timeFormat();
@@ -90,7 +93,8 @@ public:
 
             if (found < 3) { // 24h? erase %P/%p (AM|PM / am|pm)
                 pos = FbTk::StringUtil::findCharFromAlphabetAfterTrigger(
-                    newformat, '%', SWITCH_AM_PM, sizeof(SWITCH_AM_PM), 0);
+                    newformat, '%', SWITCH_AM_PM, sizeof(SWITCH_AM_PM), 0,
+                    IGNORE_AFTER_TRIGGER, sizeof(IGNORE_AFTER_TRIGGER));
                 if (pos != std::string::npos) {
                     newformat.erase(pos, 2);
                 }
@@ -107,7 +111,8 @@ private:
     void setClockModeLabel() {
         _FB_USES_NLS;
         if (FbTk::StringUtil::findCharFromAlphabetAfterTrigger(
-            m_tool.timeFormat(), '%', SWITCHES_24_12H, 3, 0) != std::string::npos) {
+            m_tool.timeFormat(), '%', SWITCHES_24_12H, 3, 0,
+            IGNORE_AFTER_TRIGGER, sizeof(IGNORE_AFTER_TRIGGER)) != std::string::npos) {
             setLabel( _FB_XTEXT(Toolbar, Clock24,   "Clock: 24h",   "set Clockmode to 24h") );
         } else {
             setLabel( _FB_XTEXT(Toolbar, Clock12,   "Clock: 12h",   "set Clockmode to 12h") );
