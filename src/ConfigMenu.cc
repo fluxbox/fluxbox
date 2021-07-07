@@ -336,6 +336,10 @@ void ConfigMenu::setup(FbTk::Menu& menu, ConfigMenu::SetupHelper& sh) {
               "Opaque Window Moving",
               "Window Moving with whole window visible (as opposed to outline moving)",
               sh.resource.opaque_move, saverc_cmd);
+    _BOOLITEM(menu, Configmenu, OpaqueResize,
+              "Opaque Window Resizing",
+              "Window Resizing with whole window visible (as opposed to outline resizing)",
+              sh.resource.opaque_resize, saverc_cmd);
     _BOOLITEM(menu, Configmenu, WorkspaceWarping,
               "Workspace Warping",
               "Workspace Warping - dragging windows to the edge and onto the next workspace",

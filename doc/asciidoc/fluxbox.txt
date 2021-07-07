@@ -414,6 +414,10 @@ titlebars, not window contents.
     If enabled, you will see the window content while dragging it. Otherwise
     only an outline of the window will be shown.
 
+*Opaque Window Resizing*:::
+    If enabled, you will see the window content while resizing it. Otherwise
+    only an outline of the window will be shown.
+
 *Workspace Warping*:::
     If enabled, you can drag windows from one workspace to another. There are
     parameters to set independently whether this warping happens horizontally
@@ -1168,6 +1172,24 @@ contents as it moves (this is nasty on slow systems). If False, it
 will only draw an outline of the window border.
 +
 Default: *True*
+
+*session.screen0.opaqueResize*: 'boolean'::
+When resizing a window, setting this to True will draw the window
+contents as it resizes (this is nasty on slow systems). If False, it
+will only draw an outline of the window border.
++
+Default: *False*
+
+*session.screen0.opaqueResizeDelay*: 'integer'::
+When resizing a window in opaque mode, this controls the resize clock pulse in
+ms.
+Low values resize "smoother" but slow clients (browser etc. which are expensive
+to resize) can put too much stress on the system (stalling everything)
+High values will cause notable latency (delay before the size is aligned to
+the mouse position)
++
+Default: *40*
+
 
 *session.screen0.workspaces*: 'integer'::
 Set this to the number of workspaces the users wants.

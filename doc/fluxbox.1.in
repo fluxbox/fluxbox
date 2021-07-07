@@ -1,7 +1,7 @@
 '\" t
 .\"     Title: fluxbox
 .\"    Author: Henrik Kinnunen <fluxgen@fluxbox.org>
-.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
 .\"      Date: 08 February 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox.txt
@@ -826,14 +826,14 @@ option will force fluxbox to ignore the xcomposite extension and use pseudo\-tra
 If enabled, you will see the window content while dragging it\&. Otherwise only an outline of the window will be shown\&.
 .RE
 .PP
+\fBOpaque Window Resizing\fR
+.RS 4
+If enabled, you will see the window content while resizing it\&. Otherwise only an outline of the window will be shown\&.
+.RE
+.PP
 \fBWorkspace Warping\fR
 .RS 4
-If enabled, you can drag windows from one workspace to another\&. There are
-parameters to set independently whether this warping happens horizontally
-and/or vertically, and in each direction you can set the number of workspaces
-to jump when warping (to allow for a virtual rectangular grid of
-workspaces)\&. When warping, lower-numbered workspaces are above/to the left, and
-higher-numbered workspaces below/to the right\&.
+If enabled, you can drag windows from one workspace to another\&. There are parameters to set independently whether this warping happens horizontally and/or vertically, and in each direction you can set the number of workspaces to jump when warping (to allow for a virtual rectangular grid of workspaces)\&. When warping, lower\-numbered workspaces are above/to the left, and higher\-numbered workspaces below/to the right\&.
 .RE
 .SS "Window Menu"
 .sp
@@ -1204,11 +1204,6 @@ All icons will be left\-aligned with the width set in the \(oqinit\(cq file
 \fBRelative\fR:
 .RS 4
 All icons will be sized evenly to fill the iconbar completely
-.RE
-.PP
-\fBRelativeSmart\fR:
-.RS 4
-All icons will initially be sized evenly, but icons with long titles will be larger
 .RE
 .PP
 \fBRight\fR:
@@ -1932,6 +1927,22 @@ When moving a window, setting this to True will draw the window contents as it m
 .sp
 Default:
 \fBTrue\fR
+.RE
+.PP
+\fBsession\&.screen0\&.opaqueResize\fR: \fIboolean\fR
+.RS 4
+When resizing a window, setting this to True will draw the window contents as it resizes (this is nasty on slow systems)\&. If False, it will only draw an outline of the window border\&.
+.sp
+Default:
+\fBFalse\fR
+.RE
+.PP
+\fBsession\&.screen0\&.opaqueResizeDelay\fR: \fIinteger\fR
+.RS 4
+When resizing a window in opaque mode, this controls the resize clock pulse in ms\&. Low values resize "smoother" but slow clients (browser etc\&. which are expensive to resize) can put too much stress on the system (stalling everything) High values will cause notable latency (delay before the size is aligned to the mouse position)
+.sp
+Default:
+\fB40\fR
 .RE
 .PP
 \fBsession\&.screen0\&.workspaces\fR: \fIinteger\fR
