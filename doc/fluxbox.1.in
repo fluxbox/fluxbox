@@ -1,7 +1,7 @@
 '\" t
 .\"     Title: fluxbox
 .\"    Author: Henrik Kinnunen <fluxgen@fluxbox.org>
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 08 February 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox.txt
@@ -1204,6 +1204,11 @@ All icons will be left\-aligned with the width set in the \(oqinit\(cq file
 \fBRelative\fR:
 .RS 4
 All icons will be sized evenly to fill the iconbar completely
+.RE
+.PP
+\fBRelativeSmart\fR:
+.RS 4
+All icons will initially be sized evenly, but icons with long titles will be larger
 .RE
 .PP
 \fBRight\fR:

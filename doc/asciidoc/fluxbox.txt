@@ -678,6 +678,8 @@ resource:
     All icons will be left-aligned with the width set in the `init' file
 *Relative*:;;
     All icons will be sized evenly to fill the iconbar completely
+*RelativeSmart*:;;
+    All icons will initially be sized evenly, but icons with long titles will be larger
 *Right*:;;
     All icons will be right-aligned with the width set in the `init' file
 
