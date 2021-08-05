@@ -32,6 +32,7 @@
 #include <X11/Xatom.h>
 
 #include <cassert>
+#include <iostream>
 #include <limits>
 #include <string.h>
 
@@ -521,48 +522,53 @@ long FbWindow::cardinalProperty(Atom prop, bool* exists) const {
 
 FbTk::FbString FbWindow::textProperty(Atom prop,bool*exists) const {
     XTextProperty text_prop;
-    TextPropPtr helper(text_prop);
+    TextPropPtr ensure_value_freed(text_prop);
     char ** stringlist = 0;
     int count = 0;
-    FbTk::FbString ret;
+    bool found = false;
+    FbTk::FbString ret = "";
 
     static const Atom utf8string = XInternAtom(display(), "UTF8_STRING", False);
 
     if (exists) *exists=false;
-    if (XGetTextProperty(display(), window(), &text_prop, prop) == 0 || text_prop.value == 0 || text_prop.nitems == 0) {
-        return "";
+    Status stat = XGetTextProperty(display(), window(), &text_prop, prop);
+    if ( stat == 0 || text_prop.value == 0 || text_prop.nitems == 0) {
+        return ret;
     }
 
-
     if (text_prop.encoding == XA_STRING) {
-        if (XTextPropertyToStringList(&text_prop, &stringlist, &count) == 0 || count == 0) {
-            return "";
+        if (XTextPropertyToStringList(&text_prop, &stringlist, &count)
+            && count) {
+            found = true;
+            ret = FbStringUtil::XStrToFb(stringlist[0]);
         }
-        ret = FbStringUtil::XStrToFb(stringlist[0]);
     } else if (text_prop.encoding == utf8string && text_prop.format == 8) {
+        int retcode;
 #ifdef X_HAVE_UTF8_STRING
-        Xutf8TextPropertyToTextList(display(), &text_prop, &stringlist, &count);
-        if (count == 0 || stringlist == 0) {
-            return "";
-        }
+        retcode = Xutf8TextPropertyToTextList(display(), &text_prop, &stringlist, &count);
 #else
-        if (XTextPropertyToStringList(&text_prop, &stringlist, &count) == 0 || count == 0 || stringlist == 0) {
-            return "";
-        }
+        retcode = XTextPropertyToStringList(&text_prop, &stringlist, &count);
 #endif
-        ret = stringlist[0];
+        if (retcode == XLocaleNotSupported) {
+            std::cerr << "Warning: current locale not supported, using "
+                      << "raw _NET_WM_NAME text value." << std::endl;
+            found = true;
+            ret = reinterpret_cast<char*>(text_prop.value);
+        } else if (count && stringlist) {
+            found = true;
+            ret = stringlist[0];
+        }
     } else {
         // still returns a "StringList" despite the different name
         XmbTextPropertyToTextList(display(), &text_prop, &stringlist, &count);
-        if (count == 0 || stringlist == 0) {
-            return "";
+        if (count && stringlist) {
+            found = true;
+            ret = FbStringUtil::LocaleStrToFb(stringlist[0]);
         }
-        ret = FbStringUtil::LocaleStrToFb(stringlist[0]);
     }
 
-    XFreeStringList(stringlist);
-
-    if (exists) *exists=true;
+    if (stringlist) XFreeStringList(stringlist);
+    if (exists) *exists = found;
     return ret;
 }
 
