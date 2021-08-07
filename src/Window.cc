@@ -2492,7 +2492,9 @@ void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
         stopResizing();
     else if (m_attaching_tab)
         attachTo(re.x_root, re.y_root);
-    else if (std::abs(m_last_button_x - re.x_root) + std::abs(m_last_button_y - re.y_root) < DEADZONE) {
+    else if (static_cast<unsigned int>(std::abs(m_last_button_x - re.x_root)
+				       + std::abs(m_last_button_y - re.y_root))
+	     < DEADZONE) {
         int context = 0;
         context = frame().getContext(re.subwindow ? re.subwindow : re.window,
                                      re.x_root, re.y_root);
@@ -2523,7 +2525,9 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
     // in case someone put  MoveX :StartMoving etc into keys, we have
     // to activate it before doing the actual motionNotify code
-    if (std::abs(m_last_button_x - me.x_root) + std::abs(m_last_button_y - me.y_root) >= DEADZONE) {
+    if (static_cast<unsigned int>(std::abs(m_last_button_x - me.x_root)
+				  + std::abs(m_last_button_y - me.y_root))
+	>= DEADZONE) {
         XEvent &e = const_cast<XEvent&>(Fluxbox::instance()->lastEvent()); // is copy of "me"
         e.xmotion.x_root = m_last_button_x;
         e.xmotion.y_root = m_last_button_y;

@@ -98,7 +98,12 @@ public:
     void setWindowType(WindowState::WindowType type) { m_window_type = type; }
     long getCardinalProperty(Atom prop,bool*exists=NULL) const { return FbTk::FbWindow::cardinalProperty(prop,exists); }
     FbTk::FbString getTextProperty(Atom prop,bool*exists=NULL) const { return FbTk::FbWindow::textProperty(prop,exists); }
-
+    void setWinTextProperty(Atom prop, XTextProperty* tp) {
+        FbTk::FbWindow::setTextProperty(prop, tp);
+    }
+    void deleteXProperty(Atom prop) {
+        FbTk::FbWindow::deleteProperty(prop);
+    }
     WinClient *transientFor() { return transient_for; }
     const WinClient *transientFor() const { return transient_for; }
     TransientList &transientList() { return transients; }

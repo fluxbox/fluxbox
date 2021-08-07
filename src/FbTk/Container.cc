@@ -393,15 +393,15 @@ void Container::repositionItems() {
                 // "a" and "a very long item with useless information" won't
                 // become "a very long item with" and ""
                 overhead += buttonDemands.size(); // compensate forrounding errors
-                const int mean = totalDemands / buttonDemands.size();
-                const int thresh = 3 * mean / 2;
+                const unsigned int mean = totalDemands / buttonDemands.size();
+                const unsigned int thresh = 3 * mean / 2;
                 int greed = 0;
-                for (int i = 0; i < buttonDemands.size(); ++i) {
+                for (unsigned int i = 0; i < buttonDemands.size(); ++i) {
                     if (buttonDemands.at(i) > thresh)
                         greed += buttonDemands.at(i);
                 }
                 if (greed) {
-                    for (int i = 0; i < buttonDemands.size(); ++i) {
+                    for (unsigned int i = 0; i < buttonDemands.size(); ++i) {
                         if (buttonDemands.at(i) > thresh) {
                             int d = buttonDemands.at(i)*overhead/greed;
                             if (buttonDemands.at(i) > mean + d) {
@@ -416,7 +416,7 @@ void Container::repositionItems() {
                 }
             }
             rounding_error = total_width;
-            for (int i = 0; i < buttonDemands.size(); ++i) {
+            for (unsigned int i = 0; i < buttonDemands.size(); ++i) {
                 rounding_error -= buttonDemands.at(i)*total_width/totalDemands;
             }
         }

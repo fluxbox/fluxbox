@@ -27,6 +27,10 @@
 #include "FbTk/Signal.hh"
 #include "FbTk/FbString.hh"
 
+#include <iostream>
+
+#include <X11/Xutil.h>
+
 class BScreen;
 class FluxboxWindow;
 
@@ -90,6 +94,8 @@ public:
     virtual std::string getWMRole() const { return "Focusable"; }
 
     virtual FbTk::FbString getTextProperty(Atom prop,bool*exists=NULL) const { return ""; }
+    virtual void setWinTextProperty(Atom prop, XTextProperty* tp) = 0;
+    virtual void deleteXProperty(Atom prop) = 0;
     virtual long getCardinalProperty(Atom prop,bool*exists=NULL) const { return 0; }
 
     /// @return whether this window is a transient (for pattern matching)

@@ -399,7 +399,7 @@ void FbRun::lastHistoryItem() {
     }
 }
 
-void FbRun::tabComplete(const std::vector<std::string> &list, int &currentItem, bool reverse) {
+void FbRun::tabComplete(const std::vector<std::string> &list, unsigned int &currentItem, bool reverse) {
     if (list.empty()) {
         XBell(m_display, 0);
         return;
@@ -418,12 +418,12 @@ void FbRun::tabComplete(const std::vector<std::string> &list, int &currentItem, 
         currentItem = 0;
     else if (currentItem >= list.size())
         currentItem = list.size() - 1;
-    int item = currentItem;
+    unsigned int item = currentItem;
 
     while (true) {
         if (reverse) {
-            if (--item < 0)
-                item = list.size() - 1;
+	  if (item == 0) item = list.size() - 1;
+	  else item--;
         } else {
             if (++item >= list.size())
                 item = 0;

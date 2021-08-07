@@ -83,7 +83,8 @@ private:
     void adjustEndPos();
     void firstHistoryItem();
     void lastHistoryItem();
-    void tabComplete(const std::vector<std::string> &list, int &current, bool reverse = false);
+    void tabComplete(const std::vector<std::string> &list,
+                     unsigned int &current, bool reverse = false);
     void tabCompleteApps();
 
     bool m_print; ///< the input should be printed to stdout rather than run
@@ -96,14 +97,16 @@ private:
 
     std::vector<std::string> m_history; ///< history list of commands
     std::string m_history_file; ///< holds filename for command history file
-    int m_current_history_item; ///< holds current position in command history
+    unsigned int m_current_history_item;
+        ///^ holds current position in command history
 
     std::vector<std::string> m_files;
-    int m_current_files_item;
+    unsigned int m_current_files_item;
     std::string m_last_completion_path; ///< last prefix we completed on
 
     std::vector<std::string> m_apps;
-    int m_current_apps_item; ///< holds current position in apps-history
+    unsigned int m_current_apps_item;
+        ///^ holds current position in apps-history
 
     size_t m_completion_pos;
     bool m_autocomplete;

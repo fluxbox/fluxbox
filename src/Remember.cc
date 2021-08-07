@@ -493,7 +493,7 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
             FbTk::StringUtil::stringtok<std::vector<string> >(tokens, str_label);
             if (tokens.size() == 2) {
                 unsigned int h, w;
-                bool h_relative, w_relative, ignore;
+                bool h_relative = false, w_relative = false, ignore;
                 w = FbTk::StringUtil::parseSizeToken(tokens[0], w_relative, ignore);
                 h = FbTk::StringUtil::parseSizeToken(tokens[1], h_relative, ignore);
                 app.rememberDimensions(w, h, w_relative, h_relative);
@@ -513,7 +513,7 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
                 FbTk::StringUtil::stringtok<std::vector<string> >(tokens, str_label);
                 if (tokens.size() == 2) {
                     int x, y;
-                    bool x_relative, y_relative, ignore;
+                    bool x_relative = false, y_relative = false, ignore;
                     x = FbTk::StringUtil::parseSizeToken(tokens[0], x_relative, ignore);
                     y = FbTk::StringUtil::parseSizeToken(tokens[1], y_relative, ignore);
                     app.rememberPosition(x, y, x_relative, y_relative, r);

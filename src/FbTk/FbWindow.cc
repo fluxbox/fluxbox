@@ -272,10 +272,14 @@ void FbWindow::setName(const char *name) {
 
 }
 
+void FbWindow::setTextProperty(Atom prop, XTextProperty* tp) {
+    XSetTextProperty(display(), m_window, tp, prop);
+}
+
 void FbWindow::setWindowRole(const char *windowRole) {
     XTextProperty tp;
     XStringListToTextProperty(const_cast<char **>(&windowRole), 1, &tp);
-    XSetTextProperty(display(), m_window, &tp, XInternAtom(display(), "WM_WINDOW_ROLE", False));
+    setTextProperty(XInternAtom(display(), "WM_WINDOW_ROLE", False), &tp);
     XFree(tp.value);
 }
 

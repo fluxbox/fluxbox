@@ -187,7 +187,7 @@ void setupFocusMenu(FbTk::Menu& menu, ConfigMenu::SetupHelper& sh, _Cmd& save_rc
             "Keep Head", "Only revert focus on same head"),
             sh.rm.getResource<bool>(sh.screen.name() + ".focusSameHead"),
             save_rc));
-    } catch (FbTk::ResourceException e) {
+    } catch (FbTk::ResourceException &e) {
         std::cerr << e.what() << std::endl;
     }
 #endif // XINERAMA
