@@ -20,10 +20,12 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "AtomHandler.hh"
+#include "Focusable.hh"
 #include "FbTk/FbString.hh"
+#include "FbTk/Signal.hh"
 
 /// Implementes Extended Window Manager Hints ( http://www.freedesktop.org/Standards/wm-spec )
-class Ewmh:public AtomHandler {
+class Ewmh:public AtomHandler, public FbTk::SignalTracker {
 public:
 
     Ewmh();
@@ -67,6 +69,7 @@ private:
     void toggleState(FluxboxWindow &win, Atom state, WinClient &client);
     void updateStrut(WinClient &winclient);
     void updateActions(FluxboxWindow &win);
+    void updateVisibleName(const std::string &new_title, Focusable &win);
 
     void setupState(FluxboxWindow &win);
 
