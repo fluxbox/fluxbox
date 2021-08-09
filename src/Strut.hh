@@ -23,29 +23,44 @@
 #ifndef STRUT_HH
 #define STRUT_HH
 
+struct StrutDimensions {
+    int left, right, top, bottom;
+    StrutDimensions(int l, int r, int t, int b):
+        left(l), right(r), top(t), bottom(b) {}
+    void max_by(const StrutDimensions& dims) {
+        if (dims.left > left)     left   = dims.left;
+        if (dims.right  > right)  right  = dims.right;
+        if (dims.top    > top)    top    = dims.top;
+        if (dims.bottom > bottom) bottom = dims.bottom;
+    }
+    bool nonzero() const {
+        return left != 0 || right != 0 || top != 0 || bottom != 0;
+    }
+    bool operator==(const StrutDimensions& dims) const {
+        return left == dims.left && right  == dims.right
+            && top  == dims.top  && bottom == dims.bottom;
+    }
+};
+
 class Strut {
 public:
-    Strut(int head, int left, int right,
-          int top, int bottom, Strut* next = 0)
-        :m_head(head), m_left(left), m_right(right),
-         m_top(top), m_bottom(bottom), m_next(next) { }
+    Strut(int head, const StrutDimensions& dims, Strut* next = 0)
+        :m_head(head), m_dims(dims), m_next(next) { }
+    Strut(): m_head(0), m_dims(0,0,0,0), m_next(0) {}
     int head() const { return m_head; }
-    int left() const { return m_left; }
-    int right() const { return m_right; }
-    int bottom() const { return m_bottom; }
-    int top() const { return m_top; }
+    StrutDimensions& dims() { return m_dims; }
+    const StrutDimensions& dims() const { return m_dims; }
+    int left() const { return m_dims.left; }
+    int right() const { return m_dims.right; }
+    int bottom() const { return m_dims.bottom; }
+    int top() const { return m_dims.top; }
     Strut* next() const { return m_next; }
     bool operator == (const Strut &test) const {
-        return (head() == test.head() &&
-                left() == test.left() &&
-                right() == test.right() &&
-                top() == test.top() &&
-                bottom() == test.bottom());
+        return (head() == test.head() && dims() == test.dims());
     }
 private:
-    Strut():m_head(0), m_left(0), m_right(0), m_top(0), m_bottom(0), m_next(0) {}
     int m_head;
-    int m_left, m_right, m_top, m_bottom;
+    StrutDimensions m_dims;
     Strut *m_next; ///< link to struts on all heads
 };
 

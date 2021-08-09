@@ -1399,8 +1399,7 @@ void Ewmh::updateStrut(WinClient &winclient) {
 
         int head = winclient.screen().getHead(winclient);
         winclient.setStrut(winclient.screen().requestStrut(head,
-                           data[0], data[1],
-                           data[2], data[3]));
+            StrutDimensions(data[0], data[1], data[2], data[3])));
         winclient.screen().updateAvailableWorkspaceArea();
     } else {
         winclient.clearStrut();

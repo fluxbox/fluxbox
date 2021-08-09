@@ -565,7 +565,8 @@ unsigned int BScreen::currentWorkspaceID() const {
 const Strut* BScreen::availableWorkspaceArea(int head) const {
     if (head > numHeads()) {
         /* May this ever happen? */
-        static Strut whole(-1 /* should never be used */, 0, width(), 0, height());
+        static Strut whole(-1 /* should never be used */,
+			   StrutDimensions(0, width(), 0, height()));
         return &whole;
     }
     return m_head_areas[head ? head-1 : 0]->availableWorkspaceArea();
@@ -779,16 +780,6 @@ void BScreen::reconfigureTabs() {
         (*it)->fbwindow()->applyDecorations();
 }
 
-static void parseStruts(const std::string &s, int &l, int &r, int &t, int &b) {
-    std::list<std::string> v;
-    FbTk::StringUtil::stringtok(v, s, " ,");
-    std::list<std::string>::iterator it = v.begin();
-    if (it != v.end())   l = std::max(0, atoi(it->c_str()));
-    if (++it != v.end()) r = std::max(0, atoi(it->c_str()));
-    if (++it != v.end()) t = std::max(0, atoi(it->c_str()));
-    if (++it != v.end()) b = std::max(0, atoi(it->c_str()));
-}
-
 void BScreen::reconfigureStruts() {
     for (std::vector<Strut*>::iterator it = m_head_struts.begin(),
                                       end = m_head_struts.end(); it != end; ++it) {
@@ -796,21 +787,22 @@ void BScreen::reconfigureStruts() {
     }
 
     m_head_struts.clear();
-
-    int gl = 0, gr = 0, gt = 0, gb = 0;
-    parseStruts(FbTk::Resource<std::string>(resourceManager(), "",
-                                            name() + ".struts",
-                                         altName() + ".Struts"), gl, gr, gt, gb);
     const int nh = std::max(1, numHeads());
     for (int i = 1; i <= nh; ++i) {
-        int l = gl, r = gr, t = gt, b = gb;
         char ai[16];
         sprintf(ai, "%d", i);
-        parseStruts(FbTk::Resource<std::string>(resourceManager(), "",
-                                            name() + ".struts." + ai,
-                                         altName() + ".Struts." + ai), l, r, t, b);
-        if (l+t+r+b)
-            m_head_struts.push_back(requestStrut(i, l, r, t, b));
+	/* Note this resource will be destructed upon departure from this
+           function, which means it will not be stored with its default
+           value when saving the rc file. Since it serves only to override
+           the default struts for a particular head, that unusual behavior
+           is probably desirable, and has been documented in the fluxbox
+           man page.
+	*/
+        FbTk::Resource<StrutDimensions>
+            headStrut(resourceManager(), *resource.default_strut_dims,
+                      name() + ".struts." + ai, altName() + ".Struts." + ai);
+	if (headStrut->nonzero())
+            m_head_struts.push_back(requestStrut(i, *headStrut));
     }
     updateAvailableWorkspaceArea();
 }
@@ -1224,7 +1216,7 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     return win;
 }
 
-Strut *BScreen::requestStrut(int head, int left, int right, int top, int bottom) {
+Strut *BScreen::requestStrut(int head, const StrutDimensions& dims) {
     if (head > numHeads() && head != 1) {
         // head does not exist (if head == 1, then numHeads() == 0,
         // which means no xinerama, but there's a head after all
@@ -1241,7 +1233,7 @@ Strut *BScreen::requestStrut(int head, int left, int right, int top, int bottom)
 
     Strut* next = 0;
     for (int i = begin; i != end; i++) {
-        next = m_head_areas[i]->requestStrut(i+1, left, right, top, bottom, next);
+        next = m_head_areas[i]->requestStrut(i+1, dims, next);
     }
 
     return next;
