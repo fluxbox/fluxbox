@@ -33,6 +33,7 @@
 #include "Layer.hh"
 #include "FocusControl.hh"
 #include "ScreenPlacement.hh"
+#include "ScreenResource.hh"
 
 // menus
 #include "ConfigMenu.hh"
@@ -209,7 +210,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_pos_window(new OSDWindow(m_root_window, *this, *m_focused_windowtheme)),
     m_tooltip_window(new TooltipWindow(m_root_window, *this, *m_focused_windowtheme)),
     m_dummy_window(scrn, -1, -1, 1, 1, 0, true, false, CopyFromParent, InputOnly),
-    resource(rm, screenname, altscreenname),
     m_resource_manager(rm),
     m_name(screenname),
     m_altname(altscreenname),
@@ -218,6 +218,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_opts(opts) {
 
 
+    m_resource = new ScreenResource(rm, screenname, altscreenname);
     m_state.cycling = false;
     m_state.restart = false;
     m_state.shutdown = false;
@@ -320,30 +321,12 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_root_theme.reset(new RootTheme(imageControl()));
     m_root_theme->reconfigTheme();
 
-    focusedWinFrameTheme()->setAlpha(*resource.focused_alpha);
-    unfocusedWinFrameTheme()->setAlpha(*resource.unfocused_alpha);
-    m_menutheme->setAlpha(*resource.menu_alpha);
-
-    clampMenuDelay(*resource.menu_delay);
-
-    m_menutheme->setDelay(*resource.menu_delay);
-
     m_tracker.join(focusedWinFrameTheme()->reconfigSig(),
             FbTk::MemFun(*this, &BScreen::focusedWinFrameThemeReconfigured));
 
 
     renderGeomWindow();
     renderPosWindow();
-    m_tooltip_window->setDelay(*resource.tooltip_delay);
-
-    // setup workspaces and workspace menu
-    int nr_ws = *resource.workspaces;
-    addWorkspace(); // at least one
-    for (int i = 1; i < nr_ws; ++i) {
-        addWorkspace();
-    }
-
-    m_current_workspace = m_workspaces_list.front();
 
     m_windowmenu.reset(MenuCreator::createMenu("", *this));
     m_windowmenu->setInternalMenu();
@@ -359,13 +342,17 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_configmenu->setInternalMenu();
     setupConfigmenu(*m_configmenu.get());
 
+    configure();
+    m_current_workspace = m_workspaces_list.front();
+
     // check which desktop we should start on
     int first_desktop = 0;
     if (m_state.restart) {
         bool exists;
         int ret = (rootWindow().cardinalProperty(atom_net_desktop, &exists));
         if (exists) {
-            first_desktop = FbTk::Util::clamp<int>(ret, 0, nr_ws);
+            first_desktop = FbTk::Util::clamp<int>(ret,
+                                                   0, numberOfWorkspaces());
         }
     }
 
@@ -407,7 +394,6 @@ BScreen::~BScreen() {
     // we need to destroy it before we destroy workspaces
     m_workspacemenu.reset(0);
 
-    removeWorkspaceNames();
     using namespace FbTk::STLUtil;
     destroyAndClear(m_workspaces_list);
     destroyAndClear(m_managed_resources);
@@ -443,8 +429,123 @@ BScreen::~BScreen() {
 
     delete m_focus_control;
     delete m_placement_strategy;
-
+    delete m_resource;
 }
+
+bool BScreen::isWorkspaceWarping() const {
+    return (m_workspaces_list.size() > 1) && *(m_resource->workspace_warping);
+}
+
+bool BScreen::isWorkspaceWarpingHorizontal() const {
+    return isWorkspaceWarping() && *(m_resource->workspace_warping_horizontal);
+}
+
+bool BScreen::isWorkspaceWarpingVertical() const {
+    return isWorkspaceWarping() && *(m_resource->workspace_warping_vertical);
+}
+
+int BScreen::getWorkspaceWarpingHorizontalOffset() const {
+    return *(m_resource->workspace_warping_horizontal_offset);
+}
+
+int BScreen::getWorkspaceWarpingVerticalOffset() const {
+    return *(m_resource->workspace_warping_vertical_offset);
+}
+
+bool BScreen::doAutoRaise() const {
+    return *(m_resource->auto_raise);
+}
+
+bool BScreen::clickRaises() const {
+    return *(m_resource->click_raises);
+}
+
+bool BScreen::doOpaqueMove() const {
+    return *(m_resource->opaque_move);
+}
+
+bool BScreen::doOpaqueResize() const {
+    return *(m_resource->opaque_resize);
+}
+
+unsigned int BScreen::opaqueResizeDelay() const {
+    return *(m_resource->opaque_resize_delay);
+}
+
+bool BScreen::doFullMax() const {
+    return *(m_resource->full_max);
+}
+
+bool BScreen::getMaxIgnoreIncrement() const {
+    return *(m_resource->max_ignore_inc);
+}
+
+bool BScreen::getMaxDisableMove() const {
+    return *(m_resource->max_disable_move);
+}
+
+bool BScreen::getMaxDisableResize() const {
+    return *(m_resource->max_disable_resize);
+}
+
+bool BScreen::doShowWindowPos() const {
+    return *(m_resource->show_window_pos);
+}
+
+const std::string &BScreen::defaultDeco() const {
+    return *(m_resource->default_deco);
+}
+
+FbWinFrame::TabPlacement BScreen::getTabPlacement() const {
+    return *(m_resource->tab_placement);
+}
+
+unsigned int BScreen::noFocusWhileTypingDelay() const {
+    return *(m_resource->typing_delay);
+}
+
+bool BScreen::allowRemoteActions() const {
+    return *(m_resource->allow_remote_actions);
+}
+
+bool BScreen::clientMenuUsePixmap() const {
+    return *(m_resource->clientmenu_use_pixmap);
+}
+
+bool BScreen::getDefaultInternalTabs() const {
+    return *(m_resource->default_internal_tabs);
+}
+
+bool BScreen::getTabsUsePixmap() const {
+    return *(m_resource->tabs_use_pixmap);
+}
+
+bool BScreen::getMaxOverTabs() const {
+    return *(m_resource->max_over_tabs);
+}
+
+unsigned int BScreen::getTabWidth() const {
+    return *(m_resource->tab_width);
+}
+
+int BScreen::getEdgeSnapThreshold() const {
+    return *(m_resource->edge_snap_threshold);
+}
+
+int BScreen::getEdgeResizeSnapThreshold() const {
+    return *(m_resource->edge_resize_snap_threshold);
+}
+
+// Resource setters
+
+void BScreen::saveTabPlacement(FbWinFrame::TabPlacement place) {
+    *(m_resource->tab_placement) = place;
+}
+
+void BScreen::saveWorkspaces(int w) {
+    *(m_resource->workspaces) = w;
+}
+
 
 bool BScreen::isRestart() {
     return Fluxbox::instance()->isStartup() && m_state.restart;
@@ -720,19 +821,19 @@ void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
 
 }
 
-void BScreen::reconfigure() {
-    Fluxbox *fluxbox = Fluxbox::instance();
+void BScreen::configure () {
+    focusedWinFrameTheme()->setAlpha(*(m_resource->focused_alpha));
+    unfocusedWinFrameTheme()->setAlpha(*(m_resource->unfocused_alpha));
+    m_menutheme->setAlpha(*(m_resource->menu_alpha));
 
-    focusedWinFrameTheme()->setAlpha(*resource.focused_alpha);
-    unfocusedWinFrameTheme()->setAlpha(*resource.unfocused_alpha);
-    m_menutheme->setAlpha(*resource.menu_alpha);
+    clampMenuDelay(*(m_resource->menu_delay));
 
-    clampMenuDelay(*resource.menu_delay);
-
-    m_menutheme->setDelay(*resource.menu_delay);
+    m_menutheme->setDelay(*(m_resource->menu_delay));
+    m_tooltip_window->setDelay(*(m_resource->tooltip_delay));
 
     // provide the number of workspaces from the init-file
-    const unsigned int nr_ws = *resource.workspaces;
+    size_t nr_ws = *(m_resource->workspaces);
+    if (nr_ws == 0) nr_ws = 1; // at least one
     if (nr_ws > m_workspaces_list.size()) {
         while(nr_ws != m_workspaces_list.size()) {
             addWorkspace();
@@ -742,6 +843,16 @@ void BScreen::reconfigure() {
             removeLastWorkspace();
         }
     }
+    // name the workspaces as desired
+    const unsigned int ws_named = std::min(nr_ws, numberOfWorkspaceNames());
+    for (unsigned int w = 0; w < ws_named; ++w) {
+        getWorkspace(w)->setName(getWorkspaceName(w));
+    }
+}
+
+void BScreen::reconfigure() {
+    configure();
+    Fluxbox *fluxbox = Fluxbox::instance();
 
     // update menu filenames
     m_rootmenu->reloadHelper()->setMainFile(fluxbox->getMenuFilename());
@@ -815,17 +926,26 @@ void BScreen::reconfigureStruts() {
     updateAvailableWorkspaceArea();
 }
 
+size_t BScreen::numberOfWorkspaceNames() const {
+    return m_resource->workspace_names->size();
+}
+
+const std::string& BScreen::getWorkspaceName(size_t index) const {
+    static std::string empty("");
+    if (index < m_resource->workspace_names->size())
+      return (*(m_resource->workspace_names))[index];
+    return empty;
+}
+
 void BScreen::updateWorkspaceName(unsigned int w) {
     Workspace *space = getWorkspace(w);
     if (space) {
-        m_workspace_names[w] = space->name();
+        if (w < m_resource->workspace_names->size())
+            (*(m_resource->workspace_names))[w] = space->name();
+	else m_resource->workspace_names->push_back(space->name());
         m_workspacenames_sig.emit(*this);
         Fluxbox::instance()->save_rc();
     }
-}
-
-void BScreen::removeWorkspaceNames() {
-    m_workspace_names.clear();
 }
 
 void BScreen::addIcon(FluxboxWindow *w) {
@@ -896,17 +1016,14 @@ void BScreen::removeClient(WinClient &client) {
 
 }
 
-int BScreen::addWorkspace() {
+unsigned int BScreen::addWorkspace() {
 
-    bool save_name = getNameOfWorkspace(m_workspaces_list.size()) == "";
-    std::string name = getNameOfWorkspace(m_workspaces_list.size());
+    const std::string& name = getWorkspaceName(m_workspaces_list.size());
+    bool save_name = (name == "");
     Workspace *ws = new Workspace(*this, name, m_workspaces_list.size());
     m_workspaces_list.push_back(ws);
 
-    if (save_name) {
-        addWorkspaceName(ws->name().c_str());
-        m_workspacenames_sig.emit(*this);
-    }
+    if (save_name) updateWorkspaceName(m_workspaces_list.size()-1);
 
     saveWorkspaces(m_workspaces_list.size());
     workspaceCountSig().emit( *this );
@@ -1269,21 +1386,6 @@ void BScreen::updateAvailableWorkspaceArea() {
         m_workspace_area_sig.emit(*this);
 }
 
-void BScreen::addWorkspaceName(const char *name) {
-    m_workspace_names.push_back(FbTk::FbStringUtil::LocaleStrToFb(name));
-    Workspace *wkspc = getWorkspace(m_workspace_names.size()-1);
-    if (wkspc)
-        wkspc->setName(m_workspace_names.back());
-}
-
-
-string BScreen::getNameOfWorkspace(unsigned int workspace) const {
-    if (workspace < m_workspace_names.size())
-        return m_workspace_names[workspace];
-    else
-        return "";
-}
-
 void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
                                 bool ignore_sticky) {
     if (w == 0)
@@ -1365,7 +1467,7 @@ void BScreen::rereadMenu() {
 }
 
 const std::string BScreen::windowMenuFilename() const {
-    std::string name = *resource.windowmenufile;
+    std::string name = *(m_resource->windowmenufile);
     if (name.empty()) {
         name = Fluxbox::instance()->getDefaultDataFilename("windowmenu");
     }
@@ -1459,7 +1561,7 @@ float BScreen::getYGap(int head) {
 
 void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
-    struct ConfigMenu::SetupHelper sh(*this, m_resource_manager, resource);
+    struct ConfigMenu::SetupHelper sh(*this, m_resource_manager, *m_resource);
     menu.removeAll();
     ConfigMenu::setup(menu, sh);
     menu.updateMenu();
@@ -1512,12 +1614,12 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
 
 
 void BScreen::showTooltip(const FbTk::BiDiString &text) {
-    if (*resource.tooltip_delay >= 0)
+    if (*(m_resource->tooltip_delay) >= 0)
         m_tooltip_window->showText(text);
 }
 
 void BScreen::hideTooltip() {
-    if (*resource.tooltip_delay >= 0)
+    if (*(m_resource->tooltip_delay) >= 0)
         m_tooltip_window->hide();
 }
 

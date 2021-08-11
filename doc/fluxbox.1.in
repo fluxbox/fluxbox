@@ -1791,7 +1791,9 @@ Default:
 .PP
 \fBsession\&.screen0\&.workspaceNames\fR: \fInames\fR
 .RS 4
-Here is where the user can name their workspaces, in a comma\-delimited list\&. However it is recommended to use the tool available in the Workspace Menu to set these\&.
+Here is where the user can name their workspaces, in a comma\-delimited list\&. It is recommended to use the tool available in the Workspace Menu to set these\&. However, if you wish to edit this resource directly, here are the fine details: The comma separating workspace names
+\fBmust\fR
+be followed by a whitespace character, which is ignored; so to set the second workspace name to an empty string, for example, you need to write "First, , Third"\&. If the name you want happens to contain a comma followed by a whitespace character, you can double the comma: "Odds,, Ends, Important Stuff" sets the first workspace name to "Odds, Ends" and the second to "Important Stuff"\&.
 .sp
 Default:
 \fBWorkspace 1, Workspace 2, Workspace 3, Workspace 4\fR

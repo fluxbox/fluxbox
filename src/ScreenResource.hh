@@ -24,6 +24,8 @@
 
 #include "FbWinFrame.hh"
 #include "FbTk/Resource.hh"
+#include "Screen.hh"
+
 #include <string>
 
 struct ScreenResource {
@@ -65,6 +67,7 @@ struct ScreenResource {
     FbTk::Resource<bool> max_over_tabs;
     FbTk::Resource<bool> default_internal_tabs;
     FbTk::Resource<unsigned int> opaque_resize_delay;
+    FbTk::Resource<BScreen::WorkspaceNames> workspace_names;
 };
 
 #endif

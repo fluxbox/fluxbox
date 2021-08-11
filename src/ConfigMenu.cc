@@ -26,6 +26,7 @@
 
 #include "FocusModelMenuItem.hh"
 #include "ScreenPlacement.hh"
+#include "ScreenResource.hh"
 #include "FbMenu.hh"
 #include "ToggleMenu.hh"
 #include "FbTk/Menu.hh"
