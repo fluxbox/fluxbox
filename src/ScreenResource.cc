@@ -23,6 +23,7 @@
 #include "fluxbox.hh"
 #include "FbTk/Util.hh"
 #include <cstring>
+#include <regex>
 
 namespace {
 
@@ -76,8 +77,34 @@ setFromString(const char *strval) {
 
 } // end namespace FbTk
 
+template<>
+std::string FbTk::Resource<BScreen::WorkspaceNames>::getString() const {
+    std::string val;
+    for (size_t i = 0; i < m_value.size(); ++i) {
+        if (i > 0) val += ", ";
+	std::string chunk = m_value[i];
+	// Double all commas in workspace name so they can be restored
+	val += std::regex_replace(chunk, std::regex(","), ",,");
+    }
+    return val;
+}
 
-
+template<>
+void FbTk::Resource<BScreen::WorkspaceNames>::
+setFromString(const char* strval) {
+    m_value.clear();
+    std::string remainder = strval;
+    // Undoubled comma followed by a whitespace character separates names
+    std::regex pat("((?:^|[^,])(?:,,)*),\\s");
+    std::smatch m;
+    while (std::regex_search(remainder, m, pat)) {
+        std::string chunk = m.prefix().str() + m[1].str();
+        // And undo the doubling of commas to allow commas within names
+        m_value.push_back(std::regex_replace(chunk, std::regex(",,"), ","));
+        remainder=m.suffix().str();
+    }
+    if (!(remainder.empty())) m_value.push_back(remainder);
+}
 
 ScreenResource::ScreenResource(FbTk::ResourceManager& rm,
         const std::string& scrname,
@@ -114,6 +141,7 @@ ScreenResource::ScreenResource(FbTk::ResourceManager& rm,
     tabs_use_pixmap(rm, true, scrname+".tabs.usePixmap", altscrname+".Tabs.UsePixmap"),
     max_over_tabs(rm, false, scrname+".tabs.maxOver", altscrname+".Tabs.MaxOver"),
     default_internal_tabs(rm, true /* TODO: autoconf option? */ , scrname+".tabs.intitlebar", altscrname+".Tabs.InTitlebar"),
-    opaque_resize_delay(rm, 50, scrname + ".opaqueResizeDelay", altscrname+".OpaqueResizeDelay")    {
+    opaque_resize_delay(rm, 50, scrname + ".opaqueResizeDelay", altscrname+".OpaqueResizeDelay"),
+    workspace_names(rm, BScreen::WorkspaceNames(), scrname+".workspaceNames", altscrname+".WorkspaceNames") {
 
 }

@@ -31,7 +31,6 @@
 #include "WinButtonTheme.hh"
 #include "FbWinFrameTheme.hh"
 #include "TooltipWindow.hh"
-#include "ScreenResource.hh"
 
 #include "FbTk/MenuTheme.hh"
 #include "FbTk/EventHandler.hh"
@@ -61,6 +60,7 @@ class Slit;
 class Toolbar;
 class HeadArea;
 class ScreenPlacement;
+class ScreenResource;
 class TooltipWindow;
 class OSDWindow;
 
@@ -82,7 +82,16 @@ class BScreen: public FbTk::EventHandler, private FbTk::NotCopyable {
 public:
     typedef std::list<FluxboxWindow *> Icons;
     typedef std::vector<Workspace *> Workspaces;
-    typedef std::vector<std::string> WorkspaceNames;
+    class WorkspaceNames {
+    public:
+        size_t size() const { return m_names.size(); }
+        const std::string& operator[](size_t i) const { return m_names[i]; }
+        std::string& operator[](size_t i) { return m_names[i]; }
+        void clear() { m_names.clear(); }
+        void push_back(const std::string& val) { m_names.push_back(val); }
+    private:
+        std::vector<std::string> m_names;
+    };
 
     BScreen(FbTk::ResourceManager &rm,
             const std::string &screenname, const std::string &altscreenname,
@@ -94,23 +103,41 @@ public:
 
     bool isRootColormapInstalled() const { return root_colormap_installed; }
     bool isScreenManaged() const { return m_state.managed; }
-    bool isWorkspaceWarping() const { return (m_workspaces_list.size() > 1) && *resource.workspace_warping; }
-    bool isWorkspaceWarpingHorizontal() const { return isWorkspaceWarping() && *resource.workspace_warping_horizontal; }
-    bool isWorkspaceWarpingVertical() const { return isWorkspaceWarping() && *resource.workspace_warping_vertical; }
-    int getWorkspaceWarpingHorizontalOffset() const { return *resource.workspace_warping_horizontal_offset; }
-    int getWorkspaceWarpingVerticalOffset() const { return *resource.workspace_warping_vertical_offset; }
-    bool doAutoRaise() const { return *resource.auto_raise; }
-    bool clickRaises() const { return *resource.click_raises; }
-    bool doOpaqueMove() const { return *resource.opaque_move; }
-    bool doOpaqueResize() const { return *resource.opaque_resize; }
-    unsigned int opaqueResizeDelay() const { return *resource.opaque_resize_delay; }
-    bool doFullMax() const { return *resource.full_max; }
-    bool getMaxIgnoreIncrement() const { return *resource.max_ignore_inc; }
-    bool getMaxDisableMove() const { return *resource.max_disable_move; }
-    bool getMaxDisableResize() const { return *resource.max_disable_resize; }
-    bool doShowWindowPos() const { return *resource.show_window_pos; }
-    const std::string &defaultDeco() const { return *resource.default_deco; }
+
+    // Resource accessors
+    bool isWorkspaceWarping() const;
+    bool isWorkspaceWarpingHorizontal() const;
+    bool isWorkspaceWarpingVertical() const;
+    int getWorkspaceWarpingHorizontalOffset() const;
+    int getWorkspaceWarpingVerticalOffset() const;
+    bool doAutoRaise() const;
+    bool clickRaises() const;
+    bool doOpaqueMove() const;
+    bool doOpaqueResize() const;
+    unsigned int opaqueResizeDelay() const;
+    bool doFullMax() const;
+    bool getMaxIgnoreIncrement() const;
+    bool getMaxDisableMove() const;
+    bool getMaxDisableResize() const;
+    bool doShowWindowPos() const;
+    const std::string &defaultDeco() const;
     const std::string windowMenuFilename() const;
+    FbWinFrame::TabPlacement getTabPlacement() const;
+    unsigned int noFocusWhileTypingDelay() const;
+    bool allowRemoteActions() const;
+    bool clientMenuUsePixmap() const;
+    bool getDefaultInternalTabs() const;
+    bool getTabsUsePixmap() const;
+    bool getMaxOverTabs() const;
+    unsigned int getTabWidth() const;
+    int getEdgeSnapThreshold() const;
+    int getEdgeResizeSnapThreshold() const;
+
+    // Resource setters
+    void saveTabPlacement(FbWinFrame::TabPlacement place);
+    void saveWorkspaces(int w);
+
+
     FbTk::ImageControl &imageControl() { return *m_image_control.get(); }
     // menus
     const FbMenu &rootMenu() const { return *m_rootmenu.get(); }
@@ -120,16 +147,7 @@ public:
     const FbMenu &windowMenu() const { return *m_windowmenu.get(); }
     FbMenu &windowMenu() { return *m_windowmenu.get(); }
 
-    FbWinFrame::TabPlacement getTabPlacement() const { return *resource.tab_placement; }
 
-    unsigned int noFocusWhileTypingDelay() const { return *resource.typing_delay; }
-    const bool allowRemoteActions() const { return *resource.allow_remote_actions; }
-    const bool clientMenuUsePixmap() const { return *resource.clientmenu_use_pixmap; }
-    const bool getDefaultInternalTabs() const { return *resource.default_internal_tabs; }
-    const bool getTabsUsePixmap() const { return *resource.tabs_use_pixmap; }
-    const bool getMaxOverTabs() const { return *resource.max_over_tabs; }
-
-    unsigned int getTabWidth() const { return *resource.tab_width; }
     /// @return the slit, @see Slit
     Slit *slit() { return m_slit.get(); }
     /// @return the slit, @see Slit
@@ -189,13 +207,16 @@ public:
 
     /// @return number of workspaces
     size_t numberOfWorkspaces() const { return m_workspaces_list.size(); }
+    /// @return number of workspace names
+    size_t numberOfWorkspaceNames() const;
 
     const Icons &iconList() const { return m_icon_list; }
     Icons &iconList() { return m_icon_list; }
 
     const Workspaces &getWorkspacesList() const { return m_workspaces_list; }
     Workspaces &getWorkspacesList() { return m_workspaces_list; }
-    const WorkspaceNames &getWorkspaceNames() const { return m_workspace_names; }
+    const std::string& getWorkspaceName(size_t index) const;
+
     /**
        @name Screen signals
     */
@@ -243,15 +264,7 @@ public:
      */
     void addExtraWindowMenu(const FbTk::FbString &label, FbTk::Menu *menu);
 
-    int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }
-
-    int getEdgeResizeSnapThreshold() const { return *resource.edge_resize_snap_threshold; }
-
     void setRootColormapInstalled(bool r) { root_colormap_installed = r;  }
-
-    void saveTabPlacement(FbWinFrame::TabPlacement place) { *resource.tab_placement = place; }
-
-    void saveWorkspaces(int w) { *resource.workspaces = w;  }
 
     FbTk::ThemeProxy<FbWinFrameTheme> &focusedWinFrameTheme() { return *m_focused_windowtheme.get(); }
     const FbTk::ThemeProxy<FbWinFrameTheme> &focusedWinFrameTheme() const { return *m_focused_windowtheme.get(); }
@@ -288,7 +301,7 @@ public:
     ScreenPlacement &placementStrategy() { return *m_placement_strategy; }
     const ScreenPlacement &placementStrategy() const { return *m_placement_strategy; }
 
-    int addWorkspace();
+    unsigned int addWorkspace();
     int removeLastWorkspace();
     // scroll workspaces
     /**
@@ -314,10 +327,6 @@ public:
 
     /// update workspace name for given workspace
     void updateWorkspaceName(unsigned int w);
-    /// remove all workspace names
-    void removeWorkspaceNames();
-    /// add a workspace name to the end of the workspace name list
-    void addWorkspaceName(const char *name);
     /// add a window to the icon list
     void addIcon(FluxboxWindow *win);
     /// remove a window from the icon list
@@ -326,12 +335,6 @@ public:
     void removeWindow(FluxboxWindow *win);
     /// remove a client
     void removeClient(WinClient &client);
-    /**
-     * Gets name of a specific workspace
-     * @param workspace the workspace number to get the name of
-     * @return name of the workspace
-     */
-    std::string getNameOfWorkspace(unsigned int workspace) const;
     /// changes workspace to specified id
     void changeWorkspaceID(unsigned int, bool revert = true);
     /**
@@ -360,6 +363,7 @@ public:
     bool relabelToolButton(std::string button, std::string label);
 #endif
 
+    void configure();
     void reconfigure();
     void reconfigureTabs();
     void reconfigureStruts();
@@ -510,7 +514,6 @@ private:
     Workspace *m_current_workspace;
     Workspace *m_former_workspace;
 
-    WorkspaceNames m_workspace_names;
     Workspaces m_workspaces_list;
 
     std::unique_ptr<FbWinFrameTheme> m_focused_windowtheme,
@@ -526,7 +529,7 @@ private:
     std::unique_ptr<TooltipWindow> m_tooltip_window;
     FbTk::FbWindow m_dummy_window;
 
-    ScreenResource resource;
+    ScreenResource* m_resource;
 
     /// Holds manage resources that screen destroys
     FbTk::ResourceManager::ResourceList m_managed_resources;

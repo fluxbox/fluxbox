@@ -818,13 +818,11 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
      *
      */
     XTextProperty text;
-    const BScreen::WorkspaceNames &workspacenames = screen.getWorkspaceNames();
-    const size_t number_of_desks = workspacenames.size();
-
+    const size_t number_of_desks = screen.numberOfWorkspaceNames();
     const char** names = new const char*[number_of_desks];
 
     for (size_t i = 0; i < number_of_desks; i++) {
-        names[i] = workspacenames[i].c_str();
+        names[i] = screen.getWorkspaceName(i).c_str();
     }
 
 #ifdef X_HAVE_UTF8_STRING
