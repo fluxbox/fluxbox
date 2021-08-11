@@ -10,8 +10,10 @@ Makefile.in
 # Exact wildcard, e.g., not in subdirs.
 /doc/*.1
 /doc/*.5
+/doc/*.in
 /doc/*/*.1
 /doc/*/*.5
+/doc/asciidoc/*.xml
 /nls/*/*.cat
 /nls/*/generated-*.m
 /m4/*.m4

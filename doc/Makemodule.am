@@ -8,7 +8,27 @@ CLEANFILES += \
 	doc/fluxbox-remote.1 \
 	doc/fluxbox-style.5 \
 	doc/fluxbox.1 \
-	doc/startfluxbox.1
+	doc/startfluxbox.1 \
+	doc/asciidoc/fbrun.in.1.xml \
+	doc/asciidoc/fbsetbg.in.1.xml \
+	doc/asciidoc/fbsetroot.in.1.xml \
+	doc/asciidoc/fluxbox-apps.in.5.xml \
+	doc/asciidoc/fluxbox-keys.in.5.xml \
+	doc/asciidoc/fluxbox-menu.in.5.xml \
+	doc/asciidoc/fluxbox-remote.in.1.xml \
+	doc/asciidoc/fluxbox-style.in.5.xml \
+	doc/asciidoc/fluxbox.in.1.xml \
+	doc/startfluxbox.in.1 \
+	doc/fbrun.in.1 \
+	doc/fbsetbg.in.1 \
+	doc/fbsetroot.in.1 \
+	doc/fluxbox-apps.in.5 \
+	doc/fluxbox-keys.in.5 \
+	doc/fluxbox-menu.in.5 \
+	doc/fluxbox-remote.in.1 \
+	doc/fluxbox-style.in.5 \
+	doc/fluxbox.in.1 \
+	doc/startfluxbox.in.1
 
 dist_man_MANS = \
 	doc/fbrun.1 \
@@ -38,3 +58,15 @@ EXTRA_DIST += \
 doc/%: doc/%.in
 	$(MKDIR_P) doc
 	@regex_cmd@ -e "s,@pkgdatadir[@],$(pkgdatadir)," $^ > $@
+
+doc/%.in: doc/asciidoc/%.xml
+	xmlto -o doc/asciidoc man $<
+	mv doc/asciidoc/$* $@
+
+doc/asciidoc/%.xml: doc/asciidoc/%.txt
+	asciidoc -b docbook -d manpage -o $@ $<
+
+# Dependencies:
+#
+# fluxbox-apps(5) and fluxbox-keys(5) both include client-patterns.txt
+doc/asciidoc/fluxbox-keys.5.xml doc/asciidoc/fluxbox-apps.5.xml: doc/asciidoc/client-patterns.txt
