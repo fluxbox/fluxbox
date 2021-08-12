@@ -90,6 +90,7 @@ enum {
 	ConfigmenuStrictMouseFocus = 30,
 	ConfigmenuFocusSameHead = 31,
     ConfigmenuOpaqueResize = 32,
+    ConfigmenuHideSingleTabs = 33,
 
 	EwmhSet = 5,
 	EwmhOutOfMemoryClientList = 1,
