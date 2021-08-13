@@ -1,7 +1,7 @@
 '\" t
 .\"     Title: fluxbox-apps
 .\"    Author: Jim Ramsay <i.am@jimramsay.com>
-.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 08 February 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-apps.txt
@@ -52,7 +52,9 @@ The file is made up of two main types of sections, apps and groups, detailed bel
 .PP
 These sections begin with a line of the format
 .RS 4
-\fB[app]\fR\fB(\fR\fIpattern\fR\fB)\fR\fB{\fR\fIcount\fR\fB}\fR
+\fB[app]\fR
+\fB(\fR\fIpattern\fR\fB)\fR
+\fB{\fR\fIcount\fR\fB}\fR
 .RE
 .sp
 The \fIpattern\fR can be one or more patterns which match windows\&. For more details, see \fBCLIENT PATTERNS\fR\&. If you specify more than one \fIpattern\fR, they must ALL match for the settings to be applied\&.
@@ -76,7 +78,8 @@ The primary purpose of \fB[group]\fR sections is to group windows together\&. Al
 .PP
 These sections begin with a line of the format
 .RS 4
-\fB[group]\fR\fB(\fR\fIpattern\fR\fB)\fR
+\fB[group]\fR
+\fB(\fR\fIpattern\fR\fB)\fR
 .RE
 .sp
 Where the \fIpattern\fR item is optional\&. If specified, this pattern must match for the group to take effect\&. It is common to use non\-window\-specific patterns such as \fB(workspace)\fR here\&. See \fBCLIENT PATTERNS\fR for more details\&.
@@ -85,7 +88,8 @@ This is followed by any number of \fB[app]\fR lines\&. These have a similar form
 .PP
 Like this
 .RS 4
-\fB[app]\fR\fB(\fR\fIpattern\fR\fB)\fR
+\fB[app]\fR
+\fB(\fR\fIpattern\fR\fB)\fR
 .RE
 .sp
 This section may also contain settings that are applied to every window in the group\&. See the \fBSETTINGS\fR section for details\&.
@@ -100,7 +104,8 @@ These settings may be stored in the \(oqapps\(cq file\&. A settings line must ap
 .PP
 The general format is
 .RS 4
-\fB[\fR\fIsetting\fR\fB]\fR\fB{\fR\fIvalue\fR\fB}\fR
+\fB[\fR\fIsetting\fR\fB]\fR
+\fB{\fR\fIvalue\fR\fB}\fR
 .RE
 .sp
 All allowed values are described below, except for \fIbool\fR which can simply have the value \fByes\fR or \fBno\fR, which enables or disables the associated setting, respectively\&.
@@ -207,6 +212,27 @@ Whether the window is Shaded (rolled\-up) or not\&.
 \fB[Tab]\fR {\fIbool\fR}
 .RS 4
 Whether the window has tabs enabled\&.
+.RE
+.PP
+\fB[TabPlacement]\fR {\fIposition\fR}
+.RS 4
+Specify where the tab(s) for the window should be placed (assuming that external tabs are being used)\&. The
+\fIposition\fR
+may be any of
+\fBTop\fR,
+\fBTopLeft\fR,
+\fBTopRight\fR,
+\fBBottom\fR,
+\fBBottomLeft\fR,
+\fBBottomRight\fR,
+\fBLeft\fR,
+\fBLeftTop\fR,
+\fBLeftBottom\fR,
+\fBRight\fR,
+\fBRightTop\fR, or
+\fBRightBottom\fR\&. The values with only one directional component mean for the tabs to be centered on the specified side\&. Note that if this setting is not given, the general tab placement for the window\(cqs screen, specified by the
+\fBtabPlacement\fR
+resource in the rc file (see fluxbox(1) for details), is used\&.
 .RE
 .PP
 \fB[FocusNewWindow]\fR {\fIbool\fR}

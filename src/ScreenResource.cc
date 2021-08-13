@@ -21,57 +21,20 @@
 
 #include "ScreenResource.hh"
 #include "fluxbox.hh"
-#include "FbTk/Util.hh"
-#include <cstring>
-
-namespace {
-
-struct TabPlacementString {
-    FbWinFrame::TabPlacement placement;
-    const char* str;
-};
-
-const TabPlacementString _PLACEMENT_STRINGS[] = {
-    { FbWinFrame::TOPLEFT, "TopLeft" },
-    { FbWinFrame::TOP, "Top" },
-    { FbWinFrame::TOPRIGHT, "TopRight" },
-    { FbWinFrame::BOTTOMLEFT, "BottomLeft" },
-    { FbWinFrame::BOTTOM, "Bottom" },
-    { FbWinFrame::BOTTOMRIGHT, "BottomRight" },
-    { FbWinFrame::LEFTBOTTOM, "LeftBottom" },
-    { FbWinFrame::LEFT, "Left" },
-    { FbWinFrame::LEFTTOP, "LeftTop" },
-    { FbWinFrame::RIGHTBOTTOM, "RightBottom" },
-    { FbWinFrame::RIGHT, "Right" },
-    { FbWinFrame::RIGHTTOP, "RightTop" }
-};
-
-}
 
 namespace FbTk {
 
 template<>
 std::string FbTk::Resource<FbWinFrame::TabPlacement>::
 getString() const {
-
-    size_t i = (m_value == FbTk::Util::clamp(m_value, FbWinFrame::TOPLEFT, FbWinFrame::RIGHTTOP)
-                ? m_value 
-                : FbWinFrame::DEFAULT) - 1;
-    return _PLACEMENT_STRINGS[i].str;
+    return FbWinFrame::nameOfTabPlacement(m_value);
 }
 
 template<>
 void FbTk::Resource<FbWinFrame::TabPlacement>::
 setFromString(const char *strval) {
-
-    size_t i;
-    for (i = 0; i < sizeof(_PLACEMENT_STRINGS)/sizeof(_PLACEMENT_STRINGS[0]); ++i) {
-        if (strcasecmp(strval, _PLACEMENT_STRINGS[i].str) == 0) {
-            m_value = _PLACEMENT_STRINGS[i].placement;
-            return;
-        }
-    }
-    setDefaultValue();
+    m_value = FbWinFrame::tabPlacementNamed(strval);
+    if (m_value == FbWinFrame::UNPARSEABLE) setDefaultValue();
 }
 
 } // end namespace FbTk
