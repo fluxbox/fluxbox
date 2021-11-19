@@ -65,7 +65,7 @@ $set 4 #Configmenu
 9 Focar em Novas Janelas
 10 Maximização Total
 11 Simulação de Cores em Imagens
-12 A Movimentação Opaca de Janelas
+12 A Movimentação Opaca as Janelas
 14 O Foco Segue o Rato/Mouse
 15 Áreas de Trabalho Contínuas
 16 Forçar a Pseudotransparência
