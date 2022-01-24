@@ -59,7 +59,7 @@ $set 4 #Configmenu
 3 Clicar coloca por cima
 4 Clicar para focar
 5 Decorar janelas transitórias
-6 Roda do mouse sobre o desktop muda a área de trabalho
+6 Roda do mouse muda a área de trabalho
 7 Focar a janela ao mudar a área de trabalho
 8 Modelo de foco
 9 Focar em novas janelas
@@ -67,7 +67,7 @@ $set 4 #Configmenu
 11 Ditherização de imagens
 12 Movimentação opaca de janelas
 14 Foco com o mouse
-15 Espaços de trabalho contínuos
+15 Áreas de trabalho contínuas
 16 Forçar pseudotransparência
 17 Alfa do Menu
 18 Transparência
