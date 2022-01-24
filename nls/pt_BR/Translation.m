@@ -25,7 +25,7 @@ $set 1 #Align
 
 $set 2 #BaseDisplay
 
-1 Abortando... despejando o núcleo\n
+1 Abortando... Despejando o núcleo\n
 2 Desligando\n
 3 %s:      sinal %d recebido\n
 
@@ -42,7 +42,7 @@ $set 3 #Common
 9         nls
 10        menu
 20  windowmenu
-11       style
+11       estilo
 12 Padrões
 13 desativado
 14 Erro
@@ -50,19 +50,19 @@ $set 3 #Common
 16 Maximizar sobre
 17 Revisão do GIT
 18 Visível
-19 Não há uma opção de fundo especificada neste tema.\nPor favor, consulte o manual ou leia o FAQ.
+19 Não há uma opção de fundo especificada para este tema.\nPor favor, consulte o manual ou leia o FAQ.
 
 $set 4 #Configmenu
 
 1 Antialias
-2 Por cima automaticamente
-3 Clicar põe por cima
+2 Automaticamente por cima
+3 Clicar coloca por cima
 4 Clicar para focar
 5 Decorar janelas transitórias
-6 Roda do mouse sobre o desktop muda espaço de trabalho
-7 Focar a janela ao mudar espaço de trabalho
+6 Roda do mouse sobre o desktop muda a área de trabalho
+7 Focar a janela ao mudar a área de trabalho
 8 Modelo de foco
-9 Focar novas janelas
+9 Focar em novas janelas
 10 Maximização total
 11 Ditherização de imagens
 12 Movimentação opaca de janelas
@@ -116,7 +116,7 @@ $set 7 #Fluxbox
 4 Tentando novamente com
 5 Atenção! Não foi encontrada uma tela para onde mapear a janela!
 6 Não é possível criar diretorio %s
-7 Não foram encontradas telas para gerenciar.\nAssegure-se de que não há outro gerenciador de janelas ativo.
+7 Não foram encontradas janelas para gerenciar.\nAssegure-se de que não há outro gerenciador de janelas ativo.
 8 Erro ao analisar expressão regular
 9 Fatal! Só é possível haver uma instância da classe fluxbox.
 10 Não é possível conectar-se ao servidor X.\nAssegure-se de que o X foi iniciado antes do Fluxbox.
@@ -158,7 +158,7 @@ $set 11 #Remember
 8 Enrolada
 9 Pregada
 10 Chave apps desconhecida
-11 Espaço de trabalho
+11 Área de trabalho
 12 Monitor
 13 Transparência
 
@@ -183,13 +183,13 @@ $set 13 #Slit
 
 $set 14 #Toolbar
 
-1 Renomear o espaço de trabalho atual
+1 Renomear a área de trabalho atual
 2 Modo da barra de janelas
 3 Todas as janelas
 4 Minimizadas
 5 Nenhuma
-6 Espaço de trabalho
-7 Minimizadas no espaço de trabalho
+6 Área de trabalho
+7 Minimizadas na Área de trabalho
 8 Camada da barra de tarefas
 9 Barra de tarefas no monitor
 10 Posicionamento da barra de tarefas
@@ -223,9 +223,9 @@ $set 16 #Windowmenu
 
 $set 17 #Workspace
 
-1 Espaço de trabalho %d
-2 Espaços de trabalho
-3 Novo espaço de trabalho
+1 Área de trabalho %d
+2 Áreas de trabalho
+3 Nova Área de trabalho
 4 Remover o último
 
 $set 18 #fbsetroot
@@ -260,8 +260,8 @@ $set 19 #main
 Site: http://www.fluxbox.org/\n\n\
 -display <string>\t\tusar conexão com o monitor.\n\
 -screen <all|int,int,int>\texecutar apenas nas telas especificadas.\n\
--no-slit\t\t\tdo not provide a slit.\n\
--no-toolbar\t\t\tdo not provide a toolbar.\n\
+-no-slit\t\t\tdo não prover uma slit.\n\
+-no-toolbar\t\t\tdo não prover uma toolbar.\n\
 -rc <string>\t\t\tusar arquivo de configuração alternativo.\n\
 -version\t\t\texibir a versão e finalizar.\n\
 -info\t\t\t\texibir algumas informações úteis.\n\
@@ -275,7 +275,7 @@ $set 20 #layers
 
 1 Acima do dock
 2 Embaixo
-3 Desktop
+3 Área de Trabalho
 4 Dock
 5 Normal
 6 Em cima
