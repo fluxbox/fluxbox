@@ -115,8 +115,8 @@ FbWinFrame::FbWinFrame(BScreen &screen, unsigned int client_depth,
     m_state(state),
     m_window(theme->screenNum(), state.x, state.y, state.width, state.height, s_mask, true, false,
         client_depth, InputOutput,
-        ((client_depth == 32) && (screen.rootWindow().depth() == 32) ? screen.rootWindow().visual() : CopyFromParent),
-        ((client_depth == 32) && (screen.rootWindow().depth() == 32) ? screen.rootWindow().colormap() : CopyFromParent)),
+        (client_depth == screen.rootWindow().maxDepth() ? screen.rootWindow().visual() : CopyFromParent),
+        (client_depth == screen.rootWindow().maxDepth() ? screen.rootWindow().colormap() : CopyFromParent)),
     m_layeritem(window(), *screen.layerManager().getLayer(ResourceLayer::NORMAL)),
     m_titlebar(m_window, 0, 0, 100, 16, s_mask, false, false, 
         screen.rootWindow().decorationDepth(), InputOutput,
@@ -272,11 +272,11 @@ void FbWinFrame::resizeForClient(unsigned int width, unsigned int height,
     moveResizeForClient(0, 0, width, height, win_gravity, client_bw, false, true);
 }
 
-void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int height, bool move, bool resize) {
-    if (move && x == window().x() && y == window().y())
+void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int height, bool move, bool resize, bool force) {
+    if (!force && move && x == window().x() && y == window().y())
         move = false;
 
-    if (resize && width == FbWinFrame::width() &&
+    if (!force && resize && width == FbWinFrame::width() &&
                   height == FbWinFrame::height())
         resize = false;
 
@@ -494,17 +494,18 @@ void FbWinFrame::applyState() {
         }
     }
 
-    if (m_state.shaded)
+    if (m_state.shaded) {
         new_h = m_titlebar.height();
-
-    if (m_state.fullscreen) {
+    } else if (m_state.fullscreen) {
         new_x = m_screen.getHeadX(head);
         new_y = m_screen.getHeadY(head);
         new_w = m_screen.getHeadWidth(head);
         new_h = m_screen.getHeadHeight(head);
+    } else if (m_state.maximized == WindowState::MAX_NONE || !m_screen.getMaxIgnoreIncrement()) {
+        applySizeHints(new_w, new_h, true);
     }
 
-    moveResize(new_x, new_y, new_w, new_h);
+    moveResize(new_x, new_y, new_w, new_h, true, true, true);
     frameExtentSig().emit();
 }
 
@@ -1587,8 +1588,18 @@ int FbWinFrame::getContext(Window win, int x, int y, int last_x, int last_y, boo
     if (window().window()    == win) return context | Keys::ON_WINDOW;
     // /!\ old code: handle = titlebar in motionNotifyEvent but only there !
     // handle() as border ??
-    if (handle().window()    == win) return Keys::ON_WINDOWBORDER | Keys::ON_WINDOW;
-    if (titlebar().window()  == win) return context | Keys::ON_TITLEBAR;
+    if (handle().window()    == win) {
+        const int px = x - this->x() - window().borderWidth();
+        if (px < gripLeft().x() + gripLeft().width() || px > gripRight().x())
+            return context; // one of the corners
+        return Keys::ON_WINDOWBORDER | Keys::ON_WINDOW;
+    }
+    if (titlebar().window()  == win) {
+        const int px = x - this->x() - window().borderWidth();
+        if (px < label().x() || px > label().x() + label().width())
+            return context; // one of the buttons, asked from a grabbed event
+        return context | Keys::ON_TITLEBAR;
+    }
     if (label().window()     == win) return context | Keys::ON_TITLEBAR;
     // internal tabs are on title bar
     if (tabcontainer().window() == win)

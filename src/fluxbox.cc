@@ -56,6 +56,7 @@
 #include "FbTk/Compose.hh"
 #include "FbTk/KeyUtil.hh"
 #include "FbTk/MemFun.hh"
+#include "FbTk/MenuItem.hh"
 
 #ifdef USE_EWMH
 #include "Ewmh.hh"
@@ -981,14 +982,22 @@ void Fluxbox::attachSignals(WinClient &winclient) {
 
 BScreen *Fluxbox::searchScreen(Window window) {
 
+    ScreenList::iterator it = m_screens.begin();
+    ScreenList::iterator it_end = m_screens.end();
+
+    // let's first assume window is a root window
+    for (; it != it_end; ++it) {
+        if (*it && (*it)->rootWindow() == window)
+            return *it;
+    }
+
+    // no? query the root for window and try with that
     Window window_root = FbTk::FbWindow::rootWindow(display(), window);
-    if (window_root == None) {
+    if (window_root == None || window_root == window) {
         return 0;
     }
 
-    ScreenList::iterator it = m_screens.begin();
-    ScreenList::iterator it_end = m_screens.end();
-    for (; it != it_end; ++it) {
+    for (it = m_screens.begin(); it != it_end; ++it) {
         if (*it && (*it)->rootWindow() == window_root)
             return *it;
     }
@@ -1253,6 +1262,38 @@ void Fluxbox::reconfigure() {
     m_reconfig_timer.start();
 }
 
+// TODO: once c++11 is required, make this a local var and a closure
+static std::list<FbTk::Menu*> s_seenMenus;
+static void rec_reconfigMenu(FbTk::Menu *menu) {
+    if (!menu || std::find(s_seenMenus.begin(), s_seenMenus.end(), menu) != s_seenMenus.end())
+        return;
+    s_seenMenus.push_back(menu);
+    menu->reconfigure();
+    for (size_t i = 0; i < menu->numberOfItems(); ++i) {
+        rec_reconfigMenu(menu->find(i)->submenu());
+        if (menu->find(i)->submenu() && menu->find(i)->submenu()->isVisible())
+            menu->drawSubmenu(i);
+    }
+}
+
+
+void Fluxbox::reconfigThemes() {
+    for (ScreenList::iterator it = m_screens.begin(), end = m_screens.end(); it != end; ++it) {
+        (*it)->focusedWinFrameTheme()->reconfigTheme();
+        (*it)->unfocusedWinFrameTheme()->reconfigTheme();
+        (*it)->menuTheme()->reconfigTheme();
+        (*it)->rootTheme()->reconfigTheme();
+        (*it)->focusedWinButtonTheme()->reconfigTheme();
+        (*it)->unfocusedWinButtonTheme()->reconfigTheme();
+        (*it)->pressedWinButtonTheme()->reconfigTheme();
+
+        rec_reconfigMenu(&(*it)->rootMenu());
+        rec_reconfigMenu(&(*it)->configMenu());
+        rec_reconfigMenu(&(*it)->windowMenu());
+        rec_reconfigMenu(&(*it)->workspaceMenu());
+        s_seenMenus.clear();
+    }
+}
 
 void Fluxbox::real_reconfigure() {
 

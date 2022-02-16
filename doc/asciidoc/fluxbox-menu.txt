@@ -50,7 +50,7 @@ which appears when you right-click on a window's titlebar or iconbar. This opens
 a menu file as defined by *~/.fluxbox/windowmenu*. If this file does not exist,
 fluxbox will copy in the default from *@pkgdatadir@/windowmenu*.
 
-You do not need to ``reload'' fluxbox after editing the apps file, the changes
+You do not need to ``reload'' fluxbox after editing either menu file, the changes
 should be taken into account the next time you open the menu.
 
 ROOT MENU
@@ -188,11 +188,12 @@ Fluxbox Functions
 
 WINDOW MENU
 -----------
-Like the *ROOT MENU*, this menu file must start with *[begin]* and end with
-*[end]*. However, this file consists of only one *[*'tag'*]* per line with no
-labels, commands, or icons.
+The syntax for the Window Menu is mostly identical to that for the *ROOT MENU*;
+it must start with *[begin]* and end with *[end]*, and may have any of the above
+tags. However, it may also contain any of the following window-specific *[*'tag'*]*s,
+which each must be on a line by itself with no labels, commands, or icons.
 
-The available tags in this menu are:
+The additonal available tags in this menu are:
 
 *[shade]*;;
     Provides a menu item to shade or unshade (or, roll-up) the window. This is

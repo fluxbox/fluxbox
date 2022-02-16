@@ -41,6 +41,7 @@ public:
     int decorationDepth() const { return m_decorationDepth; }
     Visual *decorationVisual() const { return m_decorationVisual; }
     Colormap decorationColormap() const { return m_decorationColormap; }
+    int maxDepth() const { return m_maxDepth; }
 
 private:
     Visual *m_visual;
@@ -49,6 +50,7 @@ private:
     int m_decorationDepth;
     Visual *m_decorationVisual;
     Colormap m_decorationColormap;
+    int m_maxDepth;
 };
 
 #endif // FBROOTWINDOW_HH

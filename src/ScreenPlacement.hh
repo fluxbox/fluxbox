@@ -48,7 +48,8 @@ public:
         COLMINOVERLAPPLACEMENT,
         ROWMINOVERLAPPLACEMENT,
         CASCADEPLACEMENT,
-        UNDERMOUSEPLACEMENT
+        UNDERMOUSEPLACEMENT,
+        AUTOTABPLACEMENT
     };
 
     enum RowDirection { 
@@ -80,8 +81,8 @@ private:
     FbTk::Resource<ColumnDirection> m_col_direction; ///< column direction resource
     FbTk::Resource<PlacementPolicy> m_placement_policy; ///< placement policy resource
     PlacementPolicy m_old_policy; ///< holds old policy, used to determine if resources has changed
-    std::auto_ptr<PlacementStrategy> m_strategy; ///< main strategy
-    std::auto_ptr<PlacementStrategy> m_fallback_strategy; ///< a fallback strategy if the main strategy fails
+    std::unique_ptr<PlacementStrategy> m_strategy; ///< main strategy
+    std::unique_ptr<PlacementStrategy> m_fallback_strategy; ///< a fallback strategy if the main strategy fails
     BScreen& m_screen;
 };
 

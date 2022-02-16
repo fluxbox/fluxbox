@@ -103,6 +103,7 @@ public:
 
     void moveToLayer(int layernum);
     void toggleHidden();
+    void toggleAboveDock();
 
     BScreen &screen() { return m_screen; }
     const BScreen &screen() const { return m_screen; }
@@ -133,6 +134,7 @@ private:
     void screenSizeChanged(BScreen &screen);
 
     void updateAlpha();
+    void updateCrossingState();
     void clearWindow();
     void setupMenu();
 
@@ -144,12 +146,13 @@ private:
 
     // m_hidden is for autohide, m_visible is the FbWindow state
     bool m_hidden, m_visible;
+    bool m_pending_reconfigure;
 
     BScreen &m_screen;
     FbTk::Timer m_timer;
 
     SlitClients m_client_list;
-    std::auto_ptr<LayerMenu> m_layermenu;
+    std::unique_ptr<LayerMenu> m_layermenu;
     FbMenu m_clientlist_menu, m_slitmenu;
 #ifdef XINERAMA
     XineramaHeadMenu<Slit> *m_xineramaheadmenu;
@@ -175,12 +178,12 @@ private:
     // for KDE
     Atom m_kwm1_dockwindow, m_kwm2_dockwindow;
 
-    std::auto_ptr<FbTk::LayerItem> m_layeritem;
-    std::auto_ptr<SlitTheme> m_slit_theme;
+    std::unique_ptr<FbTk::LayerItem> m_layeritem;
+    std::unique_ptr<SlitTheme> m_slit_theme;
     static unsigned int s_eventmask;
     Strut *m_strut;
 
-    FbTk::Resource<bool> m_rc_kde_dockapp, m_rc_auto_hide, m_rc_maximize_over;
+    FbTk::Resource<bool> m_rc_kde_dockapp, m_rc_auto_hide, m_rc_auto_raise, m_rc_maximize_over;
     FbTk::Resource<Slit::Placement> m_rc_placement;
     FbTk::Resource<int> m_rc_alpha, m_rc_on_head;
     FbTk::Resource<class ResourceLayer> m_rc_layernum;

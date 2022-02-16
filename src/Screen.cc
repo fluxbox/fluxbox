@@ -193,8 +193,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                  unsigned int opts) :
     m_layermanager(num_layers),
     root_colormap_installed(false),
-    m_image_control(0),
     m_current_workspace(0),
+    m_former_workspace(0),
     m_focused_windowtheme(new FbWinFrameTheme(scrn, ".focus", ".Focus")),
     m_unfocused_windowtheme(new FbWinFrameTheme(scrn, ".unfocus", ".Unfocus")),
     // the order of windowtheme and winbutton theme is important
@@ -215,7 +215,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_altname(altscreenname),
     m_focus_control(new FocusControl(*this)),
     m_placement_strategy(new ScreenPlacement(*this)),
-    m_cycle_opts(0),
     m_opts(opts) {
 
 
@@ -297,7 +296,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                             "using visual 0x%lx, depth %d\n",
                             "informational message saying screen number (%d), visual (%lx), and colour depth (%d)").c_str(),
             screenNumber(), XVisualIDFromVisual(rootWindow().visual()),
-            rootWindow().depth());
+            rootWindow().maxDepth());
 #endif // DEBUG
 
     FbTk::EventManager *evm = FbTk::EventManager::instance();
@@ -392,6 +391,7 @@ BScreen::~BScreen() {
         return;
 
     m_toolbar.reset(0);
+    m_toolButtonMap.reset(0);
 
     FbTk::EventManager *evm = FbTk::EventManager::instance();
     evm->remove(rootWindow());
@@ -454,6 +454,7 @@ void BScreen::initWindows() {
 
 #ifdef USE_TOOLBAR
     if (m_opts & Fluxbox::OPT_TOOLBAR) {
+        m_toolButtonMap.reset(new ToolButtonMap());
         Toolbar* tb = new Toolbar(*this, *layerManager().getLayer(::ResourceLayer::NORMAL));
         m_toolbar.reset(tb);
     }
@@ -641,7 +642,7 @@ void BScreen::propertyNotify(Atom atom) {
                     &ret_bytes_after, (unsigned char **)&str);
             }
 
-            static std::auto_ptr<FbTk::Command<void> > cmd(0);
+            static std::unique_ptr<FbTk::Command<void> > cmd;
             cmd.reset(FbTk::CommandParser<void>::instance().parse(str, false));
             if (cmd.get()) {
                 cmd->execute();
@@ -656,11 +657,14 @@ void BScreen::propertyNotify(Atom atom) {
 
 void BScreen::keyPressEvent(XKeyEvent &ke) {
     if (Fluxbox::instance()->keys()->doAction(ke.type, ke.state, ke.keycode,
-                Keys::GLOBAL|Keys::ON_DESKTOP)) {
+                Keys::GLOBAL|(ke.subwindow ? 0 : Keys::ON_DESKTOP), 0, ke.time)) {
 
         // re-grab keyboard, so we don't pass KeyRelease to clients
         // also for catching invalid keys in the middle of keychains
         FbTk::EventManager::instance()->grabKeyboard(rootWindow().window());
+        XAllowEvents(Fluxbox::instance()->display(), SyncKeyboard, CurrentTime);
+    } else {
+        XAllowEvents(Fluxbox::instance()->display(), ReplayKeyboard, CurrentTime);
     }
 }
 
@@ -685,8 +689,12 @@ void BScreen::buttonPressEvent(XButtonEvent &be) {
         imageControl().installRootColormap();
 
     Keys *keys = Fluxbox::instance()->keys();
-    keys->doAction(be.type, be.state, be.button, Keys::GLOBAL|Keys::ON_DESKTOP,
-                   0, be.time);
+    if (keys->doAction(be.type, be.state, be.button, Keys::GLOBAL|Keys::ON_DESKTOP,
+                   0, be.time)) {
+        XAllowEvents(Fluxbox::instance()->display(), SyncPointer, CurrentTime);
+    } else {
+        XAllowEvents(Fluxbox::instance()->display(), ReplayPointer, CurrentTime);
+    }
 }
 
 void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
@@ -759,6 +767,7 @@ void BScreen::reconfigure() {
                                         m_root_theme->screenNum());
 
     reconfigureTabs();
+    reconfigureStruts();
 }
 
 void BScreen::reconfigureTabs() {
@@ -768,6 +777,42 @@ void BScreen::reconfigureTabs() {
                                            it_end = winlist.end();
     for (; it != it_end; ++it)
         (*it)->fbwindow()->applyDecorations();
+}
+
+static void parseStruts(const std::string &s, int &l, int &r, int &t, int &b) {
+    std::list<std::string> v;
+    FbTk::StringUtil::stringtok(v, s, " ,");
+    std::list<std::string>::iterator it = v.begin();
+    if (it != v.end())   l = std::max(0, atoi(it->c_str()));
+    if (++it != v.end()) r = std::max(0, atoi(it->c_str()));
+    if (++it != v.end()) t = std::max(0, atoi(it->c_str()));
+    if (++it != v.end()) b = std::max(0, atoi(it->c_str()));
+}
+
+void BScreen::reconfigureStruts() {
+    for (std::vector<Strut*>::iterator it = m_head_struts.begin(),
+                                      end = m_head_struts.end(); it != end; ++it) {
+        clearStrut(*it);
+    }
+
+    m_head_struts.clear();
+
+    int gl = 0, gr = 0, gt = 0, gb = 0;
+    parseStruts(FbTk::Resource<std::string>(resourceManager(), "",
+                                            name() + ".struts",
+                                         altName() + ".Struts"), gl, gr, gt, gb);
+    const int nh = std::max(1, numHeads());
+    for (int i = 1; i <= nh; ++i) {
+        int l = gl, r = gr, t = gt, b = gb;
+        char ai[16];
+        sprintf(ai, "%d", i);
+        parseStruts(FbTk::Resource<std::string>(resourceManager(), "",
+                                            name() + ".struts." + ai,
+                                         altName() + ".Struts." + ai), l, r, t, b);
+        if (l+t+r+b)
+            m_head_struts.push_back(requestStrut(i, l, r, t, b));
+    }
+    updateAvailableWorkspaceArea();
 }
 
 void BScreen::updateWorkspaceName(unsigned int w) {
@@ -879,6 +924,8 @@ int BScreen::removeLastWorkspace() {
 
     if (m_current_workspace->workspaceID() == wkspc->workspaceID())
         changeWorkspaceID(m_current_workspace->workspaceID() - 1);
+    if (m_former_workspace && m_former_workspace->workspaceID() == wkspc->workspaceID())
+        m_former_workspace = 0;
 
     wkspc->removeAll(wkspc->workspaceID()-1);
 
@@ -910,10 +957,13 @@ void BScreen::changeWorkspaceID(unsigned int id, bool revert) {
         id == m_current_workspace->workspaceID())
         return;
 
+    m_former_workspace = m_current_workspace;
+
     /* Ignore all EnterNotify events until the pointer actually moves */
     this->focusControl().ignoreAtPointer();
 
     FbTk::App::instance()->sync(false);
+    Fluxbox::instance()->grab();
 
     FluxboxWindow *focused = FocusControl::focusedFbWindow();
 
@@ -951,6 +1001,7 @@ void BScreen::changeWorkspaceID(unsigned int id, bool revert) {
 
     old->hideAll(false);
 
+    Fluxbox::instance()->ungrab();
     FbTk::App::instance()->sync(false);
 
     m_currentworkspace_sig.emit(*this);
@@ -1091,6 +1142,8 @@ FluxboxWindow *BScreen::createWindow(Window client) {
 
     // check if it should be grouped with something else
     WinClient*      other = findGroupLeft(*winclient);
+    if (!other && m_placement_strategy->placementPolicy() == ScreenPlacement::AUTOTABPLACEMENT)
+        other = FocusControl::focusedWindow();
     FluxboxWindow*  win = other ? other->fbwindow() : 0;
 
     if (other && win) {
@@ -1255,6 +1308,28 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
         getWorkspace(wkspc_id)->addWindow(*w);
     }
 }
+
+#if USE_TOOLBAR
+
+void BScreen::clearToolButtonMap() {
+    m_toolButtonMap->clear();
+}
+
+void BScreen::mapToolButton(std::string name, FbTk::TextButton *button) {
+    m_toolButtonMap->insert(std::pair<std::string, FbTk::TextButton*>(name, button));
+}
+
+bool BScreen::relabelToolButton(std::string button, std::string label) {
+    ToolButtonMap::const_iterator it = m_toolButtonMap->find(button);
+    if (it != m_toolButtonMap->end() && it->second) {
+        it->second->setText(label);
+        m_toolbar->relayout();
+        return true;
+    }
+    return false;
+}
+
+#endif
 
 void BScreen::initMenus() {
     m_workspacemenu.reset(MenuCreator::createMenuType("workspacemenu", screenNumber()));
@@ -1460,20 +1535,29 @@ void BScreen::setLayer(FbTk::LayerItem &item, int layernum) {
  Goes to the workspace "right" of the current
 */
 void BScreen::nextWorkspace(int delta) {
-    changeWorkspaceID( (currentWorkspaceID() + delta) % numberOfWorkspaces());
+    focusControl().stopCyclingFocus();
+    if (delta)
+        changeWorkspaceID( (currentWorkspaceID() + delta) % numberOfWorkspaces());
+    else if (m_former_workspace)
+        changeWorkspaceID(m_former_workspace->workspaceID());
 }
 
 /**
  Goes to the workspace "left" of the current
 */
 void BScreen::prevWorkspace(int delta) {
-    changeWorkspaceID( (static_cast<signed>(numberOfWorkspaces()) + currentWorkspaceID() - (delta % numberOfWorkspaces())) % numberOfWorkspaces());
+    focusControl().stopCyclingFocus();
+    if (delta)
+        changeWorkspaceID( (static_cast<signed>(numberOfWorkspaces()) + currentWorkspaceID() - (delta % numberOfWorkspaces())) % numberOfWorkspaces());
+    else if (m_former_workspace)
+        changeWorkspaceID(m_former_workspace->workspaceID());
 }
 
 /**
  Goes to the workspace "right" of the current
 */
 void BScreen::rightWorkspace(int delta) {
+    focusControl().stopCyclingFocus();
     if (currentWorkspaceID()+delta < numberOfWorkspaces())
         changeWorkspaceID(currentWorkspaceID()+delta);
 }
@@ -1482,6 +1566,7 @@ void BScreen::rightWorkspace(int delta) {
  Goes to the workspace "left" of the current
 */
 void BScreen::leftWorkspace(int delta) {
+    focusControl().stopCyclingFocus();
     if (currentWorkspaceID() >= static_cast<unsigned int>(delta))
         changeWorkspaceID(currentWorkspaceID()-delta);
 }
@@ -1621,6 +1706,8 @@ void BScreen::initXinerama() {
 #else // XINERAMA
     m_xinerama.avail = false;
 #endif // XINERAMA
+
+    reconfigureStruts();
 }
 
 /* Move windows out of inactive heads */

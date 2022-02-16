@@ -59,6 +59,15 @@ application. See *SETTINGS* for more details.
 Each of these sections ends with the single line:::
     *[end]*
 
+TRANSIENT SECTIONS
+------------------
+*[transient]* sections provide settings for "dialogs".
+
+This is the same as the *[app]* section, but applies to transient windows.
+Transient windows have a WM_TRANSIENT_FOR property. This will apply to all
+modal and several other dialogs which have a "leader" they remain above.
+Notably, open/save dialogs fall into this category.
+
 GROUP SECTIONS
 --------------
 The primary purpose of *[group]* sections is to group windows together. All
@@ -119,6 +128,13 @@ respectively.
     If the value is given in percent, then the window size will be based on
     the current screen's size.
 
+*[IgnoreSizeHints]* {'bool'}::
+    Some Applications restrict the aspect ratio, minimum or maximum size of
+    windows. Setting this key "yes" will make fluxbox ignore those constraints.
+    *NOTICE* that bad client implementations may hard depend on these
+    constraints (by blindly using their geometry in unsave calculations, causing
+    div-by-zero segfaults etc.)
+
 *[Position]* ('anchor') {'X[%]' 'Y[%]'}::
 Position the application at a particular spot. By default the upper-left corner
 is placed at screen coordinates ('X','Y'). If you specify an 'anchor', say
@@ -159,8 +175,26 @@ Button, Close Button, Menu Button, Sticky Button, Shade Button, External Tabs, F
     Whether the window has tabs enabled.
 
 *[FocusNewWindow]* {'bool'}::
+    *DEPRECATED!* Please use FocusProtection "Gain" or "Refuse" instead.;;
     If enabled, a new window will grab X focus as soon as it is opened.
     If disabled, a new window will not grab X focus as soon as it is opened.
+
+*[FocusProtection]* {'value' [,'value' [, ...]] }::
+    Comma separated list of focus controlling flags. 'value' may be:;;
++
+--
+    *None*;;
+        Regular behavior
+    *Gain*;;
+        A new window will grab X focus as soon as it is opened.
+    *Refuse*;;
+        A new window will not grab X focus as soon as it is opened.
+    *Deny*;;
+        The window is not allowed to claim focus while it is opened.
+    *Lock*;;
+        No window is allowed to claim the focus while this window has it.
+--
+    Please notice that technically, windows may still obtain the focus which is then however reverted by the WM. In case you're very unlucky, a key event may thus still go to the wrong window.
 
 *[FocusHidden]* {'bool'}::
     If enabled, the window will not appear in 'NextWindow'/'PrevWindow' lists.

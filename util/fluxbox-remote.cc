@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
     if (strcmp(cmd, "result") == 0) {
         XTextProperty text_prop;
         if (XGetTextProperty(disp, root, &text_prop, atom_result) != 0
-            && text_prop.value > 0
+            && text_prop.value != 0
             && text_prop.nitems > 0) {
 
             printf("%s", text_prop.value);

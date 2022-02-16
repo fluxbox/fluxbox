@@ -52,9 +52,9 @@ public:
 private:
     BScreen &m_screen;
     ToolTheme m_clock_theme;
-    std::auto_ptr<ToolTheme> m_button_theme;
-    std::auto_ptr<ToolTheme> m_workspace_theme;
-    std::auto_ptr<ToolTheme> m_systray_theme;
+    std::unique_ptr<ToolTheme> m_button_theme;
+    std::unique_ptr<ToolTheme> m_workspace_theme;
+    std::unique_ptr<ToolTheme> m_systray_theme;
     IconbarTheme m_iconbar_theme, m_focused_iconbar_theme,
                  m_unfocused_iconbar_theme;
 };

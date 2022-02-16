@@ -60,7 +60,7 @@ const struct t_modlist modlist[] = {
 
 namespace FbTk {
 
-std::auto_ptr<KeyUtil> KeyUtil::s_keyutil;
+std::unique_ptr<KeyUtil> KeyUtil::s_keyutil;
 
 KeyUtil &KeyUtil::instance() {
     if (s_keyutil.get() == 0)
@@ -129,7 +129,7 @@ void KeyUtil::grabKey(unsigned int key, unsigned int mod, Window win) {
     for (int i = 0; i < 8; i++) {
         XGrabKey(display, key, mod | (i & 1 ? LockMask : 0) |
                  (i & 2 ? nummod : 0) | (i & 4 ? scrollmod : 0),
-                 win, True, GrabModeAsync, GrabModeAsync);
+                 win, True, GrabModeAsync, GrabModeSync);
     }
 
 }
@@ -144,7 +144,7 @@ void KeyUtil::grabButton(unsigned int button, unsigned int mod, Window win,
     for (int i = 0; i < 8; i++) {
         XGrabButton(display, button, mod | (i & 1 ? LockMask : 0) |
                     (i & 2 ? nummod : 0) | (i & 4 ? scrollmod : 0),
-                    win, False, event_mask, GrabModeAsync, GrabModeAsync,
+                    win, False, event_mask, GrabModeSync, GrabModeAsync,
                     None, cursor);
     }
 

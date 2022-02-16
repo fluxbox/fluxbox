@@ -95,7 +95,6 @@ Menu::Menu(FbTk::ThemeProxy<MenuTheme> &tm, ImageControl &imgctrl):
     m_active_index(-1),
     m_theme(tm),
     m_image_ctrl(imgctrl),
-    m_shape(0),
     m_alignment(ALIGNDONTCARE) {
 
     Display* disp = FbTk::App::instance()->display();
@@ -158,7 +157,7 @@ Menu::Menu(FbTk::ThemeProxy<MenuTheme> &tm, ImageControl &imgctrl):
     event_mask |= EnterWindowMask | LeaveWindowMask;
 
     int w = width();
-    int th = theme()->titleHeight();
+    int th = theme()->titleHeight(!m_title.label.logical().empty());
     int fh = std::max(m_frame.height, m_frame.height);
 
     //create menu title
@@ -395,7 +394,7 @@ void Menu::updateMenu() {
     int bw = theme()->borderWidth();
     int ih = theme()->itemHeight();
     unsigned int iw = 1;
-    int th = theme()->titleHeight();
+    int th = theme()->titleHeight(!m_title.label.logical().empty());
     int tbw = m_title.win.borderWidth();
     int w = static_cast<int>(width());
     size_t l = m_items.size();
@@ -430,7 +429,6 @@ void Menu::updateMenu() {
         m_item_w = std::max(iw, m_item_w);
     }
 
-
     // calculate needed columns
     m_columns = 0;
     m_rows_per_column = 0;
@@ -442,6 +440,10 @@ void Menu::updateMenu() {
         }
 
         m_columns = std::max(m_min_columns, m_columns);
+
+        // the menu width should be as wide as the widest menu item
+        w = m_item_w * m_columns;
+
         m_rows_per_column = m_items.size() / m_columns;
         if (m_items.size() % m_columns)
             m_rows_per_column++;
@@ -665,7 +667,7 @@ void Menu::redrawTitle(FbDrawable &drawable) {
     }
 
     // difference between height based on font, and style-set height
-    int height_offset = theme()->titleHeight() - (font.height() + 2*dx);
+    int height_offset = theme()->titleHeight(!m_title.label.logical().empty()) - (font.height() + 2*dx);
     font.drawText(drawable, screenNumber(), theme()->titleTextGC().gc(), m_title.label,
                   dx, font.ascent() + dx + height_offset/2);  // position
 }
@@ -704,10 +706,10 @@ void Menu::drawSubmenu(unsigned int index) {
         int bw = m_window.borderWidth();
         int h = static_cast<int>(height());
         int title_bw = m_title.win.borderWidth();
-        int title_height = (m_title.visible ? theme()->titleHeight() + title_bw : 0);
+        int title_height = (m_title.visible ? theme()->titleHeight(!m_title.label.logical().empty()) + title_bw : 0);
 
         int subm_title_height = (item->submenu()->m_title.visible) ?
-                item->submenu()->theme()->titleHeight() + bw : 0;
+                item->submenu()->theme()->titleHeight(!m_title.label.logical().empty()) + bw : 0;
         int subm_height = static_cast<int>(item->submenu()->height());
         int subm_width = static_cast<int>(item->submenu()->width());
         int subm_bw = item->submenu()->fbwindow().borderWidth();

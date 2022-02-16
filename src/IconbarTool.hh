@@ -29,6 +29,7 @@
 #include "FbTk/Container.hh"
 #include "FbTk/CachedPixmap.hh"
 #include "FbTk/Resource.hh"
+#include "FbTk/Timer.hh"
 
 #include <map>
 
@@ -60,6 +61,7 @@ public:
     void parentMoved() { m_icon_container.parentMoved(); }
 
     unsigned int width() const;
+    unsigned int preferredWidth() const;
     unsigned int height() const;
     unsigned int borderWidth() const;
 
@@ -67,6 +69,8 @@ public:
 
     void setOrientation(FbTk::Orientation orient);
     FbTk::Container::Alignment alignment() const { return m_icon_container.alignment(); }
+    static std::string &iconifiedPrefix() { return s_iconifiedDecoration[0]; }
+    static std::string &iconifiedSuffix() { return s_iconifiedDecoration[1]; }
 
     const BScreen &screen() const { return m_screen; }
 private:
@@ -94,10 +98,16 @@ private:
     /// add icons to the list
     void updateList();
 
+    void updateMaxSizes(unsigned int width, unsigned int height);
     /// called when the list emits a signal
     void update(UpdateReason reason, Focusable *win);
 
+    void updateIconifiedPattern();
+
     void themeReconfigured();
+
+    FbTk::Timer m_resizeSig_timer;
+    void emitResizeSig();
 
     BScreen &m_screen;
     FbTk::Container m_icon_container;
@@ -107,7 +117,7 @@ private:
 
     FbTk::SignalTracker m_tracker;
 
-    std::auto_ptr<FocusableList> m_winlist;
+    std::unique_ptr<FocusableList> m_winlist;
     IconMap m_icons;
     std::string m_mode;
     FbTk::Resource<std::string> m_rc_mode;
@@ -117,6 +127,7 @@ private:
     FbTk::Resource<bool> m_rc_use_pixmap; ///< if iconbar should use win pixmap or not
     FbMenu m_menu;
     int m_alpha;
+    static std::string s_iconifiedDecoration[2];
 };
 
 #endif // ICONBARTOOL_HH

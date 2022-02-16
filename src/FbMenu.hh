@@ -56,7 +56,7 @@ public:
 
 private:
     FbTk::LayerItem m_layeritem;
-    std::auto_ptr<FbTk::AutoReloadHelper> m_reloader;
+    std::unique_ptr<FbTk::AutoReloadHelper> m_reloader;
 };
 
 #endif // FBMENU_HH

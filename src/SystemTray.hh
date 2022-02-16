@@ -26,16 +26,17 @@
 #include "FbTk/FbWindow.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/Signal.hh"
+#include "FbTk/Resource.hh"
 
 #include "ToolTheme.hh"
 #include "ToolbarItem.hh"
 
 #include <list>
 #include <memory>
+#include <string>
 
 class BScreen;
 class ButtonTheme;
-class TrayWindow;
 class AtomHandler;
 
 namespace FbTk {
@@ -73,12 +74,13 @@ public:
     int numClients() const { return m_clients.size(); }
     const FbTk::FbWindow &window() const { return m_window; }
 
-    void renderTheme(int alpha) { 
+    void renderTheme(int alpha) {
         m_window.setBorderWidth(m_theme->border().width());
         m_window.setBorderColor(m_theme->border().color());
-        m_window.setAlpha(alpha); 
-        update(); 
+        m_window.setAlpha(alpha);
+        update();
     }
+
     void updateSizing() { m_window.setBorderWidth(m_theme->border().width()); }
 
     void parentMoved() { m_window.parentMoved(); }
@@ -87,10 +89,14 @@ public:
 
     static Atom getXEmbedInfoAtom();
 
+    static bool doesControl(Window win);
+
 private:
     void update();
+    void sortClients();
 
-    typedef std::list<TrayWindow *> ClientList;
+    class TrayWindow;
+    typedef std::list<TrayWindow*> ClientList;
     ClientList::iterator findClient(Window win);
 
     void rearrangeClients();
@@ -103,7 +109,7 @@ private:
     BScreen& m_screen;
     Pixmap m_pixmap;
 
-    std::auto_ptr<AtomHandler> m_handler;
+    std::unique_ptr<AtomHandler> m_handler;
 
     ClientList m_clients;
     size_t m_num_visible_clients;
@@ -111,6 +117,11 @@ private:
     // gaim/pidgin seems to barf if the selection is not an independent window.
     // I suspect it's an interacton with parent relationship and gdk window caching.
     FbTk::FbWindow m_selection_owner;
+    
+    // resources
+    FbTk::Resource<std::string> m_rc_systray_pinleft;
+    FbTk::Resource<std::string> m_rc_systray_pinright;
+    std::vector<std::string> m_pinleft, m_pinright;
 };
 
 #endif // SYSTEMTRAY_HH

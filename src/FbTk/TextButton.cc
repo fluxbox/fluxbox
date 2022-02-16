@@ -112,6 +112,10 @@ unsigned int TextButton::textWidth() const {
     return font().textWidth(text());
 }
 
+unsigned int TextButton::preferredWidth() const {
+    return m_bevel + m_left_padding + m_right_padding + textWidth();
+}
+
 void TextButton::renderForeground(FbWindow &win, FbDrawable &drawable) {
     // (win should always be *this, no need to check)
     drawText(0, 0, &drawable);

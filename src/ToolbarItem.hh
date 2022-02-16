@@ -47,6 +47,7 @@ public:
     virtual void show() = 0;
     virtual void hide() = 0;
     virtual unsigned int width() const = 0;
+    virtual unsigned int preferredWidth() const { return width(); }
     virtual unsigned int height() const = 0;
     virtual unsigned int borderWidth() const = 0;
     // some items might be there, but effectively empty, so shouldn't appear

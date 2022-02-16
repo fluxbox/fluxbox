@@ -1,5 +1,5 @@
-// HeadArea.hh for Fluxbox Window Manager
-// Copyright (c) 2004 Mathieu De Zutter (mathieu at dezutter.org)
+// SpacerTool.hh for Fluxbox
+// Copyright (c) 2016 Thomas Lübking <thomas.luebking@gmail.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -13,35 +13,40 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
- 
-#ifndef HEADAREA_HH
-#define HEADAREA_HH
 
-#include "FbTk/NotCopyable.hh"
-#include <memory>
-#include <list>
+#ifndef SPACERTOOL_HH
+#define SPACERTOOL_HH
 
-class Strut;
+#include "ToolbarItem.hh"
 
-class HeadArea: private FbTk::NotCopyable {
+
+class SpacerTool: public ToolbarItem {
 public:
-    HeadArea();
+    SpacerTool(int size = -1);
+    virtual ~SpacerTool();
+    void move(int x, int y) {}
+    void resize(unsigned int x, unsigned int y) {}
+    void moveResize(int x, int y,
+                    unsigned int width, unsigned int height) {}
+    void show() {}
+    void hide() {}
 
-    Strut *requestStrut(int head, int left, int right, int top, int bottom, Strut* next = 0);
-    void clearStrut(Strut *str);
-    bool updateAvailableWorkspaceArea();
-    const Strut *availableWorkspaceArea() const {
-        return m_available_workspace_area.get();
-    }
+    unsigned int width() const;
+    unsigned int height() const;
+    unsigned int borderWidth() const {return 0;}
+
+    void parentMoved() {}
+    void updateSizing() {}
+
+    virtual void renderTheme(int alpha) {}
 
 private:
-    std::unique_ptr<Strut> m_available_workspace_area;
-    std::list<Strut*> m_strutlist;
+    int m_size;
 };
 
-#endif // HEADAREA_HH
+#endif // SPACERTOOL_HH

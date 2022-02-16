@@ -32,11 +32,14 @@ struct ScreenResource {
             const std::string &scrname, const std::string &altscrname);
 
     FbTk::Resource<bool> opaque_move,
+       opaque_resize,
        full_max,
        max_ignore_inc, 
        max_disable_move,
        max_disable_resize,
        workspace_warping,
+       workspace_warping_horizontal,
+       workspace_warping_vertical,
        show_window_pos,
        auto_raise,
        click_raises;
@@ -47,17 +50,21 @@ struct ScreenResource {
     FbTk::Resource<unsigned int> typing_delay;
     FbTk::Resource<int> workspaces,
         edge_snap_threshold,
+        edge_resize_snap_threshold,
         focused_alpha,
         unfocused_alpha,
         menu_alpha,
         menu_delay,
         tab_width,
-        tooltip_delay;
+        tooltip_delay,
+        workspace_warping_horizontal_offset,
+        workspace_warping_vertical_offset;
     FbTk::Resource<bool> allow_remote_actions;
     FbTk::Resource<bool> clientmenu_use_pixmap;
     FbTk::Resource<bool> tabs_use_pixmap;
     FbTk::Resource<bool> max_over_tabs;
     FbTk::Resource<bool> default_internal_tabs;
+    FbTk::Resource<unsigned int> opaque_resize_delay;
 };
 
 #endif

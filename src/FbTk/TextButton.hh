@@ -62,6 +62,7 @@ public:
     unsigned int textWidth() const;
     int bevel() const { return m_bevel; }
 
+    virtual unsigned int preferredWidth() const;
 
 protected:
     virtual void drawText(int x_offset, int y_offset, FbDrawable *drawable_override);

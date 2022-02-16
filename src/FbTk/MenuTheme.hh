@@ -104,7 +104,9 @@ public:
     BulletType bullet() const { return *m_bullet; }
     Justify bulletPos() const { return *bullet_pos; }
 
-    unsigned int titleHeight() const { return m_real_title_height; }
+    unsigned int titleHeight(bool fontConstrained = false) const {
+        return fontConstrained ? m_real_title_height : *m_title_height;
+    }
     unsigned int itemHeight() const { return m_real_item_height; }
     unsigned int borderWidth() const { return *m_border_width; }
     unsigned int bevelWidth() const { return *m_bevel_width; }

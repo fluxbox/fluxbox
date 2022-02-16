@@ -205,7 +205,7 @@ void ThemeItem<Texture>::load(const string *o_name, const string *o_altname) {
         return;
     }
 
-    std::auto_ptr<PixmapWithMask> pm(Image::load(pixmap_name, m_tm.screenNum()));
+    std::unique_ptr<PixmapWithMask> pm(Image::load(pixmap_name, m_tm.screenNum()));
 
     if (pm.get() == 0) {
         if (ThemeManager::instance().verbose()) {
@@ -255,7 +255,7 @@ setFromString(const char *str) {
         StringUtil::removeFirstWhitespace(filename);
         StringUtil::removeTrailingWhitespace(filename);
 
-        std::auto_ptr<PixmapWithMask> pm(Image::load(filename, m_tm.screenNum()));
+        std::unique_ptr<PixmapWithMask> pm(Image::load(filename, m_tm.screenNum()));
         if (pm.get() == 0)
             setDefaultValue();
         else {

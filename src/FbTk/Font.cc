@@ -43,6 +43,7 @@
 #include <map>
 #include <typeinfo>
 #include <langinfo.h>
+#include <iostream>
 
 #ifdef HAVE_SETLOCALE
 #include <locale.h>
@@ -231,6 +232,9 @@ bool Font::load(const string &name) {
             m_fontstr = name;
             resetEffects(*this);
             return true;
+        } else {
+            std::cerr << "Couldn't initialize fonts. Check your fontconfig installation.\n";
+            exit(1);
         }
 
         delete tmp_font;

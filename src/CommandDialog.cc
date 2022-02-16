@@ -35,7 +35,6 @@
 
 using std::string;
 using std::vector;
-using std::auto_ptr;
 using std::less;
 using std::out_of_range;
 
@@ -45,9 +44,9 @@ CommandDialog::CommandDialog(BScreen &screen, const string &title,
     m_precommand(precommand) { }
 
 void CommandDialog::exec(const std::string &text){
-	
+
     // create Command<void> from line
-    auto_ptr<FbTk::Command<void> > cmd(FbTk::CommandParser<void>::instance().parse(m_precommand + text));
+    std::unique_ptr<FbTk::Command<void> > cmd(FbTk::CommandParser<void>::instance().parse(m_precommand + text));
     if (cmd.get())
         cmd->execute();
     // post execute

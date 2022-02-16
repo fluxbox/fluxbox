@@ -75,6 +75,11 @@ The mouse cursor is over the desktop (root window), and not any window\&.
 The mouse cursor is over the toolbar (which is normally at the bottom of the screen)\&.
 .RE
 .PP
+\fBOnSlit\fR
+.RS 4
+The mouse cursor is over the mystic slit (the thing that collects dock type windows)\&.
+.RE
+.PP
 \fBOnWindow\fR
 .RS 4
 The mouse cursor is over a window\&.
@@ -554,7 +559,7 @@ Adds or removes a workspace from the end of the list of workspaces\&.
 Switch to the Next / Previous workspace\&. All versions accept an offset value
 \fIn\fR, which defaults to
 \fB1\fR
-and refers to the number of workspaces to move at one time\&. {Next,Prev}Workspace wrap around when going past the last workspace, whereas {Right,Left}Workspace do not\&.
+and refers to the number of workspaces to move at one time\&. {Next,Prev}Workspace wrap around when going past the last workspace, whereas {Right,Left}Workspace do not\&. The special offset "0" will toggle the former workspace for Next\- and PrevWorkspace
 .RE
 .PP
 \fBWorkspace\fR \fInumber\fR
@@ -673,9 +678,38 @@ places the main window on the TOP half of the screen, and the tiled windows on t
 places the main window on the BOTTOM half of the screen and the tiled windows on the top half of the screen\&.
 .RE
 .PP
+\fBUnclutter\fR \fIpattern\fR
+.RS 4
+Arrange all matching windows to reduce the overall window overlap as much as possible\&. Windows are not resized\&. See
+\fBCLIENT PATTERNS\fR
+for more about the
+\fIpattern\fR
+arguments\&.
+.RE
+.PP
 \fBShowDesktop\fR
 .RS 4
 Minimizes all windows on the current workspace\&. If they are already all minimized, then it restores them\&.
+.RE
+.PP
+\fBToggleSlitAbove\fR
+.RS 4
+Toggles the slit between its regular and the AboveDock layer
+.RE
+.PP
+\fBToggleSlitHidden\fR
+.RS 4
+Toggles the slit\(cqs autohiding state (autohide doesn\(cqt have to be enabled)
+.RE
+.PP
+\fBToggleToolbarAbove\fR
+.RS 4
+Toggles the toolbar between its regular and the AboveDock layer
+.RE
+.PP
+\fBToggleToolbarHidden\fR
+.RS 4
+Toggles the toolbar\(cqs autohiding state (autohide doesn\(cqt have to be enabled)
 .RE
 .PP
 \fBDeiconify\fR \fImode\fR \fIdestination\fR

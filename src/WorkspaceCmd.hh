@@ -187,7 +187,35 @@ private:
     const ClientPattern m_pat;
 };
 
+class UnclutterCmd: public FbTk::Command<void> {
+public:
+    explicit UnclutterCmd(std::string &pat): m_pat(pat.c_str()) { }
+    void execute();
+private:
+    const ClientPattern m_pat;
+};
+
 class ShowDesktopCmd: public FbTk::Command<void> {
+public:
+    void execute();
+};
+
+class ToggleSlitAboveCmd: public FbTk::Command<void> {
+public:
+    void execute();
+};
+
+class ToggleSlitHiddenCmd: public FbTk::Command<void> {
+public:
+    void execute();
+};
+
+class ToggleToolbarAboveCmd: public FbTk::Command<void> {
+public:
+    void execute();
+};
+
+class ToggleToolbarHiddenCmd: public FbTk::Command<void> {
 public:
     void execute();
 };
@@ -195,6 +223,17 @@ public:
 class CloseAllWindowsCmd: public FbTk::Command<void> {
 public:
     void execute();
+};
+
+class RelabelButtonCmd: public FbTk::Command<void> {
+public:
+    explicit RelabelButtonCmd(std::string button, std::string label):
+            m_button(button), m_label(label) {}
+    void execute();
+    static FbTk::Command<void> *parse(const std::string &command,
+                                const std::string &args, bool trusted);
+private:
+    std::string m_button, m_label;
 };
 
 #endif // WORKSPACECMD_HH

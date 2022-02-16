@@ -83,7 +83,7 @@ private:
         unsigned int next_y = 5;
 
         TestTheme tm(screenNumber());
-        std::auto_ptr<ThemeItem<Texture> > text;
+        std::unique_ptr<ThemeItem<Texture> > text;
         char value[18];
         for (int i=0; i<m_num; ++i) {
             sprintf(value, "%d", i);

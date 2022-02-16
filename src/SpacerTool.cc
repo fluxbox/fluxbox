@@ -1,5 +1,5 @@
-// HeadArea.hh for Fluxbox Window Manager
-// Copyright (c) 2004 Mathieu De Zutter (mathieu at dezutter.org)
+// SpacerTool.cc for Fluxbox
+// Copyright (c) 2016 Thomas Lübking <thomas.luebking@gmail.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -13,35 +13,27 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
- 
-#ifndef HEADAREA_HH
-#define HEADAREA_HH
 
-#include "FbTk/NotCopyable.hh"
-#include <memory>
-#include <list>
+#include "SpacerTool.hh"
 
-class Strut;
+SpacerTool::SpacerTool(int size):
+    ToolbarItem(size < 0 ? RELATIVE : FIXED), m_size(size) {
+}
 
-class HeadArea: private FbTk::NotCopyable {
-public:
-    HeadArea();
+SpacerTool::~SpacerTool() {
 
-    Strut *requestStrut(int head, int left, int right, int top, int bottom, Strut* next = 0);
-    void clearStrut(Strut *str);
-    bool updateAvailableWorkspaceArea();
-    const Strut *availableWorkspaceArea() const {
-        return m_available_workspace_area.get();
-    }
+}
 
-private:
-    std::unique_ptr<Strut> m_available_workspace_area;
-    std::list<Strut*> m_strutlist;
-};
+unsigned int SpacerTool::width() const {
+    return ((orientation() & 1) || m_size < 0) ? 0 : m_size;
+}
 
-#endif // HEADAREA_HH
+unsigned int SpacerTool::height() const {
+    return ((orientation() & 1) && m_size > -1) ? m_size : 0;
+}
+

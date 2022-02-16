@@ -39,6 +39,7 @@ public:
                FbTk::ThemeProxy<ButtonTheme> &theme,
                FbTk::ImageControl &img_ctrl);
     virtual ~ButtonTool();
+    void setOrientation(FbTk::Orientation orient);
 
 protected:
     void renderTheme(int alpha);

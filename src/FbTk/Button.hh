@@ -47,6 +47,7 @@ public:
     /// sets the pixmap to be viewed when the button is pressed
     virtual void setPressedPixmap(Pixmap pm);
     virtual void setPressedColor(const FbTk::Color &color);
+    bool isPressed() const { return m_pressed; }
     /// sets graphic context for drawing
     void setGC(GC gc) { m_gc = gc; }
     /// sets background pixmap, this will override background color
@@ -54,6 +55,8 @@ public:
     /// sets background color
     virtual void setBackgroundColor(const Color &color);
     virtual bool setOrientation(FbTk::Orientation orient) { return orient == FbTk::ROT0; }
+
+    virtual unsigned int preferredWidth() const { return width(); }
 
     /**
        @name eventhandlers
@@ -77,6 +80,12 @@ public:
     Pixmap pressedPixmap() const { return m_pressed_pm; }
     const Color &backgroundColor() const { return m_background_color; }
     const Color &pressedColor() const { return m_pressed_color; }
+protected:
+    RefCount<Command<void> > command(int button) const {
+        if (button < 2) return m_onclick[0];
+        if (button > 4) return m_onclick[4];
+        return m_onclick[button - 1];
+    }
 private:
     Pixmap m_background_pm; ///< background pixmap
     Color m_background_color; ///< background color

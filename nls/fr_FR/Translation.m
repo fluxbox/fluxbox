@@ -1,10 +1,10 @@
-$ codeset=ISO-8859-15
+$ codeset=UTF-8
 
 $set 1 #Align
 
 1 En bas au centre
-2 En bas à gauche
-3 En bas à droite
+2 En bas Ã  gauche
+3 En bas Ã  droite
 4 Horizontale
 5 A gauche
 6 A gauche en bas
@@ -16,32 +16,32 @@ $set 1 #Align
 12 A droite au centre
 13 A droite en haut
 14 En haut au centre
-15 En haut à gauche
-16 En haut à droite
+15 En haut Ã  gauche
+16 En haut Ã  droite
 17 Vertical
 
 $set 2 #BaseDisplay
 
-1 Interruption ...vidage de la mémoire\n
+1 Interruption ...vidage de la mÃ©moire\n
 2 Fermeture du programme\n
-3 %s:      signal %d reçus\n
+3 %s:      signal %d reÃ§us\n
 
 $set 3 #Common
 
 1 Transparence
 2 Masquer automatiquement
-3 Compilé
-4 Options compilées
+3 CompilÃ©
+4 Options compilÃ©es
 5 Compilateur
 6 Version du compilateur
-12 Défauts
-13 désactivé
+12 DÃ©fauts
+13 dÃ©sactivÃ©
 14 Erreur
 15 Version de Fluxbox
 16 Maximiser
-17 Révision GIT
+17 RÃ©vision GIT
 18 Visible
-19 Aucune option d'arrière plan n'a été spécifié dans ce style.\nVeuillez consulter le manuel ou bien liser la FAQ.
+19 Aucune option d'arriÃ¨re plan n'a Ã©tÃ© spÃ©cifiÃ© dans ce style.\nVeuillez consulter le manuel ou bien liser la FAQ.
 
 $set 4 #Configmenu
 
@@ -49,103 +49,106 @@ $set 4 #Configmenu
 2 Premier plan automatique
 3 Cliquer pour mettre au premier-plan
 4 Cliquer pour converger
-5 Décorer les fenêtres transitoires
-6 Changer de bureau à l'aide de la molette
-7 Converger la fenêtre au changement de bureau
-8 Modèle de convergence
-9 Converger sur les nouvelles fenêtres
-10 Maximisation complète
+5 DÃ©corer les fenÃªtres transitoires
+6 Changer de bureau Ã  l'aide de la molette
+7 Converger la fenÃªtre au changement de bureau
+8 ModÃ¨le de convergence
+9 Converger sur les nouvelles fenÃªtres
+10 Maximisation complÃ¨te
 11 Estompage d'images
-12 Déplacement opaque des fenêtres
+12 DÃ©placement opaque des fenÃªtres
 14 Convergence souple
-15 Glisser les fenêtres sur les autres bureaux
+15 Glisser les fenÃªtres sur les autres bureaux
 16 Forcer la pseudo-transparence
 17 Transparence du menu
 18 Transparence
-19 Fenêtre active
-20 Fenêtre passive
+19 FenÃªtre active
+20 FenÃªtre passive
 21 Options des onglets
 22 Onglets sur la barre de titre
 23 Largeur de l'onglet externe
-24 Sélectionner l'onglet par clique
-25 Sélectionner l'onglet avec la souris
+24 SÃ©lectionner l'onglet par clique
+25 SÃ©lectionner l'onglet avec la souris
 
 $set 5 #Ewmh
 
-1 Mémoire insuffisante, impossible d'allouer de la mémoire pour la liste de client EWMH
+1 MÃ©moire insuffisante, impossible d'allouer de la mÃ©moire pour la liste de client EWMH
 
 $set 6 #FbTkError
 
 1 Avertissement ! Hauteur > 3200, parametre de hauteur = 3200
-2 Avertissement ! Largeur > 3200 Paramètre de hauteur = 3200
-3 impossible de charger la police par défaut
+2 Avertissement ! Largeur > 3200 ParamÃ¨tre de hauteur = 3200
+3 impossible de charger la police par dÃ©faut
 4 Erreur d'allocation.
-5 Erreur de création du pixmap
-6 Impossible de créer XImage
-7 La lecture a échoué
+5 Erreur de crÃ©ation du pixmap
+6 Impossible de crÃ©er XImage
+7 La lecture a Ã©chouÃ©
 8 aucun format valide pour la transparence.
-9 la création de l'image alpha a échoué.
-10 la création du pixmap transparent a échoué.
-11 Impossible de trouver un format valide pour l'écran(%d)
-12 Mémoire insuffisante
-13 Mémoire insuffisante pour l'allocation du tampon bleu.
-14 Mémoire insuffisante pour l'allocation du tampon vert
-15 Mémoire insuffisante pour l'allocation du tampon rouge
-16 La lecture de l'élément du thème a échoué
-17 affichage non supporté
-18 Définition des valeurs par défaut
+9 la crÃ©ation de l'image alpha a Ã©chouÃ©.
+10 la crÃ©ation du pixmap transparent a Ã©chouÃ©.
+11 Impossible de trouver un format valide pour l'Ã©cran(%d)
+12 MÃ©moire insuffisante
+13 MÃ©moire insuffisante pour l'allocation du tampon bleu.
+14 MÃ©moire insuffisante pour l'allocation du tampon vert
+15 MÃ©moire insuffisante pour l'allocation du tampon rouge
+16 La lecture de l'Ã©lÃ©ment du thÃ¨me a Ã©chouÃ©
+17 affichage non supportÃ©
+18 DÃ©finition des valeurs par dÃ©faut
 
 $set 7 #Fluxbox
 
 1 Le fichier rc n'est pas valide !
-2 Le chargement du fichier de groupe a échoué
-3 Le chargement de la base de données a échoué
+2 Le chargement du fichier de groupe a Ã©chouÃ©
+3 Le chargement de la base de donnÃ©es a Ã©chouÃ©
 4 Nouvel essai avec
-5 Avertissement ! Impossible de trouver un écran pour y afficher la fenêtre !
-6 Impossible de créer le répertoire %s
-7 Impossible de trouver un écran à gérer.\nAssurez vous de ne pas avoir un autre gestionnaire de fenêtre en cour d'execution.
-8 Erreur lors de l'analyse de l'expression regulière
+5 Avertissement ! Impossible de trouver un Ã©cran pour y afficher la fenÃªtre !
+6 Impossible de crÃ©er le rÃ©pertoire %s
+7 Impossible de trouver un Ã©cran Ã  gÃ©rer.\nAssurez vous de ne pas avoir un autre gestionnaire de fenÃªtre en cour d'execution.
+8 Erreur lors de l'analyse de l'expression reguliÃ¨re
 9 Erreur fatale ! Il ne doit y avoir qu'une seule instance de fluxbox !
-10 Impossible de se connecter au serveur X.\nAssurez vous d'avoir démarrer X avant Fluxbox.
+10 Impossible de se connecter au serveur X.\nAssurez vous d'avoir dÃ©marrer X avant Fluxbox.
 11 X ne prends pas en charge la locale
-12 impossible de définir les modificateurs de locale
+12 impossible de dÃ©finir les modificateurs de locale
 
 $set 8 #Gnome
 
-1 Mémoire insuffisante, impossible d'allouer de la mémoire pour la liste de client GNOME
+1 MÃ©moire insuffisante, impossible d'allouer de la mÃ©moire pour la liste de client GNOME
 
 $set 9 #Keys
 
+1 Keys: Erreur Ã  la ligne
+2 Keys: Impossible de fusionner l'arbre des clÃ©s!
+3 Keys: ClÃ©/valeur invalidÃ© Ã  la ligne
 
 $set 10 #Menu
 
-2 Menu par défaut de Fluxbox
+2 Menu par dÃ©faut de Fluxbox
 3 Quitter
-4 Icônes
+4 IcÃ´nes
 5 Empiler...
-6 Sur l'en-tête
+6 Sur l'en-tÃªte
 7 Disposition
 8 Recharger la configuration
-9 Redémarrer
+9 RedÃ©marrer
 
 $set 11 #Remember
 
-1 la décoration
+1 la dÃ©coration
 2 la dimension
 3 passage au bureau
 4 l'empilage
-5 Mémoriser...
+5 MÃ©moriser...
 6 la position
 7 enregistrer en quittant
 8 l'ombrage
 9 le collage
 10 Raccourcis d'application inconnu
 11 le bureau
-12 l'en-tête
+12 l'en-tÃªte
 
 $set 12 #Screen
 
-1 BScreen::BScreen: une erreur est survenue en interrogeant le serveur X.\n Un autre gestionnaire de fenêtre est en cours d'exécution sur l'affichage
+1 BScreen::BScreen: une erreur est survenue en interrogeant le serveur X.\n Un autre gestionnaire de fenÃªtre est en cours d'exÃ©cution sur l'affichage
 2 L: %4d x H: %4d
 3 BScreen::BScreen: gestion de l'ecran %d utilisant l'affichage 0x%lx, de profondeur %d\n
 
@@ -162,14 +165,14 @@ $set 13 #Slit
 $set 14 #Toolbar
 
 1 Editer le nom du bureau
-2 Mode d'icônification
-3 Toutes les fenêtres
-4 Icônes
+2 Mode d'icÃ´nification
+3 Toutes les fenÃªtres
+4 IcÃ´nes
 5 Aucun
 6 Bureau
-7 Icônes du bureau
+7 IcÃ´nes du bureau
 8 Empiler la barre d'outils
-9 Barre d'outils de l'en-tête
+9 Barre d'outils de l'en-tÃªte
 10 Disposition de la barre d'outils
 11 Barre d'outils
 12 Taille de la barre
@@ -177,8 +180,8 @@ $set 14 #Toolbar
 14 Horloge: 12h
 15 Format de l'heure
 16 Voir les images
-17 Sans icône
-18 Bureau sans icône
+17 Sans icÃ´ne
+18 Bureau sans icÃ´ne
 
 $set 15 #Window
 
@@ -187,12 +190,12 @@ $set 15 #Window
 $set 16 #Windowmenu
 
 1 Fermer
-2 Icônifier
+2 IcÃ´nifier
 3 Empilage
-4 Arrière-plan
+4 ArriÃ¨re-plan
 5 Agrandir
 6 Avant-plan
-7 Déplacer
+7 DÃ©placer
 8 Ombrer
 9 Coller
 10 Tuer
@@ -207,43 +210,43 @@ $set 17 #Workspace
 $set 18 #fbsetroot
 
 1 -solid, -mod, -gradient\n
-2 Impossible de créer des atomes de pixmap, abandon !
-3 -display <chaîne>           connexion sur l'affichage\n\
+2 Impossible de crÃ©er des atomes de pixmap, abandon !
+3 -display <chaÃ®ne>           connexion sur l'affichage\n\
 -mod <x> <y>                motif de modula\n\
 -foreground, -fg <couleur>  couleur du premier plan de modula\n\
 -background, -bg <couleur>  couleur du second plan de modula\n\n\
--gradient <texture>         texture du dégradé\n\
--from <couleur>             couleur de départ du dégradé\n\
--to <couleur>               couleur d'arrivé du dégradé\n\n\
+-gradient <texture>         texture du dÃ©gradÃ©\n\
+-from <couleur>             couleur de dÃ©part du dÃ©gradÃ©\n\
+-to <couleur>               couleur d'arrivÃ© du dÃ©gradÃ©\n\n\
 -solid <couleur>            couleur pleine\n\n\
 -help                       affiche ce texte d'aide et quitte\n
 
 $set 19 #main
 
-1 '-display' nécessite un argument\n
+1 '-display' nÃ©cessite un argument\n
 2 Mauvaise allocation
 3 Mauvais transtypage
 4 Hors des limites
-5 Erreur d'exécution
+5 Erreur d'exÃ©cution
 6 Exception standard
 7 Erreur inconnue
-8 erreur: '-log' nécessite un argument
+8 erreur: '-log' nÃ©cessite un argument
 9 Journal
 10 Enregistrement du journal vers
-11 erreur: '-rc' nécessite un argument
-12 erreur: 'screen' nécessite un argument
+11 erreur: '-rc' nÃ©cessite un argument
+12 erreur: 'screen' nÃ©cessite un argument
 13 Fluxbox %s: (c) %s Fluxbox Team\n\
 Website: http://www.fluxbox.org/\n\n\
--display <chaîne de caractere>\t\utilise la connexion sur le display\
--screen <tous|entier,entier,entier>\tfonctionne uniquement sur un écran spécifique\
--no-slit\t\t\tdo not provide a slit.\n\
--no-toolbar\t\t\tdo not provide a toolbar.\n\
--rc <chaîne>\t\t\tutilise un autre fichier de configuration.\n\
+-display <chaÃ®ne de caractÃ¨res>\t\utilise la connexion sur le display.\n\
+-screen <tous|entier,entier,entier>\tfonctionne uniquement sur un Ã©cran spÃ©cifique.\n\
+-no-slit\t\t\tne pas fournir de slit.\n\
+-no-toolbar\t\tne pas fournir de toolbar.\n\
+-rc <chaÃ®ne de caractÃ¨res>\t\t\tutilise un autre fichier de configuration.\n\
 -version\t\t\taffiche la version et quitte.\n\
 -info\t\t\t\taffiche quelques informations utiles.\n\
--list-commands\t\t\tlist all valid key commands.\n\
--sync\t\t\t\tsynchronize with X server for debugging.\n\
--log <filename>\t\t\tjournaliser la sortie vers le fichier.\n\
+-list-commands\t\t\tafficher la liste de toutes les commandes valides.\n\
+-sync\t\t\t\tse synchroniser avec le serveur X pour dÃ©bugger.\n\
+-log <nom de fichier>\t\t\tjournaliser la sortie vers le fichier.\n\
 -help\t\t\t\taffiche ce texte d'aide et quitte.\n\n
 14 attention: il n'est pas possible de placer la variable 'DISPLAY'
 

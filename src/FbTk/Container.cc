@@ -23,12 +23,14 @@
 #include "Container.hh"
 
 #include "Button.hh"
+#include "TextButton.hh"
 #include "TextUtils.hh"
 #include "EventManager.hh"
 #include "CompareEqual.hh"
 #include "STLUtil.hh"
 
 #include <algorithm>
+#include <vector>
 
 namespace FbTk {
 
@@ -304,7 +306,7 @@ void Container::repositionItems() {
 
     unsigned int max_width_per_client = maxWidthPerClient();
     unsigned int borderW = m_item_list.front()->borderWidth();
-    size_t num_items = m_item_list.size();
+    const size_t num_items = m_item_list.size();
 
     unsigned int total_width;
     unsigned int cur_width;
@@ -322,7 +324,7 @@ void Container::repositionItems() {
     // if we have a max total size, then we must also resize ourself
     // within that bound
     Alignment align = alignment();
-    if (m_max_total_size && align != RELATIVE) {
+    if (m_max_total_size && (align != RELATIVE && align != RELATIVE_SMART)) {
         total_width = (max_width_per_client + borderW) * num_items - borderW;
         if (total_width > m_max_total_size) {
             total_width = m_max_total_size;
@@ -364,10 +366,6 @@ void Container::repositionItems() {
 
     int rounding_error = 0;
 
-    if (align == RELATIVE || total_width == m_max_total_size) {
-        rounding_error = total_width - ((max_width_per_client + borderW)* num_items - borderW);
-    }
-
     int next_x = -borderW; // zero so the border of the first shows
     int extra = 0;
     int direction = 1;
@@ -378,7 +376,54 @@ void Container::repositionItems() {
 
     int tmpx, tmpy;
     unsigned int tmpw, tmph;
-    for (; it != it_end; ++it, next_x += direction*(max_width_per_client + borderW + extra)) {
+    unsigned int totalDemands = 0;
+    std::vector<unsigned int> buttonDemands;
+
+    if (align == RELATIVE_SMART && total_width == m_max_total_size) {
+        buttonDemands.reserve(num_items);
+        for (it = begin(); it != it_end; ++it) {
+            buttonDemands.push_back((*it)->preferredWidth());
+            totalDemands += buttonDemands.back();
+        }
+        if (totalDemands) {
+            int overhead = totalDemands - total_width;
+            if (overhead > int(buttonDemands.size())) {
+                // try to be fair. If we're short on space and some items
+                // take > 150% of the average, we preferably shrink them, so
+                // "a" and "a very long item with useless information" won't
+                // become "a very long item with" and ""
+                overhead += buttonDemands.size(); // compensate forrounding errors
+                const int mean = totalDemands / buttonDemands.size();
+                const int thresh = 3 * mean / 2;
+                int greed = 0;
+                for (int i = 0; i < buttonDemands.size(); ++i) {
+                    if (buttonDemands.at(i) > thresh)
+                        greed += buttonDemands.at(i);
+                }
+                if (greed) {
+                    for (int i = 0; i < buttonDemands.size(); ++i) {
+                        if (buttonDemands.at(i) > thresh) {
+                            int d = buttonDemands.at(i)*overhead/greed;
+                            if (buttonDemands.at(i) > mean + d) {
+                                buttonDemands.at(i) -= d;
+                            } else { // do not shrink below mean or a huge item number would super-punish larger ones
+                                d = buttonDemands.at(i) - mean;
+                                buttonDemands.at(i) = mean;
+                            }
+                            totalDemands -= d;
+                        }
+                    }
+                }
+            }
+            rounding_error = total_width;
+            for (int i = 0; i < buttonDemands.size(); ++i) {
+                rounding_error -= buttonDemands.at(i)*total_width/totalDemands;
+            }
+        }
+    }
+
+    it = begin();
+    for (int i = 0; it != it_end; ++it, ++i) {
         // we only need to do error stuff with alignment RELATIVE
         // OR with max_total_size triggered
         if (rounding_error) {
@@ -395,8 +440,13 @@ void Container::repositionItems() {
         // rotate the x and y coords
         tmpx = next_x;
         tmpy = -borderW;
-        tmpw = max_width_per_client + extra;
+        if ((align == RELATIVE || align == RELATIVE_SMART) && totalDemands) {
+            tmpw = buttonDemands.at(i)*total_width/totalDemands + extra;
+        } else {
+            tmpw = max_width_per_client + extra;
+        }
         tmph = height;
+        next_x += direction*(tmpw + borderW);
 
         translateCoords(m_orientation, tmpx, tmpy, total_width, height);
         translatePosition(m_orientation, tmpx, tmpy, tmpw, tmph, borderW);
@@ -419,6 +469,7 @@ unsigned int Container::maxWidthPerClient() const {
     case LEFT:
         return m_max_size_per_client;
         break;
+    case RELATIVE_SMART:
     case RELATIVE:
         if (size() == 0)
             return width();

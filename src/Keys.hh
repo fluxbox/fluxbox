@@ -53,7 +53,10 @@ public:
         ON_LEFTGRIP =       1 << 7,
         ON_RIGHTGRIP =      1 << 8,
         ON_TAB =            1 << 9,
-        ON_SLIT =           1 << 10
+        ON_SLIT =           1 << 10,
+        ON_WINBUTTON =      1 << 11,
+        ON_MINBUTTON =      1 << 12,
+        ON_MAXBUTTON =      1 << 13
         // and so on...
     };
 

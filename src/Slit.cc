@@ -36,11 +36,13 @@
 #include "FbTk/MemFun.hh"
 
 #include "FbCommands.hh"
+#include "Keys.hh"
 #include "Layer.hh"
 #include "LayerMenu.hh"
 #include "FbTk/Layer.hh"
 #include "RootTheme.hh"
 #include "FbMenu.hh"
+#include "fluxbox.hh"
 
 #include "SlitTheme.hh"
 #include "SlitClient.hh"
@@ -207,7 +209,7 @@ unsigned int Slit::s_eventmask = SubstructureRedirectMask |  ButtonPressMask |
                                  EnterWindowMask | LeaveWindowMask | ExposureMask;
 
 Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
-    : m_hidden(false), m_visible(false),
+    : m_hidden(false), m_visible(false), m_pending_reconfigure(false),
       m_screen(scr),
       m_clientlist_menu(scr.menuTheme(),
                         scr.imageControl(),
@@ -225,8 +227,6 @@ Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
       m_kwm2_dockwindow(XInternAtom(FbTk::App::instance()->display(),
                                     "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False)), //KDE v2.x
 
-      m_layeritem(0),
-
       m_slit_theme(new SlitTheme(scr.rootWindow().screenNumber())),
       m_strut(0),
       // resources
@@ -235,6 +235,8 @@ Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
                        scr.name() + ".slit.acceptKdeDockapps", scr.altName() + ".Slit.AcceptKdeDockapps"),
       m_rc_auto_hide(scr.resourceManager().lock(), false,
                      scr.name() + ".slit.autoHide", scr.altName() + ".Slit.AutoHide"),
+      m_rc_auto_raise(scr.resourceManager().lock(), false,
+                     scr.name() + ".slit.autoRaise", scr.altName() + ".Slit.AutoRaise"),
       // TODO: this resource name must change
       m_rc_maximize_over(scr.resourceManager(), false,
                          scr.name() + ".slit.maxOver", scr.altName() + ".Slit.MaxOver"),
@@ -270,11 +272,13 @@ Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
     // setup timer
     m_timer.setTimeout(200L * FbTk::FbTime::IN_MILLISECONDS); // default timeout
     m_timer.fireOnce(true);
-    FbTk::RefCount<FbTk::Command<void> > toggle_hidden(new FbTk::SimpleCommand<Slit>(*this, &Slit::toggleHidden));
-    m_timer.setCommand(toggle_hidden);
+    FbTk::RefCount<FbTk::Command<void> > ucs(new FbTk::SimpleCommand<Slit>(*this, &Slit::updateCrossingState));
+    m_timer.setCommand(ucs);
 
 
     FbTk::EventManager::instance()->add(*this, frame.window);
+    FbTk::EventManager::instance()->addParent(*this, window());
+    Fluxbox::instance()->keys()->registerWindow(window().window(), *this, Keys::ON_SLIT);
 
     if (FbTk::Transparent::haveComposite()) {
         frame.window.setOpaque(*m_rc_alpha);
@@ -565,6 +569,12 @@ void Slit::removeClient(Window w, bool remap) {
 
 void Slit::reconfigure() {
 
+    bool allow_autohide = true;
+    if (m_hidden)
+        m_pending_reconfigure = true;
+    else if (m_pending_reconfigure)
+        allow_autohide = false; // this is for a pending one, triggerd by unhide
+
     frame.width = 0;
     frame.height = 0;
 
@@ -720,7 +730,7 @@ void Slit::reconfigure() {
             x += (*client_it)->width() + bevel_width;
     } // end for
 
-    if (doAutoHide() && !isHidden() && !m_timer.isTiming())
+    if (allow_autohide && doAutoHide() && !isHidden() && !m_timer.isTiming())
         m_timer.start();
     else if (!doAutoHide() && isHidden())
         toggleHidden(); // restore visible
@@ -937,51 +947,76 @@ void Slit::handleEvent(XEvent &event) {
 }
 
 void Slit::buttonPressEvent(XButtonEvent &be) {
-    if (be.window != frame.window.window())
-        return;
+    Display *dpy = Fluxbox::instance()->display();
+    const bool myMenuWasVisible = m_slitmenu.isVisible();
 
-    if (be.button == Button3) {
-        if (! m_slitmenu.isVisible()) {
-            screen().placementStrategy()
-                .placeAndShowMenu(m_slitmenu, be.x_root, be.y_root, false);
-        } else
-            m_slitmenu.hide();
+    FbTk::Menu::hideShownMenu();
+
+    if (Fluxbox::instance()->keys()->doAction(be.type, be.state, be.button,
+                                              Keys::ON_SLIT, 0, be.time)) {
+        XAllowEvents(dpy, SyncPointer, CurrentTime);
+        return;
     }
+
+    if (be.button == 1)
+        frame.window.raise();
+
+    if (be.button != Button3) {
+        XAllowEvents(dpy, ReplayPointer, CurrentTime);
+        return;
+    }
+
+    XAllowEvents(dpy, SyncPointer, CurrentTime);
+    if (!myMenuWasVisible)
+        screen().placementStrategy().placeAndShowMenu(m_slitmenu, be.x_root, be.y_root, false);
 }
 
 
-void Slit::enterNotifyEvent(XCrossingEvent &) {
-    if (! doAutoHide())
-        return;
+void Slit::updateCrossingState() {
+    Window wr, wc;
+    int rx, ry, x, y;
+    unsigned int mask;
+    const int bw = -theme()->borderWidth();
+    bool hovered = false;
+    if (XQueryPointer(Fluxbox::instance()->display(), window().window(), &wr, &wc, &rx, &ry, &x, &y, &mask))
+        hovered = x >= bw && y >= bw && x < int(width()) && y < int(height());
 
-    if (isHidden()) {
-        if (! m_timer.isTiming())
-            m_timer.start();
+    if (hovered) {
+        if (m_rc_auto_raise)
+            m_layeritem->moveToLayer(ResourceLayer::ABOVE_DOCK);
+        if (m_rc_auto_hide && isHidden())
+            toggleHidden();
     } else {
-        if (m_timer.isTiming())
-            m_timer.stop();
+        if (m_rc_auto_hide && !isHidden())
+            toggleHidden();
+        if (m_rc_auto_raise)
+            m_layeritem->moveToLayer(m_rc_layernum->getNum());
     }
 }
 
+void Slit::enterNotifyEvent(XCrossingEvent &ce) {
+    Fluxbox::instance()->keys()->doAction(ce.type, ce.state, 0, Keys::ON_SLIT);
 
-void Slit::leaveNotifyEvent(XCrossingEvent &ev) {
-    if (! doAutoHide())
+    if (!m_rc_auto_hide && isHidden()) {
+        toggleHidden();
+    }
+
+    if (!m_timer.isTiming() && (m_rc_auto_hide && isHidden()) ||
+       (m_rc_auto_raise && m_layeritem->getLayerNum() != ResourceLayer::ABOVE_DOCK))
+        m_timer.start();
+}
+
+void Slit::leaveNotifyEvent(XCrossingEvent &event) {
+    if (m_slitmenu.isVisible())
         return;
 
-    if (isHidden()) {
-        if (m_timer.isTiming())
-            m_timer.stop();
-    } else {
-        if (! m_timer.isTiming()) {
-            // the menu is open, keep it firing until it closes
-            if (m_slitmenu.isVisible())
-                m_timer.fireOnce(false);
-            m_timer.start();
-        }
-    }
+    if (!m_timer.isTiming() && (m_rc_auto_hide && !isHidden()) ||
+       (m_rc_auto_raise && m_layeritem->getLayerNum() != m_rc_layernum->getNum()))
+        m_timer.start();
 
+    if (!isHidden())
+        Fluxbox::instance()->keys()->doAction(event.type, event.state, 0, Keys::ON_SLIT);
 }
-
 
 void Slit::configureRequestEvent(XConfigureRequestEvent &event) {
     bool reconf = false;
@@ -1036,21 +1071,23 @@ void Slit::clearWindow() {
 }
 
 void Slit::toggleHidden() {
-    if (doAutoHide()) {
-        if (!m_slitmenu.isVisible()) {
-            m_timer.fireOnce(true);
-        } else {
-            return;
-        }
-    //} else if (!isHidden()) {
-    //    return;
-    }
-
     m_hidden = ! m_hidden; // toggle hidden state
     if (isHidden())
         frame.window.move(frame.x_hidden, frame.y_hidden);
-    else
+    else {
         frame.window.move(frame.x, frame.y);
+        if (m_pending_reconfigure) {
+            reconfigure();
+            m_pending_reconfigure = false;
+        }
+    }
+}
+
+void Slit::toggleAboveDock() {
+    if (m_layeritem->getLayerNum() == m_rc_layernum->getNum())
+        m_layeritem->moveToLayer(ResourceLayer::ABOVE_DOCK);
+    else
+        m_layeritem->moveToLayer(m_rc_layernum->getNum());
 }
 
 void Slit::loadClientList(const char *filename) {
@@ -1188,6 +1225,9 @@ void Slit::setupMenu() {
 
     m_slitmenu.insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Common, AutoHide, "Auto hide", "This thing automatically hides when not close by"),
                                        m_rc_auto_hide,
+                                       save_and_reconfigure_slit));
+    m_slitmenu.insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Common, AutoRaise, "Auto raise", "This thing automatically raises when entered"),
+                                       m_rc_auto_raise,
                                        save_and_reconfigure_slit));
 
     m_slitmenu.insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,"Maximize Over", "Maximize over this thing when maximizing"),

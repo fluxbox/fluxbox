@@ -56,6 +56,18 @@ class ImageControl;
 class Layer;
 }
 
+namespace Focus {
+    enum {
+        NoProtection = 0,
+        Gain = 1,
+        Refuse = 2,
+        Lock = 4,
+        Deny = 8
+    };
+    typedef unsigned int Protection;
+}
+
+
 /// Creates the window frame and handles any window event for it
 class FluxboxWindow: public Focusable,
                      public FbTk::EventHandler,
@@ -255,7 +267,14 @@ public:
     /// sets the window icon hidden state
     void setIconHidden(bool value);
     /// sets whether or not the window normally gets focus when mapped
-    void setFocusNew(bool value) { m_focus_new = value; }
+    void setFocusNew(bool value) {
+        if (value)
+            m_focus_protection = (m_focus_protection & ~Focus::Refuse) | Focus::Gain;
+        else
+            m_focus_protection = (m_focus_protection & ~Focus::Gain) | Focus::Refuse;
+    }
+    /// sets how to protect the focus on or against this window
+    void setFocusProtection(Focus::Protection value) { m_focus_protection = value; }
     /// sets whether or not the window gets focused with mouse
     void setMouseFocus(bool value) { m_mouse_focus = value; }
     /// sets whether or not the window gets focused with click
@@ -383,7 +402,8 @@ public:
     bool isClosable() const { return functions.close; }
     bool isMoveable() const { return functions.move; }
     bool isStuck() const { return m_state.stuck; }
-    bool isFocusNew() const { return m_focus_new; }
+    bool isFocusNew() const;
+    Focus::Protection focusProtection() const { return m_focus_protection; }
     bool hasTitlebar() const { return decorations.titlebar; }
     bool isMoving() const { return moving; }
     bool isResizing() const { return resizing; }
@@ -502,12 +522,13 @@ private:
     void attachWorkAreaSig();
 
     // modifies left and top if snap is necessary
-    void doSnapping(int &left, int &top);
+    void doSnapping(int &left, int &top, bool resize = false);
     // user_w/h return the values that should be shown to the user
     void fixSize();
     void moveResizeClient(WinClient &client);
     /// sends configurenotify to all clients
     void sendConfigureNotify();
+    void updateResize() { moveResize(m_last_resize_x, m_last_resize_y, m_last_resize_w, m_last_resize_h); }
 
     static void grabPointer(Window grab_window,
                      Bool owner_events,
@@ -532,6 +553,8 @@ private:
     uint64_t m_creation_time;
     uint64_t m_last_keypress_time;
     FbTk::Timer m_timer;
+    FbTk::Timer m_tabActivationTimer;
+    FbTk::Timer m_resizeTimer;
 
     // Window states
     bool moving, resizing, m_initialized;
@@ -544,6 +567,7 @@ private:
     int m_last_resize_x, m_last_resize_y; // handles last button press event for resize
     int m_last_move_x, m_last_move_y; // handles last pos for non opaque moving
     int m_last_resize_h, m_last_resize_w; // handles height/width for resize "window"
+    int resize_base_x, resize_base_y, resize_base_w, resize_base_h; // opaque and transparent resize alignment
     int m_last_pressed_button;
 
     unsigned int m_workspace_number;
@@ -555,6 +579,9 @@ private:
     WinClient *m_client; ///< current client
     typedef std::map<WinClient *, IconButton *> Client2ButtonMap;
     Client2ButtonMap m_labelbuttons;
+    FbTk::Timer m_reposLabels_timer;
+    void emitLabelReposSig();
+    bool m_has_tooltip;
 
     SizeHints m_size_hint;
     struct {
@@ -571,7 +598,8 @@ private:
 
     typedef FbTk::ConstObjectAccessor<bool, FocusControl> BoolAcc;
     /// if the window is normally focused when mapped
-    FbTk::DefaultValue<bool, BoolAcc> m_focus_new;
+    /// special focus permissions
+    Focus::Protection m_focus_protection;
     /// if the window is focused with EnterNotify
     FbTk::DefaultValue<bool, BoolAcc> m_mouse_focus;
     bool m_click_focus;  ///< if the window is focused by clicking

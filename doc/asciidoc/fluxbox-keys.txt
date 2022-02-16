@@ -62,6 +62,9 @@ There are also some special modifiers that refer to mouse button events:::
 *OnToolbar*;;
 	The mouse cursor is over the toolbar (which is normally at the bottom
 	of the screen).
+*OnSlit*;;
+	The mouse cursor is over the mystic slit (the thing that collects dock type
+	windows).
 *OnWindow*;;
 	The mouse cursor is over a window.
 *OnTitlebar*;;
@@ -359,6 +362,8 @@ called).
 	offset value 'n', which defaults to *1* and refers to the number of
 	workspaces to move at one time. {Next,Prev}Workspace wrap around when
 	going past the last workspace, whereas {Right,Left}Workspace do not.
+	The special offset "0" will toggle the former workspace for Next- and
+	PrevWorkspace
 
 *Workspace* 'number'::
 	Jumps to the given workspace 'number'. The first workspace is *1*.
@@ -434,9 +439,26 @@ doing so.
   *ArrangeWindowsStackTop* places the main window on the BOTTOM half of the
   screen and the tiled windows on the top half of the screen.
 
+*Unclutter* 'pattern'::
+    Arrange all matching windows to reduce the overall window overlap as much
+    as possible. Windows are not resized.
+    See *CLIENT PATTERNS* for more about the 'pattern' arguments.
+
 *ShowDesktop*::
 	Minimizes all windows on the current workspace. If they are already all
 	minimized, then it restores them.
+
+*ToggleSlitAbove*::
+	Toggles the slit between its regular and the AboveDock layer
+
+*ToggleSlitHidden*::
+	Toggles the slit's autohiding state (autohide doesn't have to be enabled)
+
+*ToggleToolbarAbove*::
+	Toggles the toolbar between its regular and the AboveDock layer
+
+*ToggleToolbarHidden*::
+	Toggles the toolbar's autohiding state (autohide doesn't have to be enabled)
 
 *Deiconify* 'mode' 'destination'::
 Deiconifies windows (or, restores from a minimized state).

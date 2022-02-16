@@ -31,6 +31,7 @@
 #include "Keys.hh"
 #include "Screen.hh"
 #include "ScreenPlacement.hh"
+#include "SystemTray.hh"
 #include "WindowCmd.hh"
 
 #include "Strut.hh"
@@ -194,6 +195,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::Layer &layer, size_t width):
     // lock rcmanager here
     m_rc_auto_hide(scrn.resourceManager().lock(), false,
                    scrn.name() + ".toolbar.autoHide", scrn.altName() + ".Toolbar.AutoHide"),
+    m_rc_auto_raise(scrn.resourceManager().lock(), false,
+                   scrn.name() + ".toolbar.autoRaise", scrn.altName() + ".Toolbar.AutoRaise"),
     m_rc_maximize_over(scrn.resourceManager(), false,
                        scrn.name() + ".toolbar.maxOver", scrn.altName() + ".Toolbar.MaxOver"),
     m_rc_visible(scrn.resourceManager(), true, scrn.name() + ".toolbar.visible", scrn.altName() + ".Toolbar.Visible"),
@@ -248,8 +251,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::Layer &layer, size_t width):
 
     // setup hide timer
     m_hide_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay() * FbTk::FbTime::IN_MILLISECONDS);
-    FbTk::RefCount<FbTk::Command<void> > toggle_hidden(new FbTk::SimpleCommand<Toolbar>(*this, &Toolbar::toggleHidden));
-    m_hide_timer.setCommand(toggle_hidden);
+    FbTk::RefCount<FbTk::Command<void> > ucs(new FbTk::SimpleCommand<Toolbar>(*this, &Toolbar::updateCrossingState));
+    m_hide_timer.setCommand(ucs);
     m_hide_timer.fireOnce(true);
 
 
@@ -362,6 +365,12 @@ void Toolbar::screenChanged(BScreen &screen) {
     reconfigure();
 }
 
+void Toolbar::relayout() {
+    forAll(m_item_list, std::mem_fun(&ToolbarItem::updateSizing));
+    rearrangeItems();
+    forAll(m_item_list, std::bind2nd(std::mem_fun(&ToolbarItem::renderTheme), alpha()));
+}
+
 void Toolbar::reconfigure() {
 
     updateVisibleState();
@@ -402,6 +411,7 @@ void Toolbar::reconfigure() {
 
         // destroy tools and rebuild them
         deleteItems();
+        screen().clearToolButtonMap();
         // they will be readded later
         menu().removeAll();
         setupMenus(true); // rebuild menu but skip rebuild of placement menu
@@ -487,11 +497,7 @@ void Toolbar::reconfigure() {
     if (theme()->shape() && m_shape.get())
         m_shape->update();
 
-    forAll(m_item_list, std::mem_fun(&ToolbarItem::updateSizing));
-
-    rearrangeItems();
-
-    forAll(m_item_list, std::bind2nd(std::mem_fun(&ToolbarItem::renderTheme), alpha()));
+    relayout();
 
     // we're done with all resizing and stuff now we can request a new
     // area to be reserved on screen
@@ -507,63 +513,92 @@ void Toolbar::reconfigure() {
 
 
 void Toolbar::buttonPressEvent(XButtonEvent &be) {
+    Display *dpy = Fluxbox::instance()->display();
+
+    FbTk::Menu::hideShownMenu();
+
+    if (be.subwindow) {
+        // Do not intercept mouse events that are meant for the tray icon
+        if (SystemTray::doesControl(be.subwindow)) {
+            XAllowEvents(dpy, ReplayPointer, CurrentTime);
+            return;
+        }
+#if 0
+        // Unfortunately, the subwindow isn't exactly a reliable source here, so
+        // we COULD query the pointer (what will usually return the systray itself) and
+        // check that as well. NOTICE that due to the async nature of X11, the
+        // pointer might have moved and the result isn't correct either.
+        Window wr, wc; int junk; unsigned int ujunk;
+        XQueryPointer(dpy, be.window, &wr, &wc, &junk, &junk, &junk, &junk, &ujunk);
+        if (SystemTray::doesControl(wc)) {
+            XAllowEvents(dpy, ReplayPointer, CurrentTime);
+            return;
+        }
+#endif
+    }
+
     if (Fluxbox::instance()->keys()->doAction(be.type, be.state, be.button,
-                                              Keys::ON_TOOLBAR, 0, be.time))
+                                              Keys::ON_TOOLBAR, 0, be.time)) {
+        XAllowEvents(dpy, SyncPointer, CurrentTime);
         return;
+    }
 
     if (be.button == 1)
         raise();
-    if (be.button != 2)
+    if (be.button != 2 || be.subwindow) { // only handle direct toolbar MMBs
+        XAllowEvents(dpy, ReplayPointer, CurrentTime);
         return;
+    }
 
+    XAllowEvents(dpy, SyncPointer, CurrentTime);
     screen()
         .placementStrategy()
         .placeAndShowMenu(menu(), be.x_root, be.y_root, false);
 }
 
-void Toolbar::enterNotifyEvent(XCrossingEvent &ce) {
-    Fluxbox::instance()->keys()->doAction(ce.type, ce.state, 0,
-                                          Keys::ON_TOOLBAR);
-
-    if (! doAutoHide()) {
-        if (isHidden())
+void Toolbar::updateCrossingState() {
+    Window wr, wc;
+    int rx, ry, x, y;
+    unsigned int mask;
+    const int bw = -theme()->border().width();
+    bool hovered = false;
+    if (XQueryPointer(Fluxbox::instance()->display(), window().window(), &wr, &wc, &rx, &ry, &x, &y, &mask))
+        hovered = x >= bw && y >= bw && x < int(width()) && y < int(height());
+    if (hovered) {
+        if (m_rc_auto_raise)
+            m_layeritem.moveToLayer(ResourceLayer::ABOVE_DOCK);
+        if (m_rc_auto_hide && isHidden())
             toggleHidden();
-        return;
+    } else {
+        if (m_rc_auto_hide && !isHidden())
+            toggleHidden();
+        if (m_rc_auto_raise)
+            m_layeritem.moveToLayer(m_rc_layernum->getNum());
+    }
+}
+
+void Toolbar::enterNotifyEvent(XCrossingEvent &ce) {
+    Fluxbox::instance()->keys()->doAction(ce.type, ce.state, 0, Keys::ON_TOOLBAR);
+
+    if (!m_rc_auto_hide && isHidden()) {
+        toggleHidden();
     }
 
-    if (isHidden()) {
-        if (! m_hide_timer.isTiming())
-            m_hide_timer.start();
-    } else {
-        if (m_hide_timer.isTiming())
-            m_hide_timer.stop();
-    }
+    if ((m_rc_auto_hide || m_rc_auto_raise) && !m_hide_timer.isTiming())
+        m_hide_timer.start();
 }
 
 void Toolbar::leaveNotifyEvent(XCrossingEvent &event) {
 
-    // in autoHide mode we'll receive a leaveNotifyEvent when activating
-    // the toolbar. so check if we are still inside the toolbar area.
-    // event.subwindow gets != None if we really left the window (eg the Slit
-    // was entered ontop of the toolbar)
-    if (event.x_root > x() && event.x_root <= (int)(x() + width()) &&
-        event.y_root > y() && event.y_root <= (int)(y() + height()) && 
-        event.subwindow == None ) {
-        return;
-    }
-
-    Fluxbox::instance()->keys()->doAction(event.type, event.state, 0,
-                                          Keys::ON_TOOLBAR);
-
-    if (! doAutoHide())
+    if (menu().isVisible())
         return;
 
-    if (isHidden()) {
-        if (m_hide_timer.isTiming())
-            m_hide_timer.stop();
-    } else if (! menu().isVisible() && ! m_hide_timer.isTiming())
+    if (!m_hide_timer.isTiming() && (m_rc_auto_hide && !isHidden()) ||
+       (m_rc_auto_raise && m_layeritem.getLayerNum() != m_rc_layernum->getNum()))
         m_hide_timer.start();
 
+    if (!isHidden())
+        Fluxbox::instance()->keys()->doAction(event.type, event.state, 0, Keys::ON_TOOLBAR);
 }
 
 
@@ -719,6 +754,13 @@ void Toolbar::toggleHidden() {
 
 }
 
+void Toolbar::toggleAboveDock() {
+    if (m_layeritem.getLayerNum() == m_rc_layernum->getNum())
+        m_layeritem.moveToLayer(ResourceLayer::ABOVE_DOCK);
+    else
+        m_layeritem.moveToLayer(m_rc_layernum->getNum());
+}
+
 void Toolbar::moveToLayer(int layernum) {
     m_layeritem.moveToLayer(layernum);
     *m_rc_layernum = layernum;
@@ -754,6 +796,10 @@ void Toolbar::setupMenus(bool skip_new_placement) {
     menu().insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Common, AutoHide,
                                              "Auto hide", "Toggle auto hide of toolbar"),
                                    m_rc_auto_hide,
+                                   reconfig_toolbar_and_save_resource));
+    menu().insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Common, AutoRaise,
+                                             "Auto raise", "Toggle auto raise of toolbar"),
+                                   m_rc_auto_raise,
                                    reconfig_toolbar_and_save_resource));
 
     MenuItem *toolbar_menuitem =
@@ -868,6 +914,8 @@ void Toolbar::rearrangeItems() {
     ItemList::iterator item_it_end = m_item_list.end();
     int bevel_width = theme()->bevelWidth();
     int fixed_width = bevel_width; // combined size of all fixed items
+    int relative_width = 0; // combined *desired* size of all relative items
+    int stretch_items = 0;
     int relative_items = 0;
     int last_bw = 0; // we show the largest border of adjoining items
     bool first = true;
@@ -895,7 +943,7 @@ void Toolbar::rearrangeItems() {
 
         last_bw = borderW;
 
-        tmpw = (*item_it)->width();
+        tmpw = (*item_it)->preferredWidth();
         tmph = (*item_it)->height();
         FbTk::translateSize(orient, tmpw, tmph);
 
@@ -906,18 +954,22 @@ void Toolbar::rearrangeItems() {
             if (bevel_width)
                 fixed_width -= 2*(borderW + bevel_width);
         } else {
-            relative_items++;
+            ++relative_items;
+            relative_width += tmpw;
+            if (!tmpw)
+                ++stretch_items;
         }
     }
 
     // calculate what's going to be left over to the relative sized items
-    int relative_width = 0;
-    int rounding_error = 0;
-    if (relative_items == 0)
-        relative_width = 0;
-    else { // size left after fixed items / number of relative items
-        relative_width = (width - fixed_width) / relative_items;
-        rounding_error = width - fixed_width - relative_items * relative_width;
+    float stretch_factor = 1.0f;
+    if (relative_items) {
+        if (relative_width <= width - fixed_width && stretch_items) {
+            relative_width = int(width - fixed_width - relative_width)/stretch_items;
+        } else if (relative_width) {
+            stretch_factor = float(width - fixed_width)/relative_width;
+            relative_width = 0;
+        }
     }
 
     // now move and resize the items
@@ -952,12 +1004,9 @@ void Toolbar::rearrangeItems() {
             tmpy = offset;
 
         if ((*item_it)->type() == ToolbarItem::RELATIVE) {
-            int extra = 0;
-            if (rounding_error != 0) { // distribute rounding error over all relatives
-                extra = 1;
-                --rounding_error;
-            }
-            tmpw = extra + relative_width;
+            unsigned int itemw = (*item_it)->preferredWidth(), itemh = (*item_it)->height();
+            FbTk::translateSize(orient, itemw, itemh);
+            tmpw = itemw ? std::floor(stretch_factor * itemw) : relative_width;
             tmph = height - size_offset;
         } else if ((*item_it)->type() == ToolbarItem::SQUARE) {
             tmpw = tmph = height - size_offset;

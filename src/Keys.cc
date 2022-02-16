@@ -396,10 +396,18 @@ bool Keys::addBinding(const string &linebuffer) {
                 context |= ON_DESKTOP;
             else if (arg == "ontoolbar")
                 context |= ON_TOOLBAR;
+            else if (arg == "onslit")
+                context |= ON_SLIT;
             else if (arg == "onwindow")
                 context |= ON_WINDOW;
             else if (arg == "ontitlebar")
                 context |= ON_TITLEBAR;
+            else if (arg == "onwinbutton")
+                context |= ON_WINBUTTON;
+            else if (arg == "onminbutton")
+                context |= ON_MINBUTTON; // one char diff, oh great ... ... blast!
+            else if (arg == "onmaxbutton")
+                context |= ON_MAXBUTTON;
             else if (arg == "onwindowborder")
                 context |= ON_WINDOWBORDER;
             else if (arg == "onleftgrip")
@@ -425,12 +433,12 @@ bool Keys::addBinding(const string &linebuffer) {
                     type = FocusIn;
                 } else if (arg == "mouseover") {
                     type = EnterNotify;
-                    if (!(context & (ON_WINDOW|ON_TOOLBAR)))
+                    if (!(context & (ON_WINDOW|ON_TOOLBAR|ON_SLIT)))
                         context |= ON_WINDOW;
                     key = 0;
                 } else if (arg == "mouseout") {
                     type = LeaveNotify;
-                    if (!(context & (ON_WINDOW|ON_TOOLBAR)))
+                    if (!(context & (ON_WINDOW|ON_TOOLBAR|ON_SLIT)))
                         context |= ON_WINDOW;
                     key = 0;
 
@@ -445,6 +453,8 @@ bool Keys::addBinding(const string &linebuffer) {
                         context = ON_TITLEBAR;
                     else if (strstr(arg.c_str(), "bar"))
                         context = ON_TOOLBAR;
+                    else if (strstr(arg.c_str(), "slit"))
+                        context = ON_SLIT;
                     else if (strstr(arg.c_str(), "ow"))
                         context = ON_WINDOW;
                 } else if (extractKeyFromString(arg, "click", key)) {
@@ -522,6 +532,8 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
     if (!m_keylist)
         return false;
 
+    static Time first_key_time = 0;
+
     static Time last_button_time = 0;
     static unsigned int last_button = 0;
 
@@ -544,6 +556,17 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
         isdouble = double_click;
     }
 
+    auto resetKeyChain = [&]() {
+        first_key_time = 0;
+        next_key.reset();
+        if (saved_keymode) {
+            setKeyMode(saved_keymode);
+            saved_keymode.reset();
+        }
+    };
+    if (type == KeyPress && first_key_time && time - first_key_time > 5000)
+        resetKeyChain();
+
     if (!next_key)
         next_key = m_keylist;
 
@@ -555,9 +578,15 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
     if (!temp_key && isdouble)
         temp_key = next_key->find(type, mods, key, context, false);
 
+    if (!temp_key && type == ButtonPress && // unassigned button press
+        next_key->find(MotionNotify, mods, key, context, false))
+        return true; // if there's a motion action, prevent replay to the client (but do nothing)
+
     if (temp_key && !temp_key->keylist.empty()) { // emacs-style
-        if (!saved_keymode)
+        if (!saved_keymode) {
+            first_key_time = time;
             saved_keymode = m_keylist;
+        }
         next_key = temp_key;
         setKeyMode(next_key);
         return true;
@@ -566,11 +595,7 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
         if (type == KeyPress &&
             !FbTk::KeyUtil::instance().keycodeToModmask(key)) {
             // if we're in the middle of an emacs-style keychain, exit it
-            next_key.reset();
-            if (saved_keymode) {
-                setKeyMode(saved_keymode);
-                saved_keymode.reset();
-            }
+            resetKeyChain();
         }
         return false;
     }

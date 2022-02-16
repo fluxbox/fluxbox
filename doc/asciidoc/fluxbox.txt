@@ -157,6 +157,8 @@ order:
     Area for applets
 - *Clock*:
     Date and Time
+- *Button.<name>*:
+    A generic button with customizable label and mouse actions
 
 The contents and behavior of the toolbar can be configured, see the *TOOLBAR*
 section for details.
@@ -412,9 +414,17 @@ titlebars, not window contents.
     If enabled, you will see the window content while dragging it. Otherwise
     only an outline of the window will be shown.
 
+*Opaque Window Resizing*:::
+    If enabled, you will see the window content while resizing it. Otherwise
+    only an outline of the window will be shown.
+
 *Workspace Warping*:::
-    If enabled, you can drag windows from one workspace to another. The previous
-     workspace is to the left, the next workspace is to the right.
+    If enabled, you can drag windows from one workspace to another. There are
+    parameters to set independently whether this warping happens horizontally
+    and/or vertically, and in each direction you can set the number of
+    workspaces to jump when warping (to allow for a virtual rectangular grid
+    of workspaces). When warping, lower-numbered workspaces are above/to the
+    left, and higher-numbered workspaces below/to the right.
 
 Window Menu
 ~~~~~~~~~~~
@@ -554,6 +564,9 @@ The possible tools are:
     This will show an area to display a clock and the date according to the
     format specification listed in "man strtftime"
 
+*Button.<name>*:::
+    This displays a clickable label with custom text.
+
 *Iconbar*:::
     This is the area that contains all windows (all running applications, all
     minimized windows or maybe no window, all depending on the Toolbar
@@ -603,6 +616,11 @@ All changes take effect immediately. Here are the settings:
     mouse pointer leaves the toolbar. It will slide in when the cursor hits the
     remaining edge of the toolbar. See the *session.autoRaiseDelay* resource for
      the delay time.
+
+*Auto raise*:::
+    If this is enabled the toolbar will elevate after a defined time when the
+    mouse pointer enters the it. It will fall back when the cursor leaves the
+    toolbar. See the *session.autoRaiseDelay* resource for the delay time.
 
 *Toolbar width percentage*:::
      Sets the width of the toolbar in a percentage of your total screen size. Use
@@ -660,6 +678,8 @@ resource:
     All icons will be left-aligned with the width set in the `init' file
 *Relative*:;;
     All icons will be sized evenly to fill the iconbar completely
+*RelativeSmart*:;;
+    All icons will initially be sized evenly, but icons with long titles will be larger
 *Right*:;;
     All icons will be right-aligned with the width set in the `init' file
 
@@ -697,6 +717,8 @@ one of the first two and one of the last two. They are:
     Click to focus windows.
 *Mouse Focus*:::
     Window focus follows mouse.
+*Mouse Focus (Strict)*:::
+    Like Mouse Focus, but no mouse movement is required, ie. the window is also focused if it moves below the mouse, eg. because it shows up or you change the virtual desktop.
 *ClickTabFocus*:::
     Click to focus tabs.
 *MouseTabFocus*:::
@@ -794,6 +816,11 @@ All changes take effect immediately. Here are the settings:
     remaining edge of the slit. See the *session.autoRaiseDelay* resource for
      the delay time.
 
+*Auto raise*:::
+    If this is enabled the slit will elevate after a defined time when the
+    mouse pointer enters the it. It will fall back when the cursor leaves the
+    slit. See the *session.autoRaiseDelay* resource for the delay time.
+
 *Maximize Over*:::
      Enabling this option will allow windows to maximizing over the slit.  With
      this switched off they will only expand to the edge of the slit.  This
@@ -884,6 +911,16 @@ used actively by the user, or they remain visible at all times.
 +
 Default: *False*
 
+*session.screen0.{slit|toolbar}.autoRaise*: 'boolean'::
+If enabled, the respective item will elevate to the AboveDock layer when entered
+and fall back to its regular layer when left.
+Notice that this does *not* implicitly alter the items regular layer or the
+workspace padding, ie. if the item is already set to AboveDock this does nothing
+and if a mximized window completely covers the item you won't be able to enter,
+thus elevate it.
++
+Default: *False*
+
 *session.screen0.{slit|toolbar}.layer*: 'layer'::
 With these two resources, you can set the layer you want the toolbar and
 the slit to appear on. Please read the LAYER section for more information.
@@ -937,7 +974,7 @@ They will appear in the order given.
 +
 Possible tools:;;
 *clock iconbar nextwindow prevwindow nextworkspace  prevworkspace
-systemtray workspacename*
+systemtray workspacename button.<name>*
 +
 Default:;;
 *workspacename, prevworkspace, nextworkspace, iconbar, prevwindow, nextwindow,
@@ -972,6 +1009,12 @@ Default: *10*
 *session.screen0.iconbar.alignment*: 'position'::
 This value should be changed in the Iconbar Mode menu.
 +
+
+*session.screen0.iconbar.iconifiedPattern*: 'string'::
+Allows to decorate the title of iconified (minimized) windows.
+The title is represented by "%t".
++
+Default: *( %t )*
 --
 Available options:;;
 - *Left*: Fixed width, aligned left
@@ -1081,6 +1124,14 @@ jump to the edge.
 +
 Default: *10*
 
+*session.screen0.edgeResizeSnapThreshold*: 'integer'::
+When resizing a window by grabbing a corner, fluxbox is able to have it `snap'
+to the edges of the screen and other windows for easy placement. This
+variable tells fluxbox the distance (in pixels) at which the window will
+jump to the edge.
++
+Default: *0*
+
 *session.screen0.windowPlacement*: 'strategy'::
 This resource specifies where to place new windows when not otherwise
 specified (by the program or the `apps' file, for example).
@@ -1091,6 +1142,9 @@ Available strategies:;;
 - ColSmartPlacement: tries to place windows in columns without overlapping
 - CascadePlacement: places windows below the titlebar of the previous one
 - UnderMousePlacement: places new windows underneath the mouse
+- RowMinOverlapPlacement: place windows in rows with minimal overlapping
+- ColMinOverlapPlacement: place windows in columns with minimal overlapping
+- AutotabPlacement: tabs the window to the currently focused one
 --
 +
 Default: *RowSmartPlacement*
@@ -1121,10 +1175,49 @@ will only draw an outline of the window border.
 +
 Default: *True*
 
+*session.screen0.opaqueResize*: 'boolean'::
+When resizing a window, setting this to True will draw the window
+contents as it resizes (this is nasty on slow systems). If False, it
+will only draw an outline of the window border.
++
+Default: *False*
+
+*session.screen0.opaqueResizeDelay*: 'integer'::
+When resizing a window in opaque mode, this controls the resize clock pulse in
+ms.
+Low values resize "smoother" but slow clients (browser etc. which are expensive
+to resize) can put too much stress on the system (stalling everything)
+High values will cause notable latency (delay before the size is aligned to
+the mouse position)
++
+Default: *40*
+
+
 *session.screen0.workspaces*: 'integer'::
 Set this to the number of workspaces the users wants.
 +
 Default: *4*
+
+*session.screen0.struts*: 'integer', 'integer', 'integer', 'integer'::
+Shrink the workspace by left, right, top, bottom pixels (positive integers)
+This allows you to add some padding to the workspace eg. to keep a fraction
+of the desktop visible against maximized windows.
+session.screen0.struts.<n> allows to control this for individual heads
+(<n> starts counting at 1)
++
+Default: *0,0,0,0*
+
+*session.screen0.toolbar.button.<name>.label*:	'string'::
+The label text for the toolbar button tool "button.<name>"
++
+Default: *blank*
+
+*session.screen0.toolbar.button.<name>.commands*:   'string':'string':'string':'string':'string'::
+A colon delimited list of commands, executed when the respective mouse button is
+pressed on the toolbar button tool "button.<name>"
+The commands are the same as those detailed in *fluxbox-keys(5)*.
++
+Default: *blank*
 
 *session.cacheLife*: 'minutes'::
 This tells fluxbox how long unused pixmaps may stay in the X
@@ -1194,6 +1287,14 @@ Default right: *Shade Minimize Maximize Close*
 'LHalf' and 'RHalf' are buttons to quickly place a window into the left and
 right half of the current monitor.
 
+*session.screen0.pin{Left|Right}*: 'classes'::
+Sort the system tray icons according to order specified in 'classes', which is
+a comma-separated list of CLASSCLASS properties of the X clients (The second
+field of WM_CLASS from the output of the *xprop(1)* utility).
++
+Consider a system tray "A C B D E F". With pinRight set to "A, B" and pinLeft
+set to "E, F" it will look like "E F [C D] A B" while the icons in [] are
+unordered as usual.
 
 All of the 'location' resources following require a pathname to their specific
 files. This is where you can specify different files. Most of the defaults will

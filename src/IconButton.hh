@@ -28,6 +28,7 @@
 #include "FbTk/CachedPixmap.hh"
 #include "FbTk/FbPixmap.hh"
 #include "FbTk/TextButton.hh"
+#include "FbTk/Timer.hh"
 #include "FbTk/Signal.hh"
 
 class IconbarTheme;
@@ -64,12 +65,18 @@ public:
 
     bool setOrientation(FbTk::Orientation orient);
 
+    virtual unsigned int preferredWidth() const;
+    void showTooltip();
+
+    const FbTk::Signal<> &titleChanged() { return m_title_changed; }
+
+    static unsigned int updateLaziness() { return 100 * FbTk::FbTime::IN_MILLISECONDS; }
+
 protected:
     void drawText(int x, int y, FbTk::FbDrawable *drawable_override);
 private:
     void reconfigAndClear();
     void setupWindow();
-    void showTooltip();
 
     /// Refresh all pixmaps and windows
     /// @param setup Wether to setup window again.
@@ -89,6 +96,8 @@ private:
     // cached pixmaps
     FbTk::CachedPixmap m_pm;
     FbTk::SignalTracker m_signals;
+    FbTk::Signal<> m_title_changed;
+    FbTk::Timer m_title_update_timer;
 };
 
 #endif // ICONBUTTON_HH

@@ -27,6 +27,7 @@ enum {
 	AlignCenter = 18,
 	AlignTop = 19,
 	AlignBottom = 20,
+	AlignRelativeSmart = 21,
 
 	BaseDisplaySet = 2,
 	BaseDisplayAborting = 1,
@@ -54,6 +55,7 @@ enum {
 	CommonVisible = 18,
 	CommonBackgroundWarning = 19,
     CommonDefaultWindowMenuFile = 20,
+	CommonAutoRaise = 21,
 
 	ConfigmenuSet = 4,
 	ConfigmenuAntiAlias = 1,
@@ -87,6 +89,7 @@ enum {
     ConfigmenuMaxDisableResize = 29,
 	ConfigmenuStrictMouseFocus = 30,
 	ConfigmenuFocusSameHead = 31,
+    ConfigmenuOpaqueResize = 32,
 
 	EwmhSet = 5,
 	EwmhOutOfMemoryClientList = 1,

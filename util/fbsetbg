@@ -47,6 +47,7 @@
 wpsetters="${wpsetters:=Esetroot wmsetbg feh hsetroot chbg display qiv xv xsri xli xsetbg}" # broken icewmbg'
 lastwallpaper="${HOME}/.fluxbox/lastwallpaper"
 
+DISPLAY=${DISPLAY%.0}
 
 WHOAMI=`whoami`
 [ "$WHOAMI" = root ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
@@ -133,9 +134,20 @@ Common tips to use with $command:
 EOF
 }
 
-find_it() {
-    [ -n "$1" ] && hash $1 2> /dev/null
-}
+# some shell's hash returns 0 always
+if hash this_program_does_not_exist-no_really-aA1zZ9 > /dev/null 2>&1; then
+    # can't rely on return value
+    # ash / ksh
+    find_it() {
+        which "$1" > /dev/null 2>&1
+    }
+else
+    # can rely on return value
+    # bash / dash / zsh / sh on Solaris
+    find_it() {
+        [ -n "$1" ] && hash "$1" 2> /dev/null
+    }
+fi
 
 message() {
 
@@ -156,7 +168,7 @@ message() {
 }
 
 remembercommand() {
-    grep -vs "|${DISPLAY}$" ${lastwallpaper} > ${lastwallpaper}.tmp
+    grep -vs "|${DISPLAY}$\||${DISPLAY}\.0$" ${lastwallpaper} > ${lastwallpaper}.tmp
     mv -f ${lastwallpaper}.tmp ${lastwallpaper}
     if [ "$option" = fbsetroot ]; then
         echo $option"|$wallpaper|$style|"$DISPLAY >> $lastwallpaper
@@ -396,10 +408,11 @@ case $WPSETTER in
         debugstory=$standardok
         ;;
     display)
-        full="`xwininfo -root 2> /dev/null|grep geom` -window root"
+        rootsize=`xwininfo -root 2> /dev/null|sed '/-geometry/!d; s/.* \([0-9]*x[0-9]*\)+.*/\1/g'`
+        full="-window root -resize ${rootsize}!"
         tile='-window root'
         center='-backdrop -window root'
-        aspect=$full
+        aspect="-window root -resize "${rootsize}^" -crop ${rootsize}+0+0 -gravity center -window root"
         debugstory=$standardrant
         ;;
     Esetroot)
@@ -500,7 +513,9 @@ if [ "$option" = random ]; then
         exit 1
     fi
     if [ -d "$wallpaperdir" ]; then
-        number_of_wallpapers=`ls "$wallpaperdir"|wc -l`
+        cd "$wallpaperdir"
+        available_wallpapers=`find -L -type f ! -regex '.*/\..*'`
+        number_of_wallpapers=`echo "$available_wallpapers" | wc -l`
         if find_it random_number; then
             randomnumber=`random_number`
         # some shells don't support $RANDOM
@@ -520,10 +535,10 @@ if [ "$option" = random ]; then
         fi
         remember=false
         #set -x
-        wallpaper="$wallpaperdir/`ls \"$wallpaperdir\"|sed -n ${wallpapernumber}p`"
+        wallpaper="`echo "$available_wallpapers" | sed -n ${wallpapernumber}p`"
         option=$option2 # have to choose something...
     else
-        message "Invalid random wallpaper directory specified."
+        message "Invalid random wallpaper directory specified: '$wallpaperdir'."
         exit 1
     fi
 fi
@@ -539,7 +554,7 @@ fi
 
 
 $WPSETTER `eval echo $option` "$wallpaper"
-if [ $? -ne 0 ]; then
+if [ "$?" != "0" -a "$WPSETTER" != "display" ]; then # display is broken, all IM falsely fail for "unrecognized event type FOO"...
     message "Something went wrong while setting the wallpaper.
 Run '$WPSETTER "`eval echo $option` $wallpaper"' from an xterm to find out what."
     exit 1

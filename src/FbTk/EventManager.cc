@@ -161,7 +161,8 @@ void EventManager::dispatch(Window win, XEvent &ev, bool parent) {
 
     switch (ev.type) {
     case KeyPress:
-        evhand->keyPressEvent(ev.xkey);
+        if (!XFilterEvent(&ev, win))
+            evhand->keyPressEvent(ev.xkey);
     break;
     case KeyRelease:
         evhand->keyReleaseEvent(ev.xkey);
@@ -179,9 +180,7 @@ void EventManager::dispatch(Window win, XEvent &ev, bool parent) {
         evhand->exposeEvent(ev.xexpose);
     break;
     case EnterNotify:
-        if (ev.xcrossing.mode != NotifyGrab &&
-            ev.xcrossing.mode != NotifyUngrab)
-            evhand->enterNotifyEvent(ev.xcrossing);
+        evhand->enterNotifyEvent(ev.xcrossing);
     break;
     case LeaveNotify:
         if (ev.xcrossing.mode != NotifyGrab &&

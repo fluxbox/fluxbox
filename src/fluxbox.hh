@@ -151,6 +151,7 @@ public:
     void removeGroupSearch(Window win);
     void restart(const char *command = 0);
     void reconfigure();
+    void reconfigThemes();
 
     /// todo, remove this. just temporary
     void updateFrameExtents(FluxboxWindow &win);
@@ -228,7 +229,7 @@ private:
 
     //--- Resources
 
-    std::auto_ptr<FbAtoms> m_fbatoms;
+    std::unique_ptr<FbAtoms> m_fbatoms;
     FbTk::ResourceManager  m_resourcemanager;
     FbTk::ResourceManager& m_screen_rm;
 
@@ -259,7 +260,7 @@ private:
     } m_config;
 
 
-    std::auto_ptr<Keys>    m_key;
+    std::unique_ptr<Keys>    m_key;
     AtomHandlerContainer   m_atomhandler;
     AttentionNoticeHandler m_attention_handler;
 

@@ -155,10 +155,10 @@ private:
     bool m_close_on_click, m_toggle_item;
 
     struct Icon {
-        std::auto_ptr<PixmapWithMask> pixmap;
+        std::unique_ptr<PixmapWithMask> pixmap;
         std::string filename;
     };
-    std::auto_ptr<Icon> m_icon;
+    std::unique_ptr<Icon> m_icon;
 };
 
 } // end namespace FbTk

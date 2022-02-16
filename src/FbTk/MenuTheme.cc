@@ -86,14 +86,14 @@ MenuTheme::MenuTheme(int screen_num):
 
     ThemeManager::instance().loadTheme(*this);
 
-    m_real_item_height = std::max(*m_item_height,
-                                  std::max(frameFont().height() + 2*bevelWidth(),
-                                           hiliteFont().height() + 2*bevelWidth()));
-    m_real_title_height = std::max(*m_title_height,
-                                   titleFont().height() + 2*bevelWidth());
-
-    m_real_item_height = m_real_item_height == 0 ? 1 : m_real_item_height;
-    m_real_title_height = m_real_title_height == 0 ? 1 : m_real_title_height;
+    if (*m_title_height < 1)
+        *m_title_height = 1;
+    const unsigned int pad = 2*bevelWidth();
+    m_real_item_height = std::max(std::max(pad + 1, *m_item_height),
+                                  std::max(frameFont().height() + pad,
+                                           hiliteFont().height() + pad));
+    m_real_title_height = std::max(std::max(pad + 1, *m_title_height),
+                                   titleFont().height() + pad);
 
     t_text_gc.setForeground(*t_text);
     f_text_gc.setForeground(*f_text);
@@ -115,15 +115,14 @@ void MenuTheme::reconfigTheme() {
     if (*m_border_width > 20)
         *m_border_width = 20;
 
-    m_real_item_height = std::max(*m_item_height,
-                                  std::max(frameFont().height() + 2*bevelWidth(),
-                                           hiliteFont().height() + 2*bevelWidth()));
-    m_real_title_height = std::max(*m_title_height,
-                                   titleFont().height() + 2*bevelWidth());
 
-    unsigned int minsize = 2*bevelWidth()+1;
-    m_real_item_height = m_real_item_height < minsize ? minsize: m_real_item_height;
-    m_real_title_height = m_real_title_height == minsize ? minsize : m_real_title_height;
+    const unsigned int pad = 2*bevelWidth();
+    m_real_item_height = std::max(std::max(pad + 1, *m_item_height),
+                                  std::max(frameFont().height() + pad,
+                                           hiliteFont().height() + pad));
+    m_real_title_height = std::max(std::max(pad + 1, *m_title_height),
+                                   titleFont().height() + pad);
+
     unsigned int item_pm_height = itemHeight();
 
     m_bullet_pixmap->scale(item_pm_height, item_pm_height);

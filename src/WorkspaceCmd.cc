@@ -23,9 +23,12 @@
 #include "WorkspaceCmd.hh"
 
 #include "Layer.hh"
+#include "MinOverlapPlacement.hh"
 #include "Workspace.hh"
 #include "Window.hh"
 #include "Screen.hh"
+#include "Slit.hh"
+#include "Toolbar.hh"
 #include "fluxbox.hh"
 #include "WinClient.hh"
 #include "FocusControl.hh"
@@ -201,6 +204,8 @@ FbTk::Command<void> *parseWindowList(const string &command,
     } else if (command == "arrangewindowsstackbottom") {
         int method = ArrangeWindowsCmd::STACKBOTTOM;
         return new ArrangeWindowsCmd(method,pat);
+    } else if (command == "unclutter") {
+        return new UnclutterCmd(pat);
     }
 
     return 0;
@@ -218,6 +223,7 @@ REGISTER_COMMAND_PARSER(arrangewindowsstackleft, parseWindowList, void);
 REGISTER_COMMAND_PARSER(arrangewindowsstackright, parseWindowList, void);
 REGISTER_COMMAND_PARSER(arrangewindowsstacktop, parseWindowList, void);
 REGISTER_COMMAND_PARSER(arrangewindowsstackbottom, parseWindowList, void);
+REGISTER_COMMAND_PARSER(unclutter, parseWindowList, void);
 
 } // end anonymous namespace
 
@@ -351,15 +357,13 @@ REGISTER_COMMAND_PARSER(workspace, parseIntCmd, void);
 } // end anonymous namespace
 
 void NextWorkspaceCmd::execute() {
-    BScreen *screen = Fluxbox::instance()->mouseScreen();
-    if (screen != 0)
-        screen->nextWorkspace(m_option == 0 ? 1 : m_option);
+    if (BScreen *screen = Fluxbox::instance()->mouseScreen())
+        screen->nextWorkspace(m_option);
 }
 
 void PrevWorkspaceCmd::execute() {
-    BScreen *screen = Fluxbox::instance()->mouseScreen();
-    if (screen != 0)
-        screen->prevWorkspace(m_option == 0 ? 1 : m_option);
+    if (BScreen *screen = Fluxbox::instance()->mouseScreen())
+        screen->prevWorkspace(m_option);
 }
 
 void LeftWorkspaceCmd::execute() {
@@ -379,6 +383,7 @@ JumpToWorkspaceCmd::JumpToWorkspaceCmd(int workspace_num):m_workspace_num(worksp
 void JumpToWorkspaceCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen != 0) {
+        screen->focusControl().stopCyclingFocus();
         int num = screen->numberOfWorkspaces();
         int actual = m_workspace_num;
         // we need an extra +1, since it's subtracted in FbCommandFactory
@@ -586,6 +591,41 @@ void ArrangeWindowsCmd::execute() {
     }
 }
 
+void UnclutterCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    if (screen == 0)
+        return;
+
+    Workspace *space = screen->currentWorkspace();
+
+    if (space->windowList().empty())
+        return;
+
+    const int head = screen->getCurrHead();
+    Workspace::Windows::iterator win;
+    Workspace::Windows placed_windows;
+
+    // list and clean up
+    for (win = space->windowList().begin(); win != space->windowList().end(); ++win) {
+        int winhead = screen->getHead((*win)->fbWindow());
+        if ((winhead == head || winhead == 0) && m_pat.match(**win)) {
+            placed_windows.push_back(*win);
+            (*win)->move(-(*win)->width(), -(*win)->height());
+        }
+    }
+
+    if (placed_windows.empty())
+        return;
+
+    // place
+    MinOverlapPlacement mopp;
+    int x, y;
+    for (win = placed_windows.begin(); win != placed_windows.end(); ++win) {
+        mopp.placeWindow(**win, head, x, y);
+        (*win)->move(x, y);
+    }
+}
+
 REGISTER_COMMAND(showdesktop, ShowDesktopCmd, void);
 
 void ShowDesktopCmd::execute() {
@@ -600,6 +640,7 @@ void ShowDesktopCmd::execute() {
                                            it_end = wins.end();
     unsigned int space = screen->currentWorkspaceID();
     unsigned int count = 0;
+    XGrabServer(Fluxbox::instance()->display());
     for (; it != it_end; ++it) {
         if (!(*it)->fbwindow()->isIconic() && ((*it)->fbwindow()->isStuck() ||
             (*it)->fbwindow()->workspaceNumber() == space) &&
@@ -619,7 +660,48 @@ void ShowDesktopCmd::execute() {
         }
     } else
         FocusControl::revertFocus(*screen);
+    XUngrabServer(Fluxbox::instance()->display());
 
+}
+
+REGISTER_COMMAND(toggleslitbarabove, ToggleSlitAboveCmd, void);
+void ToggleSlitAboveCmd::execute() {
+#if USE_SLIT
+    if (BScreen *screen = Fluxbox::instance()->mouseScreen()) {
+        screen->slit()->toggleAboveDock();
+        const_cast<FbTk::FbWindow&>(screen->slit()->window()).raise();
+    }
+#endif
+}
+
+REGISTER_COMMAND(toggleslithidden, ToggleSlitHiddenCmd, void);
+void ToggleSlitHiddenCmd::execute() {
+#if USE_SLIT
+    if (BScreen *screen = Fluxbox::instance()->mouseScreen()) {
+        screen->slit()->toggleHidden();
+        const_cast<FbTk::FbWindow&>(screen->slit()->window()).raise();
+    }
+#endif
+}
+
+REGISTER_COMMAND(toggletoolbarabove, ToggleToolbarAboveCmd, void);
+void ToggleToolbarAboveCmd::execute() {
+#if USE_TOOLBAR
+    if (BScreen *screen = Fluxbox::instance()->mouseScreen()) {
+        screen->toolbar()->toggleAboveDock();
+        const_cast<FbTk::FbWindow&>(screen->toolbar()->window()).raise();
+    }
+#endif
+}
+
+REGISTER_COMMAND(toggletoolbarvisible, ToggleToolbarHiddenCmd, void);
+void ToggleToolbarHiddenCmd::execute() {
+#if USE_TOOLBAR
+    if (BScreen *screen = Fluxbox::instance()->mouseScreen()) {
+        screen->toolbar()->toggleHidden();
+        const_cast<FbTk::FbWindow&>(screen->toolbar()->window()).raise();
+    }
+#endif
 }
 
 REGISTER_COMMAND(closeallwindows, CloseAllWindowsCmd, void);
@@ -644,3 +726,28 @@ void CloseAllWindowsCmd::execute() {
             windows.end(), std::mem_fun(&FluxboxWindow::close));
 
 }
+
+void RelabelButtonCmd::execute() {
+#if USE_TOOLBAR
+    if (BScreen *screen = Fluxbox::instance()->mouseScreen())
+        screen->relabelToolButton(m_button, m_label);
+#endif
+}
+
+FbTk::Command<void> *RelabelButtonCmd::parse(const std::string &command,
+                                             const std::string &args, bool trusted) {
+    std::string button, label;
+    std::size_t ws = args.find_first_of(" \t\n");
+    if (ws != std::string::npos) {
+        button = args.substr(0, ws);
+        if (button.find("button.") == 0) {
+            label = args.substr(ws + 1, std::string::npos);
+        } else {
+            button.clear();
+        }
+    }
+    return new RelabelButtonCmd(button, label);
+}
+
+REGISTER_COMMAND_PARSER(relabelbutton, RelabelButtonCmd::parse, void);
+

@@ -37,9 +37,10 @@ public:
     virtual ~TextBox();
 
     void setText(const FbTk::BiDiString &text);
+    void setPadding(int padding);
     void setFont(const Font &font);
     void setGC(GC gc);
-    void setCursorPosition(int cursor);    
+    void setCursorPosition(int cursor);
     void setInputFocus();
     void cursorEnd();
     void cursorHome();
@@ -58,12 +59,18 @@ public:
     void exposeEvent(XExposeEvent &event);
     void buttonPressEvent(XButtonEvent &event);
     void keyPressEvent(XKeyEvent &event);
+    void handleEvent(XEvent &event);
 
     const FbString &text() const { return m_text.logical(); }
     const Font &font() const { return *m_font; }
     GC gc() const { return m_gc; }
     int cursorPosition() const { return m_cursor_pos; }
     int textStartPos() const { return m_start_pos; }
+
+    bool hasSelection() const {
+        return (m_select_pos != std::string::npos) && (m_select_pos != m_cursor_pos + m_start_pos); }
+    void select(std::string::size_type pos, int length);
+    void selectAll();
 
     unsigned int findEmptySpaceLeft();
     unsigned int findEmptySpaceRight();
@@ -74,10 +81,15 @@ private:
 
     void adjustPos();
 
+    typedef struct { std::string::size_type begin, end; } StringRange;
+    StringRange charRange(std::string::size_type pos) const;
+
     const FbTk::Font *m_font;
     BiDiString m_text;
     GC m_gc;
-    std::string::size_type m_cursor_pos, m_start_pos, m_end_pos;
+    std::string::size_type m_cursor_pos, m_start_pos, m_end_pos, m_select_pos;
+    int m_padding;
+    XIC m_xic;
 };
 
 } // end namespace FbTk

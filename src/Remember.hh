@@ -74,7 +74,8 @@ public:
         REM_MINIMIZEDSTATE,
         REM_MAXIMIZEDSTATE,
         REM_FULLSCREENSTATE,
-        REM_FOCUSNEWWINDOW,
+        REM_FOCUSPROTECTION,
+        REM_IGNORE_SIZEHINTS,
         REM_LASTATTRIB // not actually used
     };
 
@@ -85,7 +86,6 @@ public:
       POS_LOWERRIGHT,
       POS_CENTER
     };
-
 
 
     // a "pattern"  to the relevant app
@@ -155,7 +155,7 @@ public:
 
 private:
 
-    std::auto_ptr<Patterns> m_pats;
+    std::unique_ptr<Patterns> m_pats;
     Clients m_clients;
 
     Startups m_startups;

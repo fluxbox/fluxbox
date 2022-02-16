@@ -23,6 +23,7 @@
 
 #include "FbTk/EventManager.hh"
 #include "FbTk/ImageControl.hh"
+#include "FbTk/StringUtil.hh"
 #include "FbTk/TextUtils.hh"
 #include "FbTk/MemFun.hh"
 
@@ -37,20 +38,60 @@
 #include <X11/Xatom.h>
 
 #include <string>
+#include <sstream>
+#include <vector>
+#include <memory>
+#include <algorithm>
+
 
 using std::string;
-
-
 using std::endl;
 using std::hex;
 using std::dec;
 
+
+namespace {
+
+void getScreenCoordinates(Window win, int x, int y, int &screen_x, int &screen_y) {
+
+    XWindowAttributes attr;
+    if (XGetWindowAttributes(FbTk::App::instance()->display(), win, &attr) == 0) {
+        return;
+    }
+
+    Window unused_win;
+    Window parent_win;
+    Window root_win = 0;
+    Window* unused_childs = 0;
+    unsigned int unused_number;
+
+    XQueryTree(FbTk::App::instance()->display(), win,
+               &root_win,
+               &parent_win,
+               &unused_childs, &unused_number);
+
+    if (unused_childs != 0) {
+        XFree(unused_childs);
+    }
+
+    XTranslateCoordinates(FbTk::App::instance()->display(),
+                          parent_win, root_win,
+                          x, y,
+                          &screen_x, &screen_y, &unused_win);
+}
+
+};
+
+static SystemTray *s_theoneandonly = 0;
+
 /// helper class for tray windows, so we dont call XDestroyWindow
-class TrayWindow: public FbTk::FbWindow {
+class SystemTray::TrayWindow : public FbTk::FbWindow {
 public:
-    TrayWindow(Window win, bool using_xembed):FbTk::FbWindow(win), m_visible(false), m_xembedded(using_xembed) {
+    TrayWindow(Window win, bool using_xembed):FbTk::FbWindow(win), m_order(0), m_visible(false), m_xembedded(using_xembed) {
         setEventMask(PropertyChangeMask);
     }
+
+    void pinByClassname(const std::vector<std::string> &left, const std::vector<std::string> &right);
 
     bool isVisible() { return m_visible; }
     bool isXEmbedded() { return m_xembedded; }
@@ -88,10 +129,40 @@ public:
         return true;
     }
 
+    int m_order;
 private:
     bool m_visible;
     bool m_xembedded; // using xembed protocol? (i.e. unmap when done)
 };
+
+void SystemTray::TrayWindow::pinByClassname(const std::vector<std::string> &left,
+        const std::vector<std::string> &right) {
+    // based on the parsed order list and a given window sets m_order to
+    // an ordinal used to sort the tray icons.
+
+    auto deleter = [](XClassHint *x){if(x) XFree(x);};
+
+    std::unique_ptr<XClassHint, decltype(deleter)>
+        xclasshint(XAllocClassHint(), deleter);
+
+    if(XGetClassHint(Fluxbox::instance()->display(),
+                this->window(), xclasshint.get()))
+    {
+        std::string classname(xclasshint.get()->res_class);
+        classname = FbTk::StringUtil::toLower(classname);
+
+        auto ix = std::find(left.begin(), left.end(), classname);
+        if (ix != left.end())
+            m_order = -(left.end()-ix); // the more left, the negative (<0)
+        else {
+            ix = std::find(right.begin(), right.end(), classname);
+            if (ix != right.end())
+                // the more right, the positive (>0)
+                m_order = ix-right.begin()+1;
+        }
+    }
+    // in neither list or invalid window (=0)
+}
 
 /// handles clientmessage event and notifies systemtray
 class SystemTrayHandler: public AtomHandler {
@@ -127,7 +198,6 @@ public:
         winclient.setEventMask(StructureNotifyMask |
                                SubstructureNotifyMask | EnterWindowMask);
         m_tray.addClient(winclient.window(), false);
-
     };
 
     void updateWorkarea(BScreen &) { }
@@ -158,8 +228,19 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
     m_theme(theme),
     m_screen(screen),
     m_pixmap(0), m_num_visible_clients(0),
-    m_selection_owner(m_window, 0, 0, 1, 1, SubstructureNotifyMask, false, false, CopyFromParent, InputOnly) {
-    
+    m_selection_owner(m_window, 0, 0, 1, 1, SubstructureNotifyMask, false, false, CopyFromParent, InputOnly),
+    m_rc_systray_pinleft(screen.resourceManager(),
+            "", screen.name() + ".systray.pinLeft",
+            screen.altName() + ".Systray.PinLeft"),
+    m_rc_systray_pinright(screen.resourceManager(),
+            "", screen.name() + ".systray.pinRight",
+            screen.altName() + ".Systray.PinRight") {
+
+    FbTk::StringUtil::stringtok(m_pinleft,
+            FbTk::StringUtil::toLower(m_rc_systray_pinleft), " ,");
+    FbTk::StringUtil::stringtok(m_pinright,
+            FbTk::StringUtil::toLower(m_rc_systray_pinright), " ,");
+
     FbTk::EventManager::instance()->add(*this, m_window);
     FbTk::EventManager::instance()->add(*this, m_selection_owner);
     // setup signals
@@ -188,6 +269,8 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
     // set owner
     XSetSelectionOwner(disp, tray_atom, m_selection_owner.window(), CurrentTime);
 
+    s_theoneandonly = this;
+
     m_handler.reset(new SystemTrayHandler(*this));
 
     m_handler.get()->setName(atom_name);
@@ -215,6 +298,8 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
 
 SystemTray::~SystemTray() {
     // remove us, else fluxbox might delete the memory too
+    if (s_theoneandonly == this)
+        s_theoneandonly = 0;
     Fluxbox* fluxbox = Fluxbox::instance();
     fluxbox->removeAtomHandler(m_handler.get());
     Display *disp = fluxbox->display();
@@ -378,6 +463,9 @@ void SystemTray::addClient(Window win, bool using_xembed) {
 
     if (traywin->getMappedDefault())
         showClient(traywin);
+
+    traywin->pinByClassname(m_pinleft, m_pinright);
+    sortClients();
 }
 
 void SystemTray::removeClient(Window win, bool destroyed) {
@@ -418,6 +506,7 @@ void SystemTray::handleEvent(XEvent &event) {
         // check and see if we need to update it's size
         // and we must reposition and resize them to fit
         // our toolbar
+
         ClientList::iterator it = findClient(event.xconfigure.window);
         if (it != m_clients.end()) {
             if (static_cast<unsigned int>(event.xconfigure.width) != (*it)->width() ||
@@ -435,7 +524,6 @@ void SystemTray::handleEvent(XEvent &event) {
                 resizeSig().emit();
             }
         }
-
     } else if (event.type == PropertyNotify) {
         ClientList::iterator it = findClient(event.xproperty.window);
         if (it != m_clients.end()) {
@@ -446,8 +534,7 @@ void SystemTray::handleEvent(XEvent &event) {
                     hideClient(*it);
             }
         }
-    } 
-
+    }
 }
 
 void SystemTray::rearrangeClients() {
@@ -470,9 +557,11 @@ void SystemTray::rearrangeClients() {
         next_x += h_rot0+bw;
         translateCoords(orientation(), x, y, w_rot0, h_rot0);
         translatePosition(orientation(), x, y, h_rot0, h_rot0, 0);
+        int screen_x = 0, screen_y = 0;
+        getScreenCoordinates((*client_it)->window(), (*client_it)->x(), (*client_it)->y(), screen_x, screen_y);
 
         (*client_it)->moveResize(x, y, h_rot0, h_rot0);
-        (*client_it)->sendConfigureNotify(x, y, h_rot0, h_rot0);
+        (*client_it)->sendConfigureNotify(screen_x, screen_y, h_rot0, h_rot0);
     }
 }
 
@@ -516,6 +605,16 @@ void SystemTray::showClient(TrayWindow *traywin) {
     rearrangeClients();
 }
 
+void SystemTray::sortClients() {
+    m_clients.sort(
+        [](TrayWindow *a, TrayWindow *b) {
+            return a->m_order < b->m_order;
+        }
+    );
+
+    rearrangeClients();
+}
+
 void SystemTray::update() {
 
     if (!m_theme->texture().usePixmap()) {
@@ -554,4 +653,11 @@ string SystemTray::getNetSystemTrayAtom(int screen_nr) {
     atom_name += FbTk::StringUtil::number2String(screen_nr);
 
     return atom_name;
+}
+
+bool SystemTray::doesControl(Window win) {
+    if (win == None || !s_theoneandonly)
+        return false;
+    return win == s_theoneandonly->window().window() ||
+           s_theoneandonly->findClient(win) != s_theoneandonly->m_clients.end();
 }

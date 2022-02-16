@@ -53,6 +53,7 @@ class ToolbarItem;
 namespace FbTk {
 class ImageControl;
 class Shape;
+class TextButton;
 }
 
 /// The toolbar.
@@ -83,6 +84,7 @@ public:
     void updateVisibleState();
     void toggleHidden();
 
+    void toggleAboveDock();
 
     void moveToLayer(int layernum);
 
@@ -99,6 +101,7 @@ public:
     void handleEvent(XEvent &event);
     //@}
 
+    void relayout();
     void reconfigure();
     void setPlacement(Placement where);
 
@@ -142,6 +145,8 @@ private:
     void updateStrut();
     void updateAlpha();
 
+    void updateCrossingState();
+
     /// Called when the screen changed property.
     void screenChanged(BScreen &screen);
 
@@ -184,7 +189,7 @@ private:
     Strut *m_strut; ///< created and destroyed by BScreen
 
     // resources
-    FbTk::Resource<bool> m_rc_auto_hide, m_rc_maximize_over, m_rc_visible;
+    FbTk::Resource<bool> m_rc_auto_hide, m_rc_auto_raise, m_rc_maximize_over, m_rc_visible;
     FbTk::Resource<int> m_rc_width_percent;
     FbTk::Resource<int> m_rc_alpha;
     FbTk::Resource<class ResourceLayer> m_rc_layernum;
@@ -192,7 +197,7 @@ private:
     FbTk::Resource<Placement> m_rc_placement;
     FbTk::Resource<int> m_rc_height;
     FbTk::Resource<std::string> m_rc_tools;
-    std::auto_ptr<FbTk::Shape> m_shape;
+    std::unique_ptr<FbTk::Shape> m_shape;
     typedef std::list<std::string> StringList;
     StringList m_tools;
 

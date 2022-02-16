@@ -14,6 +14,7 @@ dnl Determine default prefix
 AS_IF([test "x$prefix" = "xNONE"], [prefix="$ac_default_prefix"])
 
 AC_LANG_CPLUSPLUS
+AX_CXX_COMPILE_STDCXX_11([ext], [mandatory])
 
 dnl Locate required external software
 AC_PROG_CC

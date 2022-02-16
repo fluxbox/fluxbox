@@ -241,7 +241,7 @@ private:
     unsigned long m_border_color; ///< border color
     unsigned int m_depth; ///< bit depth
     bool m_destroy; ///< wheter the x window was created before
-    std::auto_ptr<FbTk::Transparent> m_transparent;
+    std::unique_ptr<FbTk::Transparent> m_transparent;
     bool m_lastbg_color_set;
     unsigned long m_lastbg_color;
     Pixmap m_lastbg_pm;

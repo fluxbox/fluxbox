@@ -53,6 +53,7 @@ public:
     /// forces an end to event loop
     void end();
     bool done() const { return m_done; }
+    const XIM &inputModule() const { return m_xim; }
 
     // the setenv()-routine is not everywhere available and
     // putenv() doesnt manage the strings in the environment
@@ -62,6 +63,7 @@ private:
     static App *s_app;
     bool m_done;
     Display *m_display;
+    XIM m_xim;
 };
 
 } // end namespace FbTk

@@ -86,6 +86,7 @@ FocusControl::FocusControl(BScreen &screen):
     m_cycling_list(0),
     m_was_iconic(0),
     m_cycling_last(0),
+    m_cycling_next(0),
     m_ignore_mouse_x(-1), m_ignore_mouse_y(-1) {
 
     m_cycling_window = m_focused_list.clientList().end();
@@ -101,6 +102,7 @@ void FocusControl::cycleFocus(const FocusableList &window_list,
             m_cycling_list = &window_list;
         m_was_iconic = 0;
         m_cycling_last = 0;
+        m_cycling_next = 0;
     } else if (m_cycling_list != &window_list)
         m_cycling_list = &window_list;
 
@@ -108,7 +110,11 @@ void FocusControl::cycleFocus(const FocusableList &window_list,
     Focusables::const_iterator it_end = window_list.clientList().end();
 
     // too many things can go wrong with remembering this
-    m_cycling_window = find(it_begin, it_end, s_focused_window);
+    m_cycling_window = it_end;
+    if (m_cycling_next)
+        m_cycling_window = find(it_begin, it_end, m_cycling_next);
+    if (m_cycling_window == it_end)
+        m_cycling_window = find(it_begin, it_end, s_focused_window);
     if (m_cycling_window == it_end)
         m_cycling_window = find(it_begin, it_end, s_focused_fbwindow);
 
@@ -140,8 +146,9 @@ void FocusControl::cycleFocus(const FocusableList &window_list,
         was_iconic = (fbwin->isIconic() ? last_client : 0);
 
         // now we actually try to focus the window
-        if (!doSkipWindow(**it, pat) && (*it)->focus())
+        if (!doSkipWindow(**it, pat) && (m_cycling_next = *it) && (*it)->focus())
             break;
+        m_cycling_next = 0;
     }
     m_cycling_window = it;
 
@@ -235,11 +242,16 @@ void FocusControl::stopCyclingFocus() {
         return;
 
     m_cycling_last = 0;
+    m_cycling_next = 0;
     m_cycling_list = 0;
 
     // put currently focused window to top
     if (s_focused_window) {
-        setScreenFocusedWindow(*s_focused_window);
+        // re-focus last window to give the client a chance to redistribute the
+        // focus internally (client-side only modality)
+        s_focused_window->focus();
+        if (s_focused_window)
+            setScreenFocusedWindow(*s_focused_window);
         if (s_focused_fbwindow)
             s_focused_fbwindow->raise();
     } else
@@ -457,8 +469,11 @@ void FocusControl::removeClient(WinClient &client) {
         *m_cycling_window == &client) {
         m_cycling_window = m_cycling_list->clientList().end();
         stopCyclingFocus();
-    } else if (m_cycling_last == &client)
+    } else if (m_cycling_last == &client) {
         m_cycling_last = 0;
+    } else if (m_cycling_next == &client) {
+        m_cycling_next = 0;
+    }
 
     m_focused_list.remove(client);
     m_creation_order_list.remove(client);
@@ -574,6 +589,29 @@ void FocusControl::setFocusedWindow(WinClient *client) {
         return;
 
     BScreen *screen = client ? &client->screen() : 0;
+    if (client && screen && screen->focusControl().isCycling()) {
+        Focusable *next = screen->focusControl().m_cycling_next;
+        WinClient *nextClient = dynamic_cast<WinClient*>(next);
+        FluxboxWindow *nextWindow = nextClient ? 0 : dynamic_cast<FluxboxWindow*>(next);
+        if (next && nextClient != client && nextWindow != client->fbwindow() &&
+                screen->focusControl().m_cycling_list->contains(*next)) {
+            // if we're currently cycling and the client tries to juggle around focus
+            // on FocusIn events to provide client-side modality - don't let him
+            next->focus();
+            if (nextClient)
+                setFocusedWindow(nextClient); // doesn't happen automatically while cycling, 1148
+            return;
+        }
+    }
+
+    if (client && client != expectingFocus() && s_focused_window &&
+        (!(screen && screen->focusControl().isCycling())) &&
+        ((s_focused_fbwindow->focusProtection() & Focus::Lock) ||
+        (client && client->fbwindow() && (client->fbwindow()->focusProtection() & Focus::Deny)))) {
+        s_focused_window->focus();
+        return;
+    }
+
     BScreen *old_screen =
         FocusControl::focusedWindow() ?
         &FocusControl::focusedWindow()->screen() : 0;

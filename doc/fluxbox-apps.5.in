@@ -65,6 +65,11 @@ Each of these sections ends with the single line
 .RS 4
 \fB[end]\fR
 .RE
+.SH "TRANSIENT SECTIONS"
+.sp
+\fB[transient]\fR sections provide settings for "dialogs"\&.
+.sp
+This is the same as the \fB[app]\fR section, but applies to transient windows\&. Transient windows have a WM_TRANSIENT_FOR property\&. This will apply to all modal and several other dialogs which have a "leader" they remain above\&. Notably, open/save dialogs fall into this category\&.
 .SH "GROUP SECTIONS"
 .sp
 The primary purpose of \fB[group]\fR sections is to group windows together\&. All windows in a group will be tabbed together automatically\&.
@@ -134,6 +139,13 @@ and
 \fIheight\fR, in pixels\&. If the value is given in percent, then the window size will be based on the current screen\(cqs size\&.
 .RE
 .PP
+\fB[IgnoreSizeHints]\fR {\fIbool\fR}
+.RS 4
+Some Applications restrict the aspect ratio, minimum or maximum size of windows\&. Setting this key "yes" will make fluxbox ignore those constraints\&.
+\fBNOTICE\fR
+that bad client implementations may hard depend on these constraints (by blindly using their geometry in unsave calculations, causing div\-by\-zero segfaults etc\&.)
+.RE
+.PP
 \fB[Position]\fR (\fIanchor\fR) {\fIX[%]\fR \fIY[%]\fR}
 .RS 4
 Position the application at a particular spot\&. By default the upper\-left corner is placed at screen coordinates (\fIX\fR,\fIY\fR)\&. If you specify an
@@ -199,7 +211,54 @@ Whether the window has tabs enabled\&.
 .PP
 \fB[FocusNewWindow]\fR {\fIbool\fR}
 .RS 4
+.PP
+\fBDEPRECATED!\fR Please use FocusProtection "Gain" or "Refuse" instead\&.
+.RS 4
 If enabled, a new window will grab X focus as soon as it is opened\&. If disabled, a new window will not grab X focus as soon as it is opened\&.
+.RE
+.RE
+.PP
+\fB[FocusProtection]\fR {\fIvalue\fR [,\fIvalue\fR [, \&...]] }
+.RS 4
+.PP
+Comma separated list of focus controlling flags\&. \fIvalue\fR may be:
+.RS 4
+.PP
+\fBNone\fR
+.RS 4
+Regular behavior
+.RE
+.PP
+\fBGain\fR
+.RS 4
+A new window will grab X focus as soon as it is opened\&.
+.RE
+.PP
+\fBRefuse\fR
+.RS 4
+A new window will not grab X focus as soon as it is opened\&.
+.RE
+.PP
+\fBDeny\fR
+.RS 4
+The window is not allowed to claim focus while it is opened\&.
+.RE
+.PP
+\fBLock\fR
+.RS 4
+No window is allowed to claim the focus while this window has it\&.
+.RE
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+Please notice that technically, windows may still obtain the focus which is then however reverted by the WM\&. In case you\*(Aqre very unlucky, a key event may thus still go to the wrong window\&.
+.fi
+.if n \{\
+.RE
+.\}
+.RE
 .RE
 .PP
 \fB[FocusHidden]\fR {\fIbool\fR}
