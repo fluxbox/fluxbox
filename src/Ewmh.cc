@@ -821,32 +821,38 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
     const BScreen::WorkspaceNames &workspacenames = screen.getWorkspaceNames();
     const size_t number_of_desks = workspacenames.size();
 
-    const char** names = new const char*[number_of_desks];
+    /* the SPEC states "NULL-terminated strings". This implies, that also the
+     * last element actually gets proper NULL-termination after being treated
+     * by Xutf8TextListToTextProperty. Xutf8TextListToTextProperty removes
+     * the NULL from the last name and thus it is missing when reading the
+     * _NET_DESKTOP_NAMES property. This might confuse other WMs, pagers etc.
+     * thus, an artifical "empty" name is added at the end of the regular
+     * names list which is then properly encoded by Xutf8TextListToTextProperty
+     * and everyone is happy
+     */
+    const char* names[number_of_desks+1];
 
     for (size_t i = 0; i < number_of_desks; i++) {
         names[i] = workspacenames[i].c_str();
     }
+    names[number_of_desks] = NULL;
 
 #ifdef X_HAVE_UTF8_STRING
     int code = Xutf8TextListToTextProperty(FbTk::App::instance()->display(),
-                                const_cast<char**>(names), number_of_desks, XUTF8StringStyle, &text);
+                                const_cast<char**>(names), number_of_desks+1, XUTF8StringStyle, &text);
     if (code != XNoMemory && code != XLocaleNotSupported) {
         XSetTextProperty(FbTk::App::instance()->display(),
                          screen.rootWindow().window(),
                          &text, m_net->desktop_names);
-
         XFree(text.value);
     }
-
 #else
-    if (XStringListToTextProperty(names, number_of_desks, &text)) {
+    if (XStringListToTextProperty(names, number_of_desks+1, &text)) {
         XSetTextProperty(FbTk::App::instance()->display(), screen.rootWindow().window(),
                 &text, m_net->desktop_names);
         XFree(text.value);
     }
 #endif
-
-    delete[] names;
 }
 
 void Ewmh::updateCurrentWorkspace(BScreen &screen) {
