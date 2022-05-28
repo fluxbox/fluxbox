@@ -320,15 +320,24 @@ void Menu::lower() {
 
 void Menu::cycleItems(bool reverse) {
 
-    if (m_items.empty())
-        return;
-
-    int offset = reverse ? -1 : 1;
     int l = m_items.size();
-    int i = m_active_index;
+    int i;
+    int offset = reverse ? -1 : 1;
     size_t ignore;
 
-    for (i += offset; i != m_active_index; i += offset ) {
+    // check if there is _any_ selectable item
+    for (i = 0; i < l; i++) {
+        if (isItemSelectable(i)) {
+            break;
+        }
+    }
+
+    // no selectable item
+    if (i >= l) {
+        return;
+    }
+
+    for (i = m_active_index + offset; i != m_active_index; i += offset ) {
         if (i < 0) {
             i = l - 1;
         } else if (i >= l) {
