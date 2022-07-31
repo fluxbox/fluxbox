@@ -622,12 +622,9 @@ void UnclutterCmd::execute() {
         return;
 
     // place
-    MinOverlapPlacement mopp;
     int x, y;
-    for (win = placed_windows.begin(); win != placed_windows.end(); ++win) {
-        mopp.placeWindow(**win, head, x, y);
-        (*win)->move(x, y);
-    }
+    for (win = placed_windows.begin(); win != placed_windows.end(); ++win)
+        (*win)->placeWindow((*win)->getOnHead());
 }
 
 REGISTER_COMMAND(showdesktop, ShowDesktopCmd, void);
