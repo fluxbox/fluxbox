@@ -139,7 +139,7 @@ void XftFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char* te
     if (m_utf8mode) {
         // check the string size,
         // if the size is zero we use the XftDrawString8 function instead.
-        XGlyphInfo ginfo;
+        XGlyphInfo ginfo = {};
         XftTextExtentsUtf8(w.display(), m_xftfonts[ROT0], (XftChar8 *)text, len, &ginfo);
         if (ginfo.xOff != 0) {
             XftDrawStringUtf8(draw, &xftcolor, font, x, y, (XftChar8 *)text, len);
@@ -162,7 +162,7 @@ unsigned int XftFontImp::textWidth(const char* text, unsigned int len) const {
     if (m_xftfonts[ROT0] == 0)
         return 0;
 
-    XGlyphInfo ginfo;
+    XGlyphInfo ginfo = {};
     Display* disp = App::instance()->display();
 
     XftFont *font = m_xftfonts[ROT0];
