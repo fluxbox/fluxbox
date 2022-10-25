@@ -29,16 +29,12 @@ namespace FbTk {
 /// Composes two functions into one.
 /// Uses Arg for type B and then calls type A
 template <class A, class B>
-class Compose_base: public std::unary_function<typename B::argument_type, typename A::result_type> {
+class Compose_base {
 public:
-    typedef typename A::result_type ResultTypeA;
-    typedef typename A::argument_type ArgumentTypeA;
-    typedef typename B::result_type ResultTypeB;
-    typedef typename B::argument_type ArgumentTypeB;
-
     Compose_base(const A &a, const B &b):m_a(a), m_b(b) { }
-    ResultTypeA operator () (const ArgumentTypeB &arg) const {
-        return m_a(m_b(arg));
+    template <class ARG>
+    auto operator () (const ARG& arg) const {
+      return m_a(m_b(arg));
     }
 
 private:

@@ -27,7 +27,7 @@ namespace FbTk {
 
 /// @brief compares one class function with a value type
 template <typename ClassType, typename ValueType>
-class CompareEqual_base: public std::unary_function<ClassType, bool> {
+class CompareEqual_base {
 public:
     typedef ValueType (ClassType::* Action)() const;
     typedef ValueType Value;
