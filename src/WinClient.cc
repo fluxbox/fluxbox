@@ -52,7 +52,7 @@
 
 using std::string;
 using std::list;
-using std::mem_fun;
+using std::mem_fn;
 using std::endl;
 using std::cerr;
 using std::hex;
@@ -115,7 +115,7 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
         // For each transient that waits call updateTransientInfo
         for_each(s_transient_wait[win].begin(),
                  s_transient_wait[win].end(),
-                 mem_fun(&WinClient::updateTransientInfo));
+                 mem_fn(&WinClient::updateTransientInfo));
         // clear transient waiting list for this window
         s_transient_wait.erase(win);
     }

@@ -90,7 +90,7 @@ public:
     unsigned int maxWidthPerClient() const;
     bool updateLock() const { return m_update_lock; }
 
-    void for_each(std::mem_fun_t<void, FbWindow> function);
+    void for_each(std::function<void(Item)> function);
     void setAlpha(int alpha); // set alpha on all windows
 
     ItemList::iterator begin() { return m_item_list.begin(); }
