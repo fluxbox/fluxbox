@@ -91,6 +91,7 @@ public:
     //
 
     bool getAttrib(XWindowAttributes &attr) const;
+    bool getWMClientMachine(XTextProperty &textprop) const;
     bool getWMName(XTextProperty &textprop) const;
     bool getWMIconName(XTextProperty &textprop) const;
     std::string getWMRole() const;
