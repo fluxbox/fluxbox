@@ -142,6 +142,8 @@ public:
     unsigned long initial_state, normal_hint_flags, wm_hint_flags;
 
 private:
+    char hostname_char[512];
+    FbTk::FbString hostname;
     /// removes client from any waiting list and clears empty waiting lists
     void removeTransientFromWaitingList();
 

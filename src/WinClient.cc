@@ -105,6 +105,8 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
     updateWMHints();
     updateWMNormalHints();
     updateWMClassHint();
+    gethostname(hostname_char, 512);
+    hostname = FbTk::FbString(hostname_char);
     updateTitle();
     Fluxbox::instance()->saveWindowSearch(win, this);
     if (window_group != None)
@@ -325,11 +327,11 @@ void WinClient::updateTitle() {
         return;
 
     FbTk::FbString fullname = FbTk::FbString(Xutil::getWMName(window()), 0, 512);
-    FbTk::FbString clientmachine = FbTk::FbString(Xutil::getWMClientMachine(window()), 0, 512);
-    char *host = new char[512]; gethostname(host, 512);
-    FbTk::FbString hostname = FbTk::FbString(host);
-    if (clientmachine != "Unnamed" && clientmachine != "" && clientmachine != hostname) {
-        fullname += " (on " + clientmachine + ")";
+    if (m_screen.isShowClient()) {
+        FbTk::FbString clientmachine = FbTk::FbString(Xutil::getWMClientMachine(window()), 0, 512);
+        if (clientmachine != "Unnamed" && clientmachine != "" && clientmachine != hostname) {
+            fullname += " (on " + clientmachine + ")";
+        }
     }
     m_title.setLogical(fullname);
     m_title_update_timer.start();
@@ -341,11 +343,11 @@ void WinClient::emitTitleSig() {
 
 void WinClient::setTitle(const FbTk::FbString &title) {
     FbTk::FbString fullname = title;
-    FbTk::FbString clientmachine = FbTk::FbString(Xutil::getWMClientMachine(window()), 0, 512);
-    char *host = new char[512]; gethostname(host, 512);
-    FbTk::FbString hostname = FbTk::FbString(host);
-    if (clientmachine != "Unnamed" && clientmachine != "" && clientmachine != hostname) {
-        fullname += " (on " + clientmachine + ")";
+    if (m_screen.isShowClient()) {
+        FbTk::FbString clientmachine = FbTk::FbString(Xutil::getWMClientMachine(window()), 0, 512);
+        if (clientmachine != "Unnamed" && clientmachine != "" && clientmachine != hostname) {
+            fullname += " (on " + clientmachine + ")";
+        }
     }
     m_title.setLogical(fullname);
     m_title_override = true;
