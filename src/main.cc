@@ -266,6 +266,7 @@ int main(int argc, char **argv) {
     FbTk::FbStringUtil::shutdown();
 
     if (restarting) {
+        alarm(0);
         if (!restart_argument.empty()) {
             const char *shell = getenv("SHELL");
             if (!shell)
