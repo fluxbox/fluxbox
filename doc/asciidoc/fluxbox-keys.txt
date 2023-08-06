@@ -457,7 +457,7 @@ doing so.
 *ToggleToolbarAbove*::
 	Toggles the toolbar between its regular and the AboveDock layer
 
-*ToggleToolbarHidden*::
+*ToggleToolbarVisible*::
 	Toggles the toolbar's autohiding state (autohide doesn't have to be enabled)
 
 *Deiconify* 'mode' 'destination'::
