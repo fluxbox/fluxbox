@@ -60,6 +60,8 @@ using std::string;
 using std::list;
 using std::endl;
 
+using namespace std::placeholders;
+
 namespace FbTk {
 
 template<>
@@ -367,13 +369,13 @@ void IconbarTool::setMode(string mode) {
                                            mode + " (iconhidden=no)"));
     if (m_winlist.get()) {
         m_winlist->addSig().connect(
-                    std::bind1st(FbTk::MemFun(*this, &IconbarTool::update), LIST_ADD)
+                    std::bind(FbTk::MemFun(*this, &IconbarTool::update), LIST_ADD, _1)
                 );
         m_winlist->removeSig().connect(
-                    std::bind1st(FbTk::MemFun(*this, &IconbarTool::update), LIST_REMOVE)
+                    std::bind(FbTk::MemFun(*this, &IconbarTool::update), LIST_REMOVE, _1)
                 );
         m_winlist->addSig().connect(
-                    std::bind1st(FbTk::MemFun(*this, &IconbarTool::update), LIST_ORDER)
+                    std::bind(FbTk::MemFun(*this, &IconbarTool::update), LIST_ORDER, _1)
                 );
         m_winlist->resetSig().connect(FbTk::MemFunBind(
                         *this, &IconbarTool::update, LIST_RESET, static_cast<Focusable *>(0)
@@ -518,7 +520,7 @@ void IconbarTool::updateSizing() {
     m_icon_container.setBorderColor(m_theme.border().color());
 
     FbTk::STLUtil::forAll(m_icons, 
-            FbTk::Compose(std::mem_fun(&IconButton::reconfigTheme), 
+            FbTk::Compose(std::mem_fn(&IconButton::reconfigTheme), 
                 FbTk::Select2nd<IconMap::value_type>()));
 
 }

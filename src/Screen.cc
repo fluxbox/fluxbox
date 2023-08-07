@@ -133,12 +133,13 @@ using std::make_pair;
 using std::pair;
 using std::list;
 using std::vector;
-using std::mem_fun;
-using std::bind2nd;
+using std::mem_fn;
 using std::equal_to;
 
 using std::hex;
 using std::dec;
+
+using namespace std::placeholders;
 
 static bool running = true;
 namespace {
@@ -750,12 +751,12 @@ void BScreen::reconfigure() {
     // reconfigure workspaces
     for_each(m_workspaces_list.begin(),
              m_workspaces_list.end(),
-             mem_fun(&Workspace::reconfigure));
+             mem_fn(&Workspace::reconfigure));
 
     // reconfigure Icons
     for_each(m_icon_list.begin(),
              m_icon_list.end(),
-             mem_fun(&FluxboxWindow::reconfigure));
+             mem_fn(&FluxboxWindow::reconfigure));
 
     imageControl().cleanCache();
     // notify objects that the screen is reconfigured
@@ -849,7 +850,7 @@ void BScreen::removeIcon(FluxboxWindow *w) {
 
     Icons::iterator erase_it = find_if(iconList().begin(),
                                        iconList().end(),
-                                       bind2nd(equal_to<FluxboxWindow *>(), w));
+                                       std::bind(equal_to<FluxboxWindow *>(), _1, w));
     // no need to send iconlist signal if we didn't
     // change the iconlist
     if (erase_it != m_icon_list.end()) {
@@ -884,7 +885,7 @@ void BScreen::removeClient(WinClient &client) {
     // remove any grouping this is expecting
     Groupables::iterator erase_it = find_if(m_expecting_groups.begin(),
                                             m_expecting_groups.end(),
-                                            Compose(bind2nd(equal_to<WinClient *>(), &client),
+                                            Compose(std::bind(equal_to<WinClient *>(), _1, &client),
                                                     Select2nd<Groupables::value_type>()));
 
     if (erase_it != m_expecting_groups.end())
@@ -1473,7 +1474,7 @@ void BScreen::shutdown() {
     m_focus_control->shutdown();
     for_each(m_workspaces_list.begin(),
              m_workspaces_list.end(),
-             mem_fun(&Workspace::shutdown));
+             mem_fn(&Workspace::shutdown));
 }
 
 
