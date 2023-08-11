@@ -442,6 +442,12 @@ public:
     std::string getWMRole() const;
     long getCardinalProperty(Atom prop,bool*exists=NULL) const;
     FbTk::FbString getTextProperty(Atom prop,bool*exists=NULL) const;
+    void setWinTextProperty(Atom prop, XTextProperty* tp) {
+        fbWindow().setTextProperty(prop, tp);
+    }
+    void deleteXProperty(Atom prop) {
+        fbWindow().deleteProperty(prop);
+    }
     void setWindowType(WindowState::WindowType type);
     bool isTransient() const;
 

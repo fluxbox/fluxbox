@@ -30,6 +30,8 @@
 #include <set>
 #include <cmath>
 
+#include <X11/Xutil.h>
+
 namespace FbTk {
 
 class Color;
@@ -170,6 +172,7 @@ public:
 
     long cardinalProperty(Atom property, bool*exists=NULL) const;
     FbTk::FbString textProperty(Atom property,bool*exists=NULL) const;
+    void setTextProperty(Atom property, XTextProperty* tp);
 
     void addToSaveSet();
     void removeFromSaveSet();

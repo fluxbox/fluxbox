@@ -329,6 +329,7 @@ public:
 
         properties = XInternAtom(disp, "_NET_PROPERTIES", False);
         wm_name = XInternAtom(disp, "_NET_WM_NAME", False);
+        wm_visible_name = XInternAtom(disp, "_NET_WM_VISIBLE_NAME", False);
         wm_icon_name = XInternAtom(disp, "_NET_WM_ICON_NAME", False);
         wm_desktop = XInternAtom(disp, "_NET_WM_DESKTOP", False);
 
@@ -406,6 +407,7 @@ public:
     // application window properties
     Atom properties,
          wm_name,
+         wm_visible_name,
          wm_icon_name,
          wm_desktop,
          // types
@@ -625,6 +627,9 @@ void Ewmh::setupClient(WinClient &winclient) {
     if (!newtitle.empty())
         winclient.setTitle(newtitle);
 
+    join(winclient.titleSig(),
+        FbTk::MemFun(*this, &Ewmh::updateVisibleName));
+
     Atom ret_type;
     int fmt;
     unsigned long nitems, bytes_after;
@@ -691,6 +696,27 @@ void Ewmh::setupClient(WinClient &winclient) {
     winclient.setWindowType(type);
 
 
+}
+
+void Ewmh::updateVisibleName(const std::string &new_title, Focusable &win) {
+    std::string netname = win.getTextProperty(m_net->wm_name);
+    if (netname != new_title) {
+         XTextProperty tp;
+	 /* Make a copy of the new title for const-correctness purposes */
+	 std::vector<char> ntbuf(new_title.begin(), new_title.end());
+	 ntbuf.push_back(0);
+	 char* ntbuf_cstr = &ntbuf[0];
+#ifdef X_HAVE_UTF8_STRING
+	 Xutf8TextListToTextProperty(FbTk::App::instance()->display(),
+				     &ntbuf_cstr, 1, XUTF8StringStyle, &tp);
+#else
+	 XStringListToTextProperty(&ntbuf_cstr, 1, &tp);
+#endif
+         win.setWinTextProperty(m_net->wm_visible_name, &tp);
+	 XFree(tp.value);
+    } else {
+         win.deleteXProperty(m_net->wm_visible_name);
+    }
 }
 
 void Ewmh::setupFrame(FluxboxWindow &win) {

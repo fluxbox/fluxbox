@@ -69,7 +69,7 @@ public:
 
     bool hasSelection() const {
         return (m_select_pos != std::string::npos) && (m_select_pos != m_cursor_pos + m_start_pos); }
-    void select(std::string::size_type pos, int length);
+    void select(std::string::size_type pos, unsigned int length);
     void selectAll();
 
     unsigned int findEmptySpaceLeft();

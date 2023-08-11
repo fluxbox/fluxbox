@@ -219,8 +219,8 @@ void fbsetroot::modula(int x, int y) {
     char data[32];
     long pattern = 0;
 
-    register int i;
-
+    /* register */ int i; // register storage class deprecated C++11,
+                          //                        removed    C++17
     FbRootWindow root(screen);
 
     for (i = 0; i < s; i++) {

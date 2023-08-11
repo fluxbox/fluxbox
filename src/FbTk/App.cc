@@ -132,7 +132,9 @@ bool App::setenv(const char* key, const char* value) {
     }
 
     // create the new environment
-    strncpy(newenv, key, key_size);
+    strncpy(newenv, key, key_size+1); // +1 avoids warning from very clever
+                                      // compilers even though we are going
+                                      // to overwrite the NUL.
     newenv[key_size] = '=';
     if (value_size > 0) {
         strncpy(newenv+key_size+1, value, value_size);

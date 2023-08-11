@@ -205,7 +205,8 @@ void XFontImp::rotate(FbTk::Orientation orient) {
                              0, 0,
                              boxlen, boxlen);
         // draw the character centre top right on canvas
-        snprintf(text, 1, "%c", ichar);
+        snprintf(text, 2, "%c", ichar); // allow the null-termination, even
+	                                // if we don't use it, to avoid warn
         font_gc.setForeground(1);
         XDrawImageString(dpy, canvas.drawable(), font_gc.gc(),
                          boxlen/2 - lbearing,
