@@ -43,6 +43,51 @@ using std::endl;
 
 namespace Xutil {
 
+FbTk::FbString getWMClientMachine(Window window) {
+
+    if (window == None)
+        return FbTk::FbString("");
+
+    Display *display = FbTk::App::instance()->display();
+
+    XTextProperty text_prop;
+    text_prop.value = 0;
+    char **list = 0;
+    int num = 0;
+    _FB_USES_NLS;
+    FbTk::FbString name;
+
+    if (XGetWMClientMachine(display, window, &text_prop)) {
+        if (text_prop.value && text_prop.nitems > 0) {
+            if (text_prop.encoding != XA_STRING) {
+
+                text_prop.nitems = strlen((char *) text_prop.value);
+                XmbTextPropertyToTextList(display, &text_prop, &list, &num);
+
+                if (num > 0 && list != 0)
+                    name = FbTk::FbStringUtil::LocaleStrToFb(static_cast<char *>(*list));
+                else
+                    name = text_prop.value ? FbTk::FbStringUtil::XStrToFb((char *)text_prop.value) : "";
+
+                if (list)
+                    XFreeStringList(list);
+
+            } else
+                name = text_prop.value ? FbTk::FbStringUtil::XStrToFb((char *)text_prop.value) : "";
+
+            XFree(text_prop.value);
+
+        } else { // default name
+            name = _FB_XTEXT(Window, Unnamed, "Unnamed", "Default name for a window without a WM_NAME");
+        }
+    } else {
+        // default name
+        name = _FB_XTEXT(Window, Unnamed, "Unnamed", "Default name for a window without a WM_NAME");
+    }
+
+    return name;
+}
+
 FbTk::FbString getWMName(Window window) {
 
     if (window == None)

@@ -99,6 +99,7 @@ public:
     bool isWorkspaceWarpingVertical() const { return isWorkspaceWarping() && *resource.workspace_warping_vertical; }
     int getWorkspaceWarpingHorizontalOffset() const { return *resource.workspace_warping_horizontal_offset; }
     int getWorkspaceWarpingVerticalOffset() const { return *resource.workspace_warping_vertical_offset; }
+    bool isShowClient() const { return *resource.show_clientmachine; }
     bool doAutoRaise() const { return *resource.auto_raise; }
     bool clickRaises() const { return *resource.click_raises; }
     bool doOpaqueMove() const { return *resource.opaque_move; }
