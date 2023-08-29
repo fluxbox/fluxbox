@@ -118,12 +118,12 @@ window.tab.borderColor:              black
 
 window.justify:                      Center
 
-window.tab.font:                     -*-clean-medium-r-*-*-12-*-*-*-*-60-iso8859-*
-toolbar.font:                        -*-lucida-bold-r-*-*-*-100-*-*-*-*-*-*
-window.font:                         -*-helvetica-medium-r-normal-*-12-*-*-*-*-*-iso8859-*
-#menu.title.font:                    -*-lucida-bold-r-*-*-*-100-*-*-*-*-*-*
-menu.title.font:                     -*-lucida-bold-r-*-*-*-100-*-*-*-*-*-*
-menu.frame.font:                     -*-lucida-medium-r-*-*-*-100-*-*-*-*-*-*
+window.tab.font: clean-12
+toolbar.font: lucida-12:bold
+window.font: helvetica-12
+#menu.title.font: lucida-12:bold
+menu.title.font: lucida-12:bold
+menu.frame.font: lucida-12
 
 borderColor:                         rgb:00/00/00
 
@@ -136,3 +136,5 @@ background.modX:                     5
 background.modY:                     5
 background.color:                    rgb:52/60/75
 background.colorTo:                  rgb:62/70/85
+
+! vim: ft=xdefaults
