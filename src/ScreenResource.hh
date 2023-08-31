@@ -41,6 +41,7 @@ struct ScreenResource {
        workspace_warping_horizontal,
        workspace_warping_vertical,
        show_window_pos,
+       tab_hide_single,
        auto_raise,
        click_raises;
 
