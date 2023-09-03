@@ -1199,11 +1199,14 @@ Set this to the number of workspaces the users wants.
 Default: *4*
 
 *session.screen0.struts*: 'integer', 'integer', 'integer', 'integer'::
-Shrink the workspace by left, right, top, bottom pixels (positive integers)
-This allows you to add some padding to the workspace eg. to keep a fraction
+Shrink the workspace by left, right, top, bottom pixels (positive integers).
+This allows you to add some padding to the workspace, e.g. to keep a fraction
 of the desktop visible against maximized windows.
 session.screen0.struts.<n> allows to control this for individual heads
-(<n> starts counting at 1)
+(<n> starts counting at 1); note these latter per-head parameters, unlike
+most, will not be auto-generated with default values when saving the Fluxbox
+rc file, since they serve only to override for a specific head the default
+value specified by session.screen0.struts.
 +
 Default: *0,0,0,0*
 
