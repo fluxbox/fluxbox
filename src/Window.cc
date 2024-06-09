@@ -291,6 +291,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client):
     m_current_state(0),
     m_old_decoration_mask(0),
     m_client(&client),
+    m_has_tooltip(false),
     m_toggled_decos(false),
     m_focus_protection(Focus::NoProtection),
     m_mouse_focus(BoolAcc(screen().focusControl(), &FocusControl::isMouseFocus)),
