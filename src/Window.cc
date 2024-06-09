@@ -73,14 +73,14 @@
 using std::endl;
 using std::string;
 using std::vector;
-using std::bind2nd;
-using std::mem_fun;
+using std::mem_fn;
 using std::equal_to;
 using std::max;
 using std::swap;
 using std::dec;
 using std::hex;
 
+using namespace std::placeholders;
 using namespace FbTk;
 
 namespace {
@@ -815,8 +815,8 @@ bool FluxboxWindow::removeClient(WinClient &client) {
 WinClient *FluxboxWindow::findClient(Window win) {
     ClientList::iterator it = find_if(clientList().begin(),
                                       clientList().end(),
-                                      Compose(bind2nd(equal_to<Window>(), win),
-                                              mem_fun(&WinClient::window)));
+                                      Compose(std::bind(equal_to<Window>(), _1, win),
+                                              mem_fn(&WinClient::window)));
     return (it == clientList().end() ? 0 : *it);
 }
 
@@ -3379,8 +3379,8 @@ WinClient* FluxboxWindow::winClientOfLabelButtonWindow(Window window) {
     Client2ButtonMap::iterator it =
         find_if(m_labelbuttons.begin(),
                 m_labelbuttons.end(),
-                Compose(bind2nd(equal_to<Window>(), window),
-                        Compose(mem_fun(&FbTk::Button::window),
+                Compose(std::bind(equal_to<Window>(), _1, window),
+                        Compose(mem_fn(&FbTk::Button::window),
                                 Select2nd<Client2ButtonMap::value_type>())));
     if (it != m_labelbuttons.end())
         result = it->first;

@@ -720,12 +720,12 @@ void CloseAllWindowsCmd::execute() {
     for (; workspace_it != workspace_it_end; ++workspace_it) {
         windows = (*workspace_it)->windowList();
         std::for_each(windows.begin(), windows.end(),
-                std::mem_fun(&FluxboxWindow::close));
+                std::mem_fn(&FluxboxWindow::close));
     }
 
     windows = screen->iconList();
     std::for_each(windows.begin(),
-            windows.end(), std::mem_fun(&FluxboxWindow::close));
+            windows.end(), std::mem_fn(&FluxboxWindow::close));
 
 }
 
