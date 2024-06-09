@@ -202,7 +202,7 @@ typedef FbTk::SimpleCommand<Fluxbox> FluxboxCmd;
       };
 
       Bar bar;
-      bind2nd(mem_fun(&F::foo), bar);
+      bind(mem_fn(&F::foo), _1, bar);
 
    it complaints about not beeing able to store a reference to
    a reference (Bar&&).
@@ -514,7 +514,7 @@ void Fluxbox::initScreen(BScreen *screen) {
     // initiate atomhandler for screen specific stuff
     STLUtil::forAll(m_atomhandler, 
             CallMemFunWithRefArg<AtomHandler, BScreen&, void>(&AtomHandler::initForScreen, *screen));
-    //STLUtil::forAll(m_atomhandler, bind2nd(mem_fn(&AtomHandler::initForScreen), *screen));
+    //STLUtil::forAll(m_atomhandler, bind(mem_fn(&AtomHandler::initForScreen), _1, *screen));
 
     FocusControl::revertFocus(*screen); // make sure focus style is correct
 
