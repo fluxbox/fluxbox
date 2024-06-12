@@ -1192,6 +1192,12 @@ the mouse position)
 +
 Default: *40*
 
+*session.screen0.ignoreOversizedWindows*: 'boolean'::
+If this setting is enabled, windows larger than the screen width and height are
+not automatically resized. This is useful while using heads with different
+resolutions and moving windows between them.
++
+Default: *False*
 
 *session.screen0.workspaces*: 'integer'::
 Set this to the number of workspaces the users wants.
