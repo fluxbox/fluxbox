@@ -802,39 +802,41 @@ void Remember::reload() {
             int pos = getStringBetween(key, line.c_str(), '[', ']');
             string lc_key = toLower(key);
 
-            if (pos > 0 && (lc_key == "app" || lc_key == "transient")) {
-                ClientPattern *pat = new ClientPattern(line.c_str() + pos);
-                if (!in_group) {
-                    if ((err = pat->error()) == 0) {
-                        bool transient = (lc_key == "transient");
-                        Application *app = findMatchingPatterns(pat,
-                                               old_pats, transient, false);
-                        if (app) {
-                            app->reset();
-                            reused_apps.insert(app);
-                        } else {
-                            app = new Application(transient, false);
-                        }
+            if (pos > 0) {
+                if (lc_key == "app" || lc_key == "transient") {
+                    ClientPattern *pat = new ClientPattern(line.c_str() + pos);
+                    if (!in_group) {
+                        if ((err = pat->error()) == 0) {
+                            bool transient = (lc_key == "transient");
+                            Application *app = findMatchingPatterns(pat,
+                                                   old_pats, transient, false);
+                            if (app) {
+                                app->reset();
+                                reused_apps.insert(app);
+                            } else {
+                                app = new Application(transient, false);
+                            }
 
-                        m_pats->push_back(make_pair(pat, app));
-                        row += parseApp(apps_file, *app);
+                            m_pats->push_back(make_pair(pat, app));
+                            row += parseApp(apps_file, *app);
+                        } else {
+                            cerr<<"Error reading apps file at line "<<row<<", column "<<(err+pos)<<"."<<endl;
+                            delete pat; // since it didn't work
+                        }
                     } else {
-                        cerr<<"Error reading apps file at line "<<row<<", column "<<(err+pos)<<"."<<endl;
-                        delete pat; // since it didn't work
+                        grouped_pats.push_back(pat);
                     }
-                } else {
-                    grouped_pats.push_back(pat);
+                } else if (lc_key == "startup" && fb.isStartup()) {
+                    if (!handleStartupItem(line, pos)) {
+                        cerr<<"Error reading apps file at line "<<row<<"."<<endl;
+                    }
+                    // save the item even if it was bad (aren't we nice)
+                    m_startups.push_back(line.substr(pos));
+                } else if (lc_key == "group") {
+                    in_group = true;
+                    if (line.find('(') != string::npos)
+                        pat = new ClientPattern(line.c_str() + pos);
                 }
-            } else if (pos > 0 && lc_key == "startup" && fb.isStartup()) {
-                if (!handleStartupItem(line, pos)) {
-                    cerr<<"Error reading apps file at line "<<row<<"."<<endl;
-                }
-                // save the item even if it was bad (aren't we nice)
-                m_startups.push_back(line.substr(pos));
-            } else if (pos > 0 && lc_key == "group") {
-                in_group = true;
-                if (line.find('(') != string::npos)
-                    pat = new ClientPattern(line.c_str() + pos);
             } else if (in_group) {
                 // otherwise assume that it is the start of the attributes
                 Application *app = 0;
