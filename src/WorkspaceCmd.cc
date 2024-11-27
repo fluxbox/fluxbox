@@ -507,16 +507,18 @@ void ArrangeWindowsCmd::execute() {
         if (i & 1)
             (*win)->move(x_offs, y_offs);
         else
-            (*win)->move(screen->maxRight(head) - (*win)->frame().width(), y_offs);
+            (*win)->move(screen->maxRight(head) - (*win)->frame().width() -
+                         (*win)->fbWindow().borderWidth()*2, y_offs);
 
-        y_offs += (*win)->frame().height();
+        y_offs += (*win)->frame().height() + (*win)->fbWindow().borderWidth()*2;
     }
 
     // TODO: what if the number of shaded windows is really big and we end up
     // with really little space left for the normal windows? how to handle
     // this?
     if (!shaded_windows.empty())
-        max_height -= i * (*shaded_windows.begin())->frame().height();
+        max_height -= i * ( (*shaded_windows.begin())->frame().height() +
+                            (*shaded_windows.begin())->fbWindow().borderWidth()*2 );
 
     const unsigned int cal_width = max_width/cols; // width ratio (width of every window)
     const unsigned int cal_height = max_height/rows; // height ratio (height of every window)
@@ -550,16 +552,27 @@ void ArrangeWindowsCmd::execute() {
             unsigned int w = cal_width - (*closest)->widthOffset();
             unsigned int h = cal_height - (*closest)->heightOffset();
 
-            // the last window gets everything that is left.
-            if (normal_windows.size() == 1) {
-
+            // the last window of every row gets all the remaining width.
+            if ( (normal_windows.size() == 1) || (j == (cols-1)) ) {
                 w = static_cast<int>(screen->maxRight(head)) - x_offs - (*closest)->widthOffset();
-                h = static_cast<int>(cal_height) - (*closest)->heightOffset();
 
                 if (m_tile_method == STACKLEFT) {
                     w -= max_width;
                 }
+             }
+
+            // the last window of every column also gets all the remaining height.
+            if ( (normal_windows.size() == 1) || (i == (rows-1)) ) {
+                h = static_cast<int>(screen->maxBottom(head)) - y_offs - (*closest)->heightOffset();
+
+                if (m_tile_method == STACKTOP) {
+                    h -= max_height;
+                }
             }
+
+            // mind the width of window borders
+            w -= (*closest)->fbWindow().borderWidth() * 2;
+            h -= (*closest)->fbWindow().borderWidth() * 2;
 
             (*closest)->moveResize(x, y, w, h);
             normal_windows.erase(closest);
@@ -573,18 +586,21 @@ void ArrangeWindowsCmd::execute() {
     // If using a stacked mechanism we now need to place the main window.
     if (main_window != NULL){
         x_offs = screen->maxLeft(head);
+        // mind the width of window borders
+        unsigned int max_width_b = max_width - (main_window->fbWindow().borderWidth() * 2);
+        unsigned int max_height_b = max_height - (main_window->fbWindow().borderWidth() * 2);
         switch (m_tile_method){
             case STACKLEFT:
-                main_window->moveResize(x_offs + max_width, orig_y_offs, max_width, max_height);
+                main_window->moveResize(x_offs + max_width, orig_y_offs, max_width_b, max_height_b);
                 break;
             case STACKRIGHT:
-                main_window->moveResize(x_offs, screen->maxTop(head), max_width, max_height);
+                main_window->moveResize(x_offs, screen->maxTop(head), max_width_b, max_height_b);
                 break;
             case STACKTOP:
-                main_window->moveResize(x_offs, max_height, max_width, max_height);
+                main_window->moveResize(x_offs, max_height, max_width_b, max_height_b);
                 break;
             case STACKBOTTOM:
-                main_window->moveResize(x_offs, screen->maxTop(head), max_width, max_height);
+                main_window->moveResize(x_offs, screen->maxTop(head), max_width_b, max_height_b);
                 break;
             default:
                 // Shouldn't happen.
