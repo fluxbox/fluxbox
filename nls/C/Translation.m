@@ -83,6 +83,7 @@ $set 4 #Configmenu
 27 Ignore Resize Increment
 28 Disable Moving
 29 Disable Resizing
+33 Show clientmachine
 
 $set 5 #Ewmh_OBSOLETE
 

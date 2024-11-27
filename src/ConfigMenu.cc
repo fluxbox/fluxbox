@@ -344,6 +344,10 @@ void ConfigMenu::setup(FbTk::Menu& menu, ConfigMenu::SetupHelper& sh) {
               "Workspace Warping",
               "Workspace Warping - dragging windows to the edge and onto the next workspace",
               sh.resource.workspace_warping, saverc_cmd);
+    _BOOLITEM(menu, Configmenu, WorkspaceShowClientmachine,
+              "Show (on $CLIENT)",
+              "Show clientmachine if not running on localhost",
+              sh.resource.show_clientmachine, saverc_cmd);
 
 #undef _BOOLITEM
 

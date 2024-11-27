@@ -40,6 +40,7 @@ struct ScreenResource {
        workspace_warping,
        workspace_warping_horizontal,
        workspace_warping_vertical,
+       show_clientmachine,
        show_window_pos,
        auto_raise,
        click_raises;
