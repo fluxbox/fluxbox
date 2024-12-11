@@ -3,9 +3,11 @@
 bin_SCRIPTS = \
 	util/fbsetbg \
 	util/fluxbox-generate_menu \
-	util/startfluxbox
+	util/startfluxbox \
+	util/fbsystem-style-font-resizer
 EXTRA_DIST += \
-	util/fbsetbg
+	util/fbsetbg \
+	util/fbsystem-style-font-resizer
 PATHFILES += \
 	util/startfluxbox \
 	util/fluxbox-generate_menu
