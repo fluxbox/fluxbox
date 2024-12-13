@@ -2458,23 +2458,24 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     // - raise() if clickRaise is enabled
     // - hide open menues
     // - focus on clickFocus
-    if (frame().window().window() == be.window) {
-        if (screen().clickRaises())
-            raise();
+    if (!screen().focusControl().isCycling()) {
+        if (frame().window().window() == be.window) {
+            if (screen().clickRaises())
+                raise();
 
-        m_button_grab_x = be.x_root - frame().x() - frame().window().borderWidth();
-        m_button_grab_y = be.y_root - frame().y() - frame().window().borderWidth();
+            m_button_grab_x = be.x_root - frame().x() - frame().window().borderWidth();
+            m_button_grab_y = be.y_root - frame().y() - frame().window().borderWidth();
+        }
+
+        if (!m_focused && acceptsFocus() && m_click_focus)
+            focus();
+
+        if (!screen().focusControl().isMouseTabFocus() &&
+            client && client != m_client &&
+            !screen().focusControl().isIgnored(be.x_root, be.y_root) ) {
+            setCurrentClient(*client, isFocused());
+        }
     }
-
-    if (!m_focused && acceptsFocus() && m_click_focus)
-        focus();
-
-    if (!screen().focusControl().isMouseTabFocus() &&
-        client && client != m_client &&
-        !screen().focusControl().isIgnored(be.x_root, be.y_root) ) {
-        setCurrentClient(*client, isFocused());
-    }
-
 
 
 }
