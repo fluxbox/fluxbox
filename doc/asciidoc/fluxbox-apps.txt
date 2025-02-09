@@ -174,6 +174,16 @@ Button, Close Button, Menu Button, Sticky Button, Shade Button, External Tabs, F
 *[Tab]* {'bool'}::
     Whether the window has tabs enabled.
 
+*[TabPlacement]* {'position'}::
+    Specify where the tab(s) for the window should be placed (assuming that
+    external tabs are being used). The 'position' may be any of *Top*,
+    *TopLeft*, *TopRight*, *Bottom*, *BottomLeft*, *BottomRight*, *Left*,
+    *LeftTop*, *LeftBottom*, *Right*, *RightTop*, or *RightBottom*. The values
+    with only one directional component mean for the tabs to be centered on
+    the specified side. Note that if this setting is not given, the
+    general tab placement for the window's screen, specified by the
+    *tabPlacement* resource in the rc file (see fluxbox(1) for details), is used.
+
 *[FocusNewWindow]* {'bool'}::
     *DEPRECATED!* Please use FocusProtection "Gain" or "Refuse" instead.;;
     If enabled, a new window will grab X focus as soon as it is opened.
