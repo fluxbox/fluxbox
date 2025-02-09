@@ -54,8 +54,8 @@ void maxTextLength(int n_pixels, const FbTk::Font& font, const char* const text,
         //             +------left
         //              n_pixels
 
-        int right = n_pixels / (font.textWidth(".", 1) + 1);
-        int left = n_pixels / (font.textWidth("WW", 2) + 1);
+        int right = std::min(n_pixels / (font.textWidth(".", 1) + 1), text_len);
+        int left = std::min(n_pixels / (font.textWidth("WW", 2) + 1), text_len);
         int middle;
 
         // binary search for longest substring fitting into 'max_width' pixels
