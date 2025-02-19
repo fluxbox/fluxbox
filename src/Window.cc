@@ -528,7 +528,8 @@ void FluxboxWindow::init() {
 
     fluxbox.attachSignals(*this);
 
-    if (!m_state.fullscreen) {
+    const int ignore_oversized = screen().getIgnoreOversizedWindows();
+    if (!m_state.fullscreen && !ignore_oversized) {
         unsigned int new_width = 0, new_height = 0;
         if (m_client->width() >= screen().width()) {
             m_state.maximized |= WindowState::MAX_HORZ;
