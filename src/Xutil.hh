@@ -28,6 +28,7 @@
 
 namespace Xutil {
 
+FbTk::FbString getWMClientMachine(Window window);
 FbTk::FbString getWMName(Window window);
 
 FbTk::FbString getWMClassName(Window win);
