@@ -2159,6 +2159,7 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent &ue) {
 
     if (numClients() == 1) // unmapping the last client
         frame().hide(); // hide this now, otherwise compositors will fade out the frame, bug #1110
+    setState(WithdrawnState, false);
     restore(client, false);
 
 }
