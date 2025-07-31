@@ -521,22 +521,24 @@ void ArrangeWindowsCmd::execute() {
     const unsigned int cal_width = max_width/cols; // width ratio (width of every window)
     const unsigned int cal_height = max_height/rows; // height ratio (height of every window)
 
+    int cell_center_x = 0, cell_center_y = 0, win_center_x = 0, win_center_y = 0, x = 0, y = 0;
+    unsigned int closest_dist = ~0, dist = 0, w = 0, h = 0;
     // Resizes and sets windows positions in columns and rows.
     for (i = 0; i < rows; ++i) {
         x_offs = orig_x_offs;
         for (j = 0; j < cols && !normal_windows.empty(); ++j) {
 
 
-            int cell_center_x = x_offs + (x_offs + cal_width) / 2;
-            int cell_center_y = y_offs + (y_offs + cal_height) / 2;
-            unsigned int closest_dist = ~0;
+            cell_center_x = x_offs + (x_offs + cal_width) / 2;
+            cell_center_y = y_offs + (y_offs + cal_height) / 2;
+            int closest_dist = ~0;
 
             Workspace::Windows::iterator closest = normal_windows.end();
             for (win = normal_windows.begin(); win != normal_windows.end(); ++win) {
 
-                int win_center_x = (*win)->frame().x() + ((*win)->frame().x() + (*win)->frame().width() / 2);
-                int win_center_y = (*win)->frame().y() + ((*win)->frame().y() + (*win)->frame().height() / 2);
-                unsigned int dist = (win_center_x - cell_center_x) * (win_center_x - cell_center_x) +
+                win_center_x = (*win)->frame().x() + ((*win)->frame().x() + (*win)->frame().width() / 2);
+                win_center_y = (*win)->frame().y() + ((*win)->frame().y() + (*win)->frame().height() / 2);
+                dist = (win_center_x - cell_center_x) * (win_center_x - cell_center_x) +
                                     (win_center_y - cell_center_y) * (win_center_y - cell_center_y);
 
                 if (dist < closest_dist) {
@@ -545,10 +547,10 @@ void ArrangeWindowsCmd::execute() {
                 }
             }
 
-            int x = x_offs + (*closest)->xOffset();
-            int y = y_offs + (*closest)->yOffset();
-            unsigned int w = cal_width - (*closest)->widthOffset();
-            unsigned int h = cal_height - (*closest)->heightOffset();
+            x = x_offs + (*closest)->xOffset();
+            y = y_offs + (*closest)->yOffset();
+            w = cal_width - (*closest)->widthOffset();
+            h = cal_height - (*closest)->heightOffset();
 
             // the last window gets everything that is left.
             if (normal_windows.size() == 1) {
@@ -620,12 +622,9 @@ void UnclutterCmd::execute() {
         return;
 
     // place
-    MinOverlapPlacement mopp;
     int x, y;
-    for (win = placed_windows.begin(); win != placed_windows.end(); ++win) {
-        mopp.placeWindow(**win, head, x, y);
-        (*win)->move(x, y);
-    }
+    for (win = placed_windows.begin(); win != placed_windows.end(); ++win)
+        (*win)->placeWindow((*win)->getOnHead());
 }
 
 REGISTER_COMMAND(showdesktop, ShowDesktopCmd, void);
