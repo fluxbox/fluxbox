@@ -110,5 +110,7 @@ background.modY:		4
 background.color:		rgb:10/18/20
 background.colorTo:		rgb:30/38/40
 
-*Font:	                        -*-lucidatypewriter-medium-r-*-*-*-100-*-*-*-*-*-*
-!*Font:                         vera-7
+*Font: lucidatypewriter-12
+!*Font: vera-12
+
+! vim: ft=xdefaults
