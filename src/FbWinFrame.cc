@@ -37,10 +37,12 @@
 #include "FbTk/CompareEqual.hh"
 #include "FbTk/TextUtils.hh"
 #include "FbTk/STLUtil.hh"
+#include "FbTk/Util.hh"
 
 #include <X11/X.h>
 
 #include <algorithm>
+#include <cstring>
 
 using std::max;
 using std::mem_fn;
@@ -54,6 +56,28 @@ enum { UNFOCUS = 0, FOCUS, PRESSED };
 
 const int s_button_size = 26;
 const long s_mask = ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | EnterWindowMask | LeaveWindowMask;
+
+struct TabPlacementString {
+    FbWinFrame::TabPlacement placement;
+    const char* str;
+};
+
+const TabPlacementString _PLACEMENT_STRINGS[] = {
+    { FbWinFrame::DEFER_TO_SCREEN, "DeferToScreenTabPlacement" }, // presumably not used
+    { FbWinFrame::TOPLEFT, "TopLeft" },
+    { FbWinFrame::TOP, "Top" },
+    { FbWinFrame::TOPRIGHT, "TopRight" },
+    { FbWinFrame::BOTTOMLEFT, "BottomLeft" },
+    { FbWinFrame::BOTTOM, "Bottom" },
+    { FbWinFrame::BOTTOMRIGHT, "BottomRight" },
+    { FbWinFrame::LEFTBOTTOM, "LeftBottom" },
+    { FbWinFrame::LEFT, "Left" },
+    { FbWinFrame::LEFTTOP, "LeftTop" },
+    { FbWinFrame::RIGHTBOTTOM, "RightBottom" },
+    { FbWinFrame::RIGHT, "Right" },
+    { FbWinFrame::RIGHTTOP, "RightTop" },
+    { FbWinFrame::UNPARSEABLE, "<Error in parsing TabPlacement>" }
+};
 
 const struct {
     FbWinFrame::TabPlacement where;
@@ -106,6 +130,24 @@ void bg_pm_or_color(FbTk::FbWindow& win, const Pixmap& pm, const FbTk::Color& co
 
 } // end anonymous
 
+std::string FbWinFrame::nameOfTabPlacement(FbWinFrame::TabPlacement place) {
+    size_t i = (place == FbTk::Util::clamp(place, FbWinFrame::DEFER_TO_SCREEN,
+                                                  FbWinFrame::RIGHTTOP))
+               ? place
+               : FbWinFrame::DEFAULT;
+    return _PLACEMENT_STRINGS[i].str;
+}
+
+FbWinFrame::TabPlacement FbWinFrame::tabPlacementNamed(const char* name) {
+    static size_t n_tps = sizeof(_PLACEMENT_STRINGS)/sizeof(_PLACEMENT_STRINGS[0]);
+    for (size_t i = 0; i < n_tps; ++i) {
+        if (strcasecmp(name, _PLACEMENT_STRINGS[i].str) == 0) {
+            return _PLACEMENT_STRINGS[i].placement;
+        }
+    }
+    return FbWinFrame::UNPARSEABLE;
+}
+
 FbWinFrame::FbWinFrame(BScreen &screen, unsigned int client_depth,
                        WindowState &state,
                        FocusableTheme<FbWinFrameTheme> &theme):
@@ -143,6 +185,7 @@ FbWinFrame::FbWinFrame(BScreen &screen, unsigned int client_depth,
     m_use_handle(true),
     m_visible(false),
     m_tabmode(screen.getDefaultInternalTabs()?INTERNAL:EXTERNAL),
+    m_tab_placement(FbWinFrame::DEFER_TO_SCREEN),
     m_active_orig_client_bw(0),
     m_need_render(true),
     m_button_size(1),
@@ -217,6 +260,16 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
     }
 
     return ret;
+}
+
+FbWinFrame::TabPlacement FbWinFrame::tabPlacement() const {
+  if (m_tab_placement == DEFER_TO_SCREEN) return m_screen.getTabPlacement();
+  return m_tab_placement;
+}
+
+void FbWinFrame::setTabPlacement(FbWinFrame::TabPlacement place) {
+  m_tab_placement = place;
+  // do we need to do anything here to ensure redraw?
 }
 
 void FbWinFrame::hide() {
@@ -297,14 +350,13 @@ void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int heigh
     m_state.saveGeometry(window().x(), window().y(),
                          window().width(), window().height());
 
-    if (move || (resize && m_screen.getTabPlacement() != TOPLEFT &&
-                           m_screen.getTabPlacement() != LEFTTOP))
+    if (move || (resize && tabPlacement() != TOPLEFT && tabPlacement() != LEFTTOP))
         alignTabs();
 
     if (resize) {
         if (m_tabmode == EXTERNAL) {
             unsigned int s = width;
-            if (!s_place[m_screen.getTabPlacement()].is_horizontal) {
+            if (!s_place[tabPlacement()].is_horizontal) {
                 s = height;
             }
             m_tab_container.setMaxTotalSize(s);
@@ -320,7 +372,7 @@ void FbWinFrame::quietMoveResize(int x, int y,
                          window().width(), window().height());
     if (m_tabmode == EXTERNAL) {
         unsigned int s = width;
-        if (!s_place[m_screen.getTabPlacement()].is_horizontal) {
+        if (!s_place[tabPlacement()].is_horizontal) {
             s = height;
         }
         m_tab_container.setMaxTotalSize(s);
@@ -345,7 +397,7 @@ void FbWinFrame::alignTabs() {
     int tab_x = x();
     int tab_y = y();
 
-    TabPlacement p = m_screen.getTabPlacement();
+    TabPlacement p = tabPlacement();
     if (orig_orient != s_place[p].orient) {
         tabs.hide();
     }
@@ -870,7 +922,7 @@ void FbWinFrame::reconfigure() {
     if (m_tabmode == EXTERNAL) {
         unsigned int h = buttonHeight();
         unsigned int w = m_tab_container.width();
-        if (!s_place[m_screen.getTabPlacement()].is_horizontal) {
+        if (!s_place[tabPlacement()].is_horizontal) {
             w = m_tab_container.height();
             std::swap(w, h);
         }
@@ -1505,7 +1557,7 @@ void FbWinFrame::gravityTranslate(int &x, int &y,
 int FbWinFrame::widthOffset() const {
     if (m_tabmode != EXTERNAL || !m_use_tabs)
         return 0;
-    if (s_place[m_screen.getTabPlacement()].is_horizontal) {
+    if (s_place[tabPlacement()].is_horizontal) {
         return 0;
     }
     return m_tab_container.width() + m_window.borderWidth();
@@ -1515,7 +1567,7 @@ int FbWinFrame::heightOffset() const {
     if (m_tabmode != EXTERNAL || !m_use_tabs)
         return 0;
 
-    if (!s_place[m_screen.getTabPlacement()].is_horizontal) {
+    if (!s_place[tabPlacement()].is_horizontal) {
         return 0;
     }
     return m_tab_container.height() + m_window.borderWidth();
@@ -1524,7 +1576,7 @@ int FbWinFrame::heightOffset() const {
 int FbWinFrame::xOffset() const {
     if (m_tabmode != EXTERNAL || !m_use_tabs)
         return 0;
-    TabPlacement p = m_screen.getTabPlacement();
+    TabPlacement p = tabPlacement();
     if (p == LEFTTOP || p == LEFT || p == LEFTBOTTOM) {
         return m_tab_container.width() + m_window.borderWidth();
     }
@@ -1534,7 +1586,7 @@ int FbWinFrame::xOffset() const {
 int FbWinFrame::yOffset() const {
     if (m_tabmode != EXTERNAL || !m_use_tabs)
         return 0;
-    TabPlacement p = m_screen.getTabPlacement();
+    TabPlacement p = tabPlacement();
     if (p == TOPLEFT || p == TOP || p == TOPRIGHT) {
         return m_tab_container.height() + m_window.borderWidth();
     }
