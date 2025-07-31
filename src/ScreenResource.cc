@@ -22,7 +22,9 @@
 #include "ScreenResource.hh"
 #include "fluxbox.hh"
 #include "FbTk/Util.hh"
+
 #include <cstring>
+#include <sstream>
 
 namespace {
 
@@ -76,8 +78,25 @@ setFromString(const char *strval) {
 
 } // end namespace FbTk
 
+template<>
+void FbTk::Resource<StrutDimensions>::setFromString(const char *strval) {
+    setDefaultValue();
+    std::list<std::string> v;
+    FbTk::StringUtil::stringtok(v, strval, " ,");
+    std::list<std::string>::iterator it = v.begin();
+    if (it != v.end())   m_value.left   = std::max(0, atoi(it->c_str()));
+    if (++it != v.end()) m_value.right  = std::max(0, atoi(it->c_str()));
+    if (++it != v.end()) m_value.top    = std::max(0, atoi(it->c_str()));
+    if (++it != v.end()) m_value.bottom = std::max(0, atoi(it->c_str()));
+}
 
-
+template<>
+std::string FbTk::Resource<StrutDimensions>::getString() const {
+    std::ostringstream oss;
+    oss << m_value.left << ", " << m_value.right << ", "
+	<< m_value.top  << ", " << m_value.bottom;
+    return oss.str();
+}
 
 ScreenResource::ScreenResource(FbTk::ResourceManager& rm,
         const std::string& scrname,
@@ -98,6 +117,8 @@ ScreenResource::ScreenResource(FbTk::ResourceManager& rm,
     click_raises(rm, true, scrname+".clickRaises", altscrname+".ClickRaises"),
     default_deco(rm, "NORMAL", scrname+".defaultDeco", altscrname+".DefaultDeco"),
     tab_placement(rm, FbWinFrame::TOPLEFT, scrname+".tab.placement", altscrname+".Tab.Placement"),
+    default_strut_dims(rm, StrutDimensions(0,0,0,0), scrname+".struts",
+		       altscrname+".Struts"),
     windowmenufile(rm, Fluxbox::instance()->getDefaultDataFilename("windowmenu"), scrname+".windowMenu", altscrname+".WindowMenu"),
     typing_delay(rm, 0, scrname+".noFocusWhileTypingDelay", altscrname+".NoFocusWhileTypingDelay"),
     workspaces(rm, 4, scrname+".workspaces", altscrname+".Workspaces"),
