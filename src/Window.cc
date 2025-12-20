@@ -3268,14 +3268,18 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top, bool resize) {
 FluxboxWindow::ReferenceCorner FluxboxWindow::getResizeDirection(int x, int y,
         ResizeModel model, int corner_size_px, int corner_size_pc) const
 {
-    if (model == TOPLEFTRESIZE)     return LEFTTOP;
-    if (model == TOPRESIZE)         return TOP;
-    if (model == TOPRIGHTRESIZE)    return RIGHTTOP;
-    if (model == LEFTRESIZE)        return LEFT;
-    if (model == RIGHTRESIZE)       return RIGHT;
-    if (model == BOTTOMLEFTRESIZE)  return LEFTBOTTOM;
-    if (model == BOTTOMRESIZE)      return BOTTOM;
-    if (model == CENTERRESIZE)      return CENTER;
+    switch (model) {
+    case TOPLEFTRESIZE:     return LEFTTOP;
+    case TOPRESIZE:         return TOP;
+    case TOPRIGHTRESIZE:    return RIGHTTOP;
+    case LEFTRESIZE:        return LEFT;
+    case RIGHTRESIZE:       return RIGHT;
+    case BOTTOMLEFTRESIZE:  return LEFTBOTTOM;
+    case BOTTOMRESIZE:      return BOTTOM;
+    case CENTERRESIZE:      return CENTER;
+    default:
+    break;
+    }
 
     if (model == EDGEORCORNERRESIZE)
     {

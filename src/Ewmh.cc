@@ -1096,15 +1096,19 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         // ce.data.l[0] = the action (remove, add or toggle)
         // ce.data.l[1] = the first property to alter
         // ce.data.l[2] = second property to alter (can be zero)
-        if (ce.data.l[0] == STATE_REMOVE) {
-            setState(win, ce.data.l[1], false, *winclient);
-            setState(win, ce.data.l[2], false, *winclient);
-        } else if (ce.data.l[0] == STATE_ADD) {
-            setState(win, ce.data.l[1], true, *winclient);
-            setState(win, ce.data.l[2], true, *winclient);
-        } else if (ce.data.l[0] == STATE_TOGGLE) {
-            toggleState(win, ce.data.l[1]);
-            toggleState(win, ce.data.l[2]);
+        bool addremove = false; // add true, remove false
+
+        switch (ce.data.l[0]) {
+          case STATE_TOGGLE:
+              toggleState(win, ce.data.l[1]);
+              toggleState(win, ce.data.l[2]);
+              break;
+          case STATE_ADD:
+              addremove = true;
+          case STATE_REMOVE:
+              setState(win, ce.data.l[1], addremove, *winclient);
+              setState(win, ce.data.l[2], addremove, *winclient);
+              break;
         }
         return true;
     } else if (ce.message_type == m_net->number_of_desktops) {
