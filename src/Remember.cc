@@ -93,6 +93,7 @@ public:
     void forgetPosition() { position_remember = false; }
     void forgetShadedstate() { shadedstate_remember = false; }
     void forgetTabstate() { tabstate_remember = false; }
+    void forgetTabplacement() { tabplacement_remember = false; }
     void forgetDecostate() { decostate_remember = false; }
     void forgetFocusHiddenstate() { focushiddenstate_remember= false; }
     void forgetIconHiddenstate() { iconhiddenstate_remember= false; }
@@ -134,6 +135,8 @@ public:
         { shadedstate = state; shadedstate_remember = true; }
     void rememberTabstate(bool state)
         { tabstate = state; tabstate_remember = true; }
+    void rememberTabplacement(FbWinFrame::TabPlacement p)
+        { tabplacement = p; tabplacement_remember = true; }
     void rememberDecostate(unsigned int state)
         { decostate = state; decostate_remember = true; }
     void rememberStuckstate(bool state)
@@ -183,6 +186,9 @@ public:
 
     bool tabstate_remember;
     bool tabstate;
+
+    bool tabplacement_remember;
+    FbWinFrame::TabPlacement tabplacement;
 
     bool decostate_remember;
     unsigned int decostate;
@@ -245,6 +251,7 @@ void Application::reset() {
         stuckstate_remember =
         focusprotection_remember =
         tabstate_remember =
+        tabplacement_remember =
         workspace_remember =
         head_remember =
         alpha_remember =
@@ -524,6 +531,10 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
             app.rememberShadedstate(str_label == "yes");
         } else if (str_key == "tab") {
             app.rememberTabstate(str_label == "yes");
+        } else if (str_key == "tabplacement") {
+            FbWinFrame::TabPlacement place
+                = FbWinFrame::tabPlacementNamed(str_label.c_str());
+            if (place != FbWinFrame::UNPARSEABLE) app.rememberTabplacement(place);
         } else if (str_key == "focushidden") {
             app.rememberFocusHiddenstate(str_label == "yes");
         } else if (str_key == "iconhidden") {
@@ -999,6 +1010,10 @@ void Remember::save() {
         if (a.tabstate_remember) {
             apps_file << "  [Tab]\t\t{" << ((a.tabstate)?"yes":"no") << "}" << endl;
         }
+        if (a.tabplacement_remember) {
+            apps_file << "  [TabPlacement]\t{"
+                      << FbWinFrame::nameOfTabPlacement(a.tabplacement) << "}" << endl;
+        }
         if (a.decostate_remember) {
             switch (a.decostate) {
             case (0) :
@@ -1159,6 +1174,9 @@ bool Remember::isRemembered(WinClient &winclient, Attribute attrib) {
         //    case REM_TABSTATE:
         //        return app->tabstate_remember;
         //        break;
+    case REM_TABPLACEMENT:
+        return app->tabplacement_remember;
+        break;
     case REM_JUMPWORKSPACE:
         return app->jumpworkspace_remember;
         break;
@@ -1238,6 +1256,9 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
         break;
         //    case REM_TABSTATE:
         //        break;
+    case REM_TABPLACEMENT:
+        app->rememberTabplacement(win->frame().tabPlacement());
+	break;
     case REM_JUMPWORKSPACE:
         app->rememberJumpworkspace(true);
         break;
@@ -1310,6 +1331,9 @@ void Remember::forgetAttrib(WinClient &winclient, Attribute attrib) {
         break;
 //    case REM_TABSTATE:
 //        break;
+    case REM_TABPLACEMENT:
+        app->forgetTabplacement();
+        break;
     case REM_JUMPWORKSPACE:
         app->forgetJumpworkspace();
         break;
@@ -1349,6 +1373,10 @@ void Remember::setupFrame(FluxboxWindow &win) {
         win.frame().setDefaultAlpha();
         win.frame().setAlpha(true,app->focused_alpha);
         win.frame().setAlpha(false,app->unfocused_alpha);
+    }
+
+    if (app->tabplacement_remember) {
+        win.frame().setTabPlacement(app->tabplacement);
     }
 
     BScreen &screen = winclient.screen();
