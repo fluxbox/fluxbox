@@ -26,13 +26,13 @@ toolbar.clock.colorTo:          rgb:8/8/7
 toolbar.clock.textColor:        grey85
 
 toolbar.justify:                center
-toolbar.font:                   lucidasans-bold-10
+toolbar.font: lucidasans-12:bold
 
 menu.title:                     raised diagonal interlaced gradient bevel1
 menu.title.color:               grey20
 menu.title.colorTo:             rgb:8/8/7
 menu.title.textColor:           grey85
-menu.title.font:                lucidasans-bold-10
+menu.title.font: lucidasans-12:bold
 menu.title.justify:             center
 
 menu.frame:                     raised diagonal gradient bevel1
@@ -40,7 +40,7 @@ menu.frame.color:               rgb:8/8/7
 menu.frame.colorTo:             grey10
 menu.frame.textColor:           white
 menu.frame.disableColor:        rgb:4/4/38
-menu.frame.font:                lucidasans-10
+menu.frame.font: lucidasans-12
 menu.frame.justify:             center
 
 menu.bullet:                    triangle
@@ -97,7 +97,7 @@ window.button.pressed.colorTo:  rgb:f/f/d
 window.frame.focusColor:        grey85
 window.frame.unfocusColor:      rgb:6/6/54
 
-window.font:                    lucidasans-bold-10
+window.font: lucidasans-12:bold
 window.justify:                 center
 
 ! misc...
@@ -114,5 +114,7 @@ background.color:               grey20
 background.colorTo:             rgb:6/6/5c
 
 ! for the bbtools
-menuFont:                       lucidasans-10
-titleFont:                      lucidasans-bold-10
+menuFont: lucidasans-12
+titleFont: lucidasans-12:bold
+
+! vim: ft=xdefaults
