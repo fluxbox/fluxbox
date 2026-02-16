@@ -979,6 +979,7 @@ void Toolbar::rearrangeItems() {
     int next_x = -m_item_list.front()->borderWidth(); // list isn't empty
     if (bevel_width != 0)
         next_x = 0;
+    int relative_tail = width - fixed_width;
 
     last_bw = 0;
     for (item_it = m_item_list.begin(); item_it != item_it_end; ++item_it) {
@@ -1008,7 +1009,11 @@ void Toolbar::rearrangeItems() {
         if ((*item_it)->type() == ToolbarItem::RELATIVE) {
             unsigned int itemw = (*item_it)->preferredWidth(), itemh = (*item_it)->height();
             FbTk::translateSize(orient, itemw, itemh);
-            tmpw = itemw ? std::floor(stretch_factor * itemw) : relative_width;
+            if (--relative_items > 0)
+                tmpw = itemw ? std::floor(stretch_factor * itemw) : relative_width;
+            else
+                tmpw = relative_tail;
+            relative_tail -= tmpw;
             tmph = height - size_offset;
         } else if ((*item_it)->type() == ToolbarItem::SQUARE) {
             tmpw = tmph = height - size_offset;
