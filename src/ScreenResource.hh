@@ -24,6 +24,7 @@
 
 #include "FbWinFrame.hh"
 #include "FbTk/Resource.hh"
+#include "Strut.hh"
 #include <string>
 
 struct ScreenResource {
@@ -46,6 +47,7 @@ struct ScreenResource {
 
     FbTk::Resource<std::string> default_deco;
     FbTk::Resource<FbWinFrame::TabPlacement> tab_placement;
+    FbTk::Resource<StrutDimensions> default_strut_dims;
     FbTk::Resource<std::string> windowmenufile;
     FbTk::Resource<unsigned int> typing_delay;
     FbTk::Resource<int> workspaces,

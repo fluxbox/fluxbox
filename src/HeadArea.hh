@@ -27,12 +27,13 @@
 #include <list>
 
 class Strut;
+struct StrutDimensions;
 
 class HeadArea: private FbTk::NotCopyable {
 public:
     HeadArea();
 
-    Strut *requestStrut(int head, int left, int right, int top, int bottom, Strut* next = 0);
+    Strut *requestStrut(int head, const StrutDimensions& dims, Strut* next = 0);
     void clearStrut(Strut *str);
     bool updateAvailableWorkspaceArea();
     const Strut *availableWorkspaceArea() const {
