@@ -114,6 +114,7 @@ ScreenResource::ScreenResource(FbTk::ResourceManager& rm,
     tabs_use_pixmap(rm, true, scrname+".tabs.usePixmap", altscrname+".Tabs.UsePixmap"),
     max_over_tabs(rm, false, scrname+".tabs.maxOver", altscrname+".Tabs.MaxOver"),
     default_internal_tabs(rm, true /* TODO: autoconf option? */ , scrname+".tabs.intitlebar", altscrname+".Tabs.InTitlebar"),
-    opaque_resize_delay(rm, 50, scrname + ".opaqueResizeDelay", altscrname+".OpaqueResizeDelay")    {
+    opaque_resize_delay(rm, 50, scrname + ".opaqueResizeDelay", altscrname+".OpaqueResizeDelay"),
+    ignore_oversized_windows(rm, false, scrname+".ignoreOversizedWindows", altscrname+".IgnoreOversizedWindows")    {
 
 }

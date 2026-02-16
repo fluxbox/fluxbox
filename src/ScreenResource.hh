@@ -65,6 +65,7 @@ struct ScreenResource {
     FbTk::Resource<bool> max_over_tabs;
     FbTk::Resource<bool> default_internal_tabs;
     FbTk::Resource<unsigned int> opaque_resize_delay;
+    FbTk::Resource<bool> ignore_oversized_windows;
 };
 
 #endif

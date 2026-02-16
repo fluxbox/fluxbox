@@ -104,6 +104,7 @@ public:
     bool doOpaqueMove() const { return *resource.opaque_move; }
     bool doOpaqueResize() const { return *resource.opaque_resize; }
     unsigned int opaqueResizeDelay() const { return *resource.opaque_resize_delay; }
+    bool getIgnoreOversizedWindows() const { return *resource.ignore_oversized_windows; }
     bool doFullMax() const { return *resource.full_max; }
     bool getMaxIgnoreIncrement() const { return *resource.max_ignore_inc; }
     bool getMaxDisableMove() const { return *resource.max_disable_move; }
