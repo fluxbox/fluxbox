@@ -507,6 +507,9 @@ void FluxboxWindow::init() {
         frame().move(left, top);
     };
 
+    // we must do this now, or else resizing may not work properly
+    applyDecorations();
+
     if (fluxbox.isStartup()) {
         m_placed = true;
     } else if (m_client->normal_hint_flags & (PPosition|USPosition)) {
@@ -517,36 +520,20 @@ void FluxboxWindow::init() {
             // this probably should never happen, but if a window
             // unexplicitly has its topleft corner outside any screen,
             // move it to the current screen and ensure it's just placed
+            // this typically happens with fullscreen+ windows, e.g. videos
             int cur = screen().getHead(fbWindow());
-            move(screen().getHeadX(cur), screen().getHeadY(cur));
-            m_placed = false; // allow placement strategy to fix position
+            int new_x = screen().getHeadX(cur), new_y = screen().getHeadY(cur);
+            if (m_client->height() >= screen().height())
+              new_x = 0;
+            if (m_client->width() >= screen().width())
+              new_y = 0;
+            move(new_x, new_y);
+            m_placed = true; // dont allow placement strategy to fix position
         }
         setOnHead(screen().getCurrHead());
     }
 
-    // we must do this now, or else resizing may not work properly
-    applyDecorations();
-
     fluxbox.attachSignals(*this);
-
-    if (!m_state.fullscreen) {
-        unsigned int new_width = 0, new_height = 0;
-        if (m_client->width() >= screen().width()) {
-            m_state.maximized |= WindowState::MAX_HORZ;
-            new_width = 2 * screen().width() / 3;
-        }
-        if (m_client->height() >= screen().height()) {
-            m_state.maximized |= WindowState::MAX_VERT;
-            new_height = 2 * screen().height() / 3;
-        }
-        if (new_width || new_height) {
-            const int maximized = m_state.maximized;
-            m_state.maximized = WindowState::MAX_NONE;
-            resize(new_width ? new_width : width(), new_height ? new_height : height());
-            m_placed = false;
-            m_state.maximized = maximized;
-        }
-    }
 
     // this window is managed, we are now allowed to modify actual state
     m_initialized = true;
