@@ -751,13 +751,23 @@ tabs. Inside of it there are three main options:
     When this option is on, tabs are fixed in window titlebar and the width
     varies according to the amount of windows grouped.
 
+*Hide Single Tabs*:::
+    When this option is on, tabs are not shown when there is only a single
+    window in a tab group; they will only appear when multiple windows are
+    grouped together.
+
 *Maximize Over*:::
     When this option is on, maximizing a window will disregard the size and
     location of external tabs, which means they may be pushed out of the screen
-     entirely.
+    entirely.
+
+*Show Pictures*:::
+    When this option is on, small application icons will be shown in each tab
+    to the left of the window title for that tab.
 
 *External Tab Width*:::
-    This specifies in pixels the width of external tabs.
+    This specifies in pixels the maximum width of external tabs (they shrink
+    if need be to fit all tabs).
 
 STYLES
 ------
@@ -994,9 +1004,9 @@ pattern is acceptable. See the section *CLIENT PATTERNS* in either
 +
 Default: *{static groups} (workspace)*
 
-*session.screen0.iconbar.usePixmap*: 'boolean'::
-This is also set in the Iconbar Mode menu. When set to True, this will
-show the native icon of applications.
+*session.screen0.{iconbar|clientMenu|tabs}.usePixmap*: 'boolean'::
+When any of these are set to True, Fluxbox will show the native icon of
+applications in the corresponding location (to the left of the window or icon title).
 +
 Default: *True*
 
@@ -1040,6 +1050,13 @@ This specifies whether tabs should be embedded in the titlebar or placed
 outside the window.
 +
 Default: *True*
+
+*session.screen0.tabs.hideSingle*: 'boolean'::
+This specifies whether tabs should be suppressed when there is only a single
+window in a tabbing group (i.e. when only one tab would be shown in connection
+with a given window).
++
+Default: *False*
 
 *session.screen0.tab.placement*: 'placement'::
 This specifies where external tabs will appear on the window. It has the same
