@@ -33,9 +33,9 @@ bool FbMenuParser::open(const std::string &filename) {
 }
 
 FbTk::Parser &FbMenuParser::operator >> (FbTk::Parser::Item &out) {
-    if (eof()) {        
+    if (eof()) {
         out = FbTk::Parser::s_empty_item;
-        return *this; 
+        return *this;
     }
 
     if (m_curr_line.empty())
@@ -69,20 +69,26 @@ FbTk::Parser &FbMenuParser::operator >> (FbTk::Parser::Item &out) {
         return (*this)>>out;
         break;
     }
-    
+
     std::string key;
     int err = FbTk::StringUtil::
         getStringBetween(key, m_curr_line.c_str() + m_curr_pos,
                          first, second);
-    if (err <= 0) {        
-        if (m_curr_token == TYPE)
+    if (err <= 0) {
+        switch (m_curr_token) {
+          case TYPE:
             m_curr_token = NAME;
-        else if (m_curr_token == NAME)
+            break;
+          case NAME:
             m_curr_token = ARGUMENT;
-        else if (m_curr_token == ARGUMENT)
+            break;
+          case ARGUMENT:
             m_curr_token = ICON;
-        else if (m_curr_token == ICON)
+            break;
+          case ICON:
             m_curr_token = DONE;
+            break;
+        }
 
         out = FbTk::Parser::s_empty_item;
         return *this;

@@ -550,10 +550,12 @@ void SystemTray::rearrangeClients() {
     ClientList::iterator client_it = m_clients.begin();
     ClientList::iterator client_it_end = m_clients.end();
     int next_x = bw;
+    int x, y;
     for (; client_it != client_it_end; ++client_it) {
         if (!(*client_it)->isVisible())
             continue;
-        int x = next_x, y = bw;
+        x = next_x;
+        y = bw;
         next_x += h_rot0+bw;
         translateCoords(orientation(), x, y, w_rot0, h_rot0);
         translatePosition(orientation(), x, y, h_rot0, h_rot0, 0);
