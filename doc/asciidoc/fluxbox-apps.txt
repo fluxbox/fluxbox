@@ -195,6 +195,7 @@ Button, Close Button, Menu Button, Sticky Button, Shade Button, External Tabs, F
         No window is allowed to claim the focus while this window has it.
 --
     Please notice that technically, windows may still obtain the focus which is then however reverted by the WM. In case you're very unlucky, a key event may thus still go to the wrong window.
+    To change the protection of a window that is already open, use the SetFocusProtection command described in fluxbox-keys(5).
 
 *[FocusHidden]* {'bool'}::
     If enabled, the window will not appear in 'NextWindow'/'PrevWindow' lists.
