@@ -232,6 +232,17 @@ These commands ordinarily affect only the currently focused window. The
 	*AboveDock*, *Dock*, *Top*, *Normal*, *Bottom*, *Desktop*. See
 	'fluxbox(1)' for a discussion of layers.
 
+*SetFocusProtection* 'value'[, 'value' ...]::
+	Replaces the focus protection of the current window. 'value' has the
+	same format as the `[FocusProtection]' parameter in the apps file; see
+	'fluxbox-apps(5)'. Only that window changes, and only until it closes
+	or fluxbox restarts. The apps file is not changed, so windows opened
+	later still follow their apps rules. *Gain* and *Refuse* only act when
+	a window or tab first appears, so on an open window *Deny* and *Lock*
+	are the values that matter. Use *ForEach* to change several open
+	windows at once, e.g.
+	`ForEach {SetFocusProtection Deny} {Matches (name=vlc)}'.
+
 *Close*::
 	Close the current window, equivalent to the window button.
 

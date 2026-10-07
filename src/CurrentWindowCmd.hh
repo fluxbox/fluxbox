@@ -262,6 +262,17 @@ private:
     int m_layer;
 };
 
+class SetFocusProtectionCmd: public WindowHelperCmd {
+public:
+    explicit SetFocusProtectionCmd(Focus::Protection protect): m_protect(protect) { }
+    static FbTk::Command<void> *parse(const std::string &command,
+                                      const std::string &args, bool trusted);
+protected:
+    void real_execute();
+private:
+    Focus::Protection m_protect;
+};
+
 class ChangeLayerCmd: public WindowHelperCmd {
 public:
     explicit ChangeLayerCmd(int diff): m_diff(diff) { }
