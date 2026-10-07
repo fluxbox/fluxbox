@@ -1344,6 +1344,8 @@ void Remember::setupFrame(FluxboxWindow &win) {
         win.moveToLayer(app->layer);
     if (app->decostate_remember)
         win.setDecorationMask(app->decostate);
+    if (app->focusprotection_remember)
+        win.setFocusProtection(app->focusprotection);
 
     if (app->alpha_remember) {
         win.frame().setDefaultAlpha();
@@ -1412,10 +1414,6 @@ void Remember::setupFrame(FluxboxWindow &win) {
         if ((win.isStuck() && !app->stuckstate) ||
             (!win.isStuck() && app->stuckstate))
             win.stick(); // toggles
-
-    if (app->focusprotection_remember) {
-        win.setFocusProtection(app->focusprotection);
-    }
 
     if (app->minimizedstate_remember) {
         // if inconsistent...
