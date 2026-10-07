@@ -65,6 +65,10 @@ namespace Focus {
         Deny = 8
     };
     typedef unsigned int Protection;
+
+    /// applies a comma separated list of flags (none, gain, refuse, lock,
+    /// deny; case insensitive) to protect, returns false on an unknown flag
+    bool parseProtection(const std::string &flags, Protection &protect);
 }
 
 
