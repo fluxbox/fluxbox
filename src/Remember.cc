@@ -563,23 +563,8 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
             }
         } else if (str_key == "focusprotection") {
             remember_protect = true;
-            std::list<std::string> labels;
-            FbTk::StringUtil::stringtok(labels, str_label, ", ");
-            std::list<std::string>::iterator it = labels.begin();
-            for (; it != labels.end(); ++it) {
-                if (*it == "lock")
-                    protect = (protect & ~Focus::Deny) | Focus::Lock;
-                else if (*it == "deny")
-                    protect = (protect & ~Focus::Lock) | Focus::Deny;
-                else if (*it == "gain")
-                    protect = (protect & ~Focus::Refuse) | Focus::Gain;
-                else if (*it == "refuse")
-                    protect = (protect & ~Focus::Gain) | Focus::Refuse;
-                else if (*it == "none")
-                    protect = Focus::NoProtection;
-                else
-                    had_error = 1;
-            }
+            if (!Focus::parseProtection(str_label, protect))
+                had_error = 1;
         } else if (str_key == "minimized") {
             app.rememberMinimizedstate(str_label == "yes");
         } else if (str_key == "maximized") {

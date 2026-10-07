@@ -69,6 +69,7 @@
 #include <cassert>
 #include <functional>
 #include <algorithm>
+#include <list>
 
 using std::endl;
 using std::string;
@@ -82,6 +83,29 @@ using std::hex;
 
 using namespace std::placeholders;
 using namespace FbTk;
+
+bool Focus::parseProtection(const string &flags, Protection &protect) {
+    std::list<string> labels;
+    StringUtil::stringtok(labels, flags, ", ");
+    bool ok = true;
+    std::list<string>::iterator it = labels.begin();
+    for (; it != labels.end(); ++it) {
+        const string label = StringUtil::toLower(*it);
+        if (label == "lock")
+            protect = (protect & ~Focus::Deny) | Focus::Lock;
+        else if (label == "deny")
+            protect = (protect & ~Focus::Lock) | Focus::Deny;
+        else if (label == "gain")
+            protect = (protect & ~Focus::Refuse) | Focus::Gain;
+        else if (label == "refuse")
+            protect = (protect & ~Focus::Gain) | Focus::Refuse;
+        else if (label == "none")
+            protect = Focus::NoProtection;
+        else
+            ok = false;
+    }
+    return ok;
+}
 
 namespace {
 
