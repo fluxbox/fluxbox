@@ -699,6 +699,24 @@ void SetLayerCmd::real_execute() {
     fbwindow().moveToLayer(m_layer);
 }
 
+// replaces rather than adds to the protection, so that it gives a window the
+// same result as the equivalent [FocusProtection] key in the apps file
+FbTk::Command<void> *SetFocusProtectionCmd::parse(const string &command,
+                                                  const string &args, bool trusted) {
+    Focus::Protection protect = Focus::NoProtection;
+    // an empty list would silently clear the protection
+    if (args.find_first_not_of(", ") == string::npos ||
+        !Focus::parseProtection(args, protect))
+        return 0;
+    return new SetFocusProtectionCmd(protect);
+}
+
+REGISTER_COMMAND_PARSER(setfocusprotection, SetFocusProtectionCmd::parse, void);
+
+void SetFocusProtectionCmd::real_execute() {
+    fbwindow().setFocusProtection(m_protect);
+}
+
 FbTk::Command<void> *ChangeLayerCmd::parse(const string &command,
         const string &args, bool trusted) {
     int num = 2;
