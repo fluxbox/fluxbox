@@ -52,10 +52,10 @@ inline bool overlapRectangles(
         int bx, int by, int bwidth, int bheight) {
 
     bool do_not_overlap =
-         ax > (bx + bwidth)
-      || bx > (ax + awidth)
-      || ay > (by + bheight)
-      || by > (ay + aheight);
+         ax >= (bx + bwidth)
+      || bx >= (ax + awidth)
+      || ay >= (by + bheight)
+      || by >= (ay + aheight);
 
     return !do_not_overlap;
 }
