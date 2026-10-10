@@ -929,6 +929,9 @@ void Ewmh::updateGeometry(BScreen &screen) {
 }
 
 void Ewmh::updateWorkarea(BScreen &screen) {
+    // screen resize and workspace-area signals share this update path
+    updateGeometry(screen);
+
     /* From Extended Window Manager Hints, draft 1.3:
      *
      * _NET_WORKAREA, x, y, width, height CARDINAL[][4]/32
