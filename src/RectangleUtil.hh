@@ -51,11 +51,13 @@ inline bool overlapRectangles(
         int ax, int ay, int awidth, int aheight,
         int bx, int by, int bwidth, int bheight) {
 
+    // x + width is one past the last column, so rectangles that only
+    // share an edge don't overlap
     bool do_not_overlap =
-         ax > (bx + bwidth)
-      || bx > (ax + awidth)
-      || ay > (by + bheight)
-      || by > (ay + aheight);
+         ax >= (bx + bwidth)
+      || bx >= (ax + awidth)
+      || ay >= (by + bheight)
+      || by >= (ay + aheight);
 
     return !do_not_overlap;
 }
