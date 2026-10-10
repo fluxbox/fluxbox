@@ -288,6 +288,11 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     XRRSelectInput(disp, rootWindow().window(), randr_mask);
 #endif // HAVE_RANDR
 
+    m_clear_docks_timer.setTimeout(4 * FbTk::FbTime::IN_SECONDS);
+    m_clear_docks_timer.fireOnce(true);
+    FbTk::RefCount<FbTk::Command<void> > clear_docks(new FbTk::SimpleCommand<BScreen>(*this, &BScreen::clearStrandedDocks));
+    m_clear_docks_timer.setCommand(clear_docks);
+
 
     _FB_USES_NLS;
 
@@ -1713,6 +1718,18 @@ void BScreen::initXinerama() {
 
 /* Move windows out of inactive heads */
 void BScreen::clearHeads() {
+    placeInvisibleWindows(false);
+
+    // give docks a few seconds to move themselves before placing them
+    m_clear_docks_timer.stop();
+    m_clear_docks_timer.start();
+}
+
+void BScreen::clearStrandedDocks() {
+    placeInvisibleWindows(true);
+}
+
+void BScreen::placeInvisibleWindows(bool include_docks) {
     if (!hasXinerama()) return;
 
     for (Workspaces::iterator i = m_workspaces_list.begin();
@@ -1721,6 +1738,14 @@ void BScreen::clearHeads() {
                 win != (*i)->windowList().end(); ++win) {
 
             FluxboxWindow& w = *(*win);
+            // Docks and desktops position themselves when the screen
+            // layout changes; placing them would fight the client and can
+            // leave a panel stranded wherever the placement strategy put it.
+            const WindowState::WindowType type = w.winClient().getWindowType();
+            if (!include_docks &&
+                (type == WindowState::TYPE_DOCK ||
+                 type == WindowState::TYPE_DESKTOP))
+                continue;
 
             // check if the window is invisible
             bool invisible = true;

@@ -40,6 +40,7 @@
 #include "FbTk/NotCopyable.hh"
 #include "FbTk/Signal.hh"
 #include "FbTk/RelCalcHelper.hh"
+#include "FbTk/Timer.hh"
 
 #include "FocusControl.hh"
 
@@ -473,6 +474,8 @@ private:
     void setupConfigmenu(FbTk::Menu &menu);
     void renderGeomWindow();
     void renderPosWindow();
+    void placeInvisibleWindows(bool include_docks);
+    void clearStrandedDocks();
     void focusedWinFrameThemeReconfigured();
 
     int getGap(int head, const char type);
@@ -558,6 +561,8 @@ private:
         int center_y;
         std::vector<XineramaHeadInfo> heads;
     } m_xinerama;
+
+    FbTk::Timer m_clear_docks_timer; ///< late pass for docks left off-screen
 
     std::vector<HeadArea*> m_head_areas;
     std::vector<Strut*> m_head_struts;
