@@ -1721,6 +1721,13 @@ void BScreen::clearHeads() {
                 win != (*i)->windowList().end(); ++win) {
 
             FluxboxWindow& w = *(*win);
+            // Docks and desktops position themselves when the screen
+            // layout changes; placing them would fight the client and can
+            // leave a panel stranded wherever the placement strategy put it.
+            const WindowState::WindowType type = w.winClient().getWindowType();
+            if (type == WindowState::TYPE_DOCK ||
+                type == WindowState::TYPE_DESKTOP)
+                continue;
 
             // check if the window is invisible
             bool invisible = true;
