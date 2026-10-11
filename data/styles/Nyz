@@ -21,13 +21,13 @@ toolbar.clock.color:            grey40
 toolbar.clock.colorTo:          grey20
 toolbar.clock.textColor:        grey85
 toolbar.justify:                right
-toolbar.font:                   lucidasans-10
+toolbar.font: lucidasans-12
 
 menu.title:                     flat crossdiagonal gradient
 menu.title.color:               rgb:6/9/c
 menu.title.colorTo:             rgb:3/48/6
 menu.title.textColor:           white
-menu.title.font:                lucidasans-10
+menu.title.font: lucidasans-12
 menu.title.justify:             right
 
 menu.frame:                     flat crossdiagonal gradient
@@ -35,7 +35,7 @@ menu.frame.color:               grey40
 menu.frame.colorTo:             grey20
 menu.frame.textColor:           grey85
 menu.frame.disableColor:        rgb:4/4/38
-menu.frame.font:                lucidasans-10
+menu.frame.font: lucidasans-12
 menu.frame.justify:             center
 
 menu.bullet.position:           right
@@ -88,7 +88,7 @@ window.grip.unfocus.colorTo:    grey20
 window.frame.focusColor:        rgb:6/9/c
 window.frame.unfocusColor:      grey30
 
-window.font:                    lucidasans-10
+window.font: lucidasans-12
 window.justify:                 right
 
 borderColor:                    grey10
@@ -98,8 +98,9 @@ borderWidth:                    2
 handleWidth:                    4
 
 *textColor:                     grey85
-*Font:                          lucidasans-10
+*Font: lucidasans-12
 
 
 background: flat
 background.color: grey20
+! vim: ft=xdefaults

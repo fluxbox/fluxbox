@@ -98,14 +98,14 @@ window.tab.label.focus.textColor:    rgb:40/20/05
 window.tab.borderWidth:              1
 window.tab.borderColor:              rgb:10/10/10
 ! ----------- (fluxbox.sourceforge.net)
-window.tab.font:                     -*-helvetica-medium-r-*-*-11-*-*-*-*-*-iso8859-*
+window.tab.font: helvetica-12
 
 window.justify:                      Left
 
-toolbar.font:                        -*-helvetica-medium-r-*-*-11-*-*-*-*-*-iso8859-*
-window.font:                         -*-helvetica-bold-r-*-*-11-*-*-*-*-*-iso8859-*
-menu.title.font:                     -*-helvetica-bold-r-*-*-11-*-*-*-*-*-iso8859-*
-menu.frame.font:                     -*-helvetica-medium-r-*-*-10-*-*-*-*-*-iso8859-*
+toolbar.font: helvetica-12
+window.font: helvetica-12:bold
+menu.title.font: helvetica-12:bold
+menu.frame.font: helvetica-12
 
 borderColor:                         rgb:10/10/10
 
@@ -115,3 +115,4 @@ handleWidth:                         3
 
 background: flat
 background.color: rgb:9A/9A/90
+! vim: ft=xdefaults

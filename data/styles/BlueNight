@@ -36,7 +36,7 @@ toolbar.clock.textColor:             #ffffff
 toolbar:                             Flat Solid CrossDiagonal
 toolbar.color:                       #000000
 toolbar.textColor:                   #333333
-toolbar.font:                        lucidasans-10
+toolbar.font: lucidasans-12
 toolbar.justify:                     Left
 
 
@@ -45,14 +45,14 @@ menu.frame:                          Flat Gradient CrossDiagonal
 menu.frame.color:                    #40545d
 menu.frame.colorTo:                  #0e1a27
 menu.frame.textColor:                #ffffff
-menu.frame.font:                     lucidasans-10
+menu.frame.font: lucidasans-12
 menu.frame.justify:                  Left
 
 menu.title:                          Flat Gradient CrossDiagonal
 menu.title.color:                    #80949d
 menu.title.colorTo:                  #4e5a67
 menu.title.textColor:                #ffffff
-menu.title.font:                     -*-lucida-bold-r-*-*-11-*-*-*-*-*-*-*
+menu.title.font: lucida-12:bold
 menu.title.justify:                  Left
 
 menu.hilite:                         Flat Gradient CrossDiagonal
@@ -91,10 +91,10 @@ window.label.focus:                  Flat Gradient CrossDiagonal
 window.label.focus.color:            #60747d
 window.label.focus.colorTo:          #0e1a27
 window.label.focus.textColor:        #ffffff
-window.label.focus.font:             lucidasans-10
+window.label.focus.font: lucidasans-12
 window.label.focus.justify:          Left
 
-window.font:                         lucidasans-10
+window.font: lucidasans-12
 window.justify:                      Left
 window.label.unfocus:                Flat Gradient CrossDiagonal
 window.label.unfocus.color:          #40545d
@@ -138,3 +138,5 @@ bevelWidth:                          1
 borderWidth:                         1
 borderColor:                         #000000
 
+
+! vim: ft=xdefaults
