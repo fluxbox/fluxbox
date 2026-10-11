@@ -380,7 +380,8 @@ void Slit::updateStrut() {
         break;
     }
 
-    m_strut = screen().requestStrut(getOnHead(), left, right, top, bottom);
+    m_strut = screen().requestStrut(getOnHead(),
+                                    StrutDimensions(left, right, top, bottom));
     screen().updateAvailableWorkspaceArea();
 }
 
