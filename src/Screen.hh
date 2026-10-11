@@ -130,6 +130,7 @@ public:
     const bool getMaxOverTabs() const { return *resource.max_over_tabs; }
 
     unsigned int getTabWidth() const { return *resource.tab_width; }
+    bool getTabHideSingle() const { return *resource.tab_hide_single; }
     /// @return the slit, @see Slit
     Slit *slit() { return m_slit.get(); }
     /// @return the slit, @see Slit

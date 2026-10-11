@@ -178,8 +178,8 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
         alignTabs();
 
         // TODO: tab position
-        if (m_use_tabs && m_visible)
-            tabs.show();
+        if (m_use_tabs)
+            maybeShowTabContainer();
         else {
             ret = false;
             tabs.hide();
@@ -208,7 +208,7 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
 
         tabs.clear();
         tabs.raise();
-        tabs.show();
+        maybeShowTabContainer();
 
         if (!m_use_tabs)
             ret = false;
@@ -237,7 +237,7 @@ void FbWinFrame::show() {
     }
 
     if (m_tabmode == EXTERNAL && m_use_tabs)
-        m_tab_container.show();
+        maybeShowTabContainer();
 
     m_window.showSubwindows();
     m_window.show();
@@ -381,10 +381,10 @@ void FbWinFrame::alignTabs() {
     if (tabs.orientation() != orig_orient ||
         tabs.maxWidthPerClient() != orig_tabwidth) {
         renderTabContainer();
-        if (m_visible && m_use_tabs) {
+        if (m_use_tabs) {
             applyTabContainer();
             tabs.clear();
-            tabs.show();
+            maybeShowTabContainer();
         }
     }
 
@@ -580,11 +580,13 @@ void FbWinFrame::createTab(FbTk::Button &button) {
     FbTk::EventManager::instance()->add(button, button.window());
 
     m_tab_container.insertItem(&button);
+    maybeShowTabContainer();
 }
 
 void FbWinFrame::removeTab(IconButton *btn) {
     if (m_tab_container.removeItem(btn))
         delete btn;
+    maybeShowTabContainer();
 }
 
 
@@ -679,9 +681,15 @@ bool FbWinFrame::showTabs() {
     }
 
     m_use_tabs = true;
-    if (m_visible)
-        m_tab_container.show();
+    maybeShowTabContainer();
     return true;
+}
+
+void FbWinFrame::maybeShowTabContainer() {
+    if (m_visible && (!(m_screen.getTabHideSingle())
+		      || m_tab_container.size() > 1)) {
+        m_tab_container.show();
+    } else m_tab_container.hide();
 }
 
 bool FbWinFrame::hideTitlebar() {

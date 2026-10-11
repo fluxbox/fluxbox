@@ -245,11 +245,14 @@ void setupTabMenu(FbTk::Menu& parent, ConfigMenu::SetupHelper& sh, _Cmd& save_re
     menu->insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Configmenu, TabsInTitlebar,
               "Tabs in Titlebar", "Tabs in Titlebar"),
               sh.resource.default_internal_tabs, save_reconftabs));
+    menu->insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Configmenu, HideSingleTabs,
+              "Hide Single Tabs", "Don't show tabs for windows with only a single tab"),
+              sh.resource.tab_hide_single, save_reconftabs));
     menu->insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,
               "Maximize Over", "Maximize over this thing when maximizing"),
               sh.resource.max_over_tabs, save_reconf));
     menu->insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Toolbar, ShowIcons,
-              "Show Pictures", "chooses if little icons are shown next to title in the iconbar"),
+              "Show Pictures", "chooses if little icons are shown next to title in each tab"),
               sh.resource.tabs_use_pixmap, save_reconf));
 
     FbTk::MenuItem *tab_width_item =
