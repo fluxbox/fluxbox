@@ -1304,10 +1304,13 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
         return;
 
 
-    if (w->isIconic()) {
+    if (w->isIconic())
         removeIcon(w);
-        getWorkspace(wkspc_id)->addWindow(*w);
-    } else if (ignore_sticky || ! w->isStuck()) {
+
+    // an earlier reassociation may already have put an iconic window in a
+    // workspace list; leaving it there would leave a dangling pointer once
+    // the window dies, since removal goes by its new number
+    if (w->isIconic() || ignore_sticky || ! w->isStuck()) {
         // fresh windows have workspaceNumber == -1, which leads to
         // an invalid workspace (unsigned int)
         Workspace* ws = getWorkspace(w->workspaceNumber());
