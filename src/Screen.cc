@@ -1299,6 +1299,12 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
 
     if (w->isIconic()) {
         removeIcon(w);
+        // an earlier reassociation may already have put this iconic window
+        // in a workspace list; leaving it there would leave a dangling
+        // pointer once the window dies, since removal goes by its new number
+        Workspace* ws = getWorkspace(w->workspaceNumber());
+        if (ws)
+            ws->removeWindow(w, true);
         getWorkspace(wkspc_id)->addWindow(*w);
     } else if (ignore_sticky || ! w->isStuck()) {
         // fresh windows have workspaceNumber == -1, which leads to
