@@ -49,6 +49,7 @@
 #else
   #include <string.h>
 #endif
+#include<unistd.h>
 
 using std::string;
 using std::list;
@@ -104,6 +105,8 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
     updateWMHints();
     updateWMNormalHints();
     updateWMClassHint();
+    gethostname(hostname_char, 512);
+    hostname = FbTk::FbString(hostname_char);
     updateTitle();
     Fluxbox::instance()->saveWindowSearch(win, this);
     if (window_group != None)
@@ -217,6 +220,10 @@ bool WinClient::getAttrib(XWindowAttributes &attr) const {
     return XGetWindowAttributes(display(), window(), &attr);
 }
 
+bool WinClient::getWMClientMachine(XTextProperty &textprop) const {
+    return XGetWMClientMachine(display(), window(), &textprop);
+}
+
 bool WinClient::getWMName(XTextProperty &textprop) const {
     return XGetWMName(display(), window(), &textprop);
 }
@@ -319,7 +326,14 @@ void WinClient::updateTitle() {
     if (m_title_override)
         return;
 
-    m_title.setLogical(FbTk::FbString(Xutil::getWMName(window()), 0, 512));
+    FbTk::FbString fullname = FbTk::FbString(Xutil::getWMName(window()), 0, 512);
+    if (m_screen.isShowClient()) {
+        FbTk::FbString clientmachine = FbTk::FbString(Xutil::getWMClientMachine(window()), 0, 512);
+        if (clientmachine != "Unnamed" && clientmachine != "" && clientmachine != hostname) {
+            fullname += " (on " + clientmachine + ")";
+        }
+    }
+    m_title.setLogical(fullname);
     m_title_update_timer.start();
 }
 
@@ -328,7 +342,14 @@ void WinClient::emitTitleSig() {
 }
 
 void WinClient::setTitle(const FbTk::FbString &title) {
-    m_title.setLogical(title);
+    FbTk::FbString fullname = title;
+    if (m_screen.isShowClient()) {
+        FbTk::FbString clientmachine = FbTk::FbString(Xutil::getWMClientMachine(window()), 0, 512);
+        if (clientmachine != "Unnamed" && clientmachine != "" && clientmachine != hostname) {
+            fullname += " (on " + clientmachine + ")";
+        }
+    }
+    m_title.setLogical(fullname);
     m_title_override = true;
     m_title_update_timer.start();
 }

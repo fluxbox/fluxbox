@@ -1084,6 +1084,12 @@ across the edge of the screen.
 +
 Default: *True*
 
+*session.screen0.showClientmachine*: 'boolean'::
+This enables in the titlebar an indication of forwarded client windows
+with "(on $CLIENT)" appended to the main title.
++
+Default: *True*
+
 *session.screen0.showwindowposition*: 'boolean'::
 Setting this resource to True shows the user, in a little window,
 the exact position of the application window while the user is
