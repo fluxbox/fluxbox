@@ -35,6 +35,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <vector>
 
 using std::cerr;
 using std::cout;
@@ -48,9 +49,37 @@ FluxboxCli::Options::Options() : xsync(false) {
         session_display.assign(env);
     }
 
-    string fname = std::string("~/.") + realProgramName("fluxbox");
-    rc_path = FbTk::StringUtil::expandFilename(fname);
+    // deduce the config folder to use:
+    // 1. try $XDG_CONFIG_HOME
+    // 2. try to find default ~/.config/fluxbox
+    // 3. default to "legacy" folder ~/.fluxbox
+    std::vector<std::string> paths;
 
+    // user specified XDG_CONFIG_HOME
+    env = getenv("XDG_CONFIG_HOME");
+    if (env && strlen(env) > 0) {
+        paths.push_back(FbTk::StringUtil::expandFilename(std::string(env) + "/" + realProgramName("fluxbox")));
+    }
+
+    // default XDG_CONFIG_HOME folder
+    paths.push_back(FbTk::StringUtil::expandFilename(std::string("~/.config/") + realProgramName("fluxbox")));
+    // "legacy" config folder
+    paths.push_back(FbTk::StringUtil::expandFilename(std::string("~/.") + realProgramName("fluxbox")));
+
+    // default is to use the legacy-folder, absent or not.
+    // might be changed once XDG_CONFIG_HOME is the default way
+    // of fluxbox to locate the folder.
+    std::string fname = paths.back();
+    for (size_t i = 0; i < paths.size(); i++) {
+        if (FbTk::FileUtil::isDirectory(paths[i].c_str())) {
+            fname = paths[i];
+            break;
+        }
+    }
+
+    cerr << "info: using \"" << fname << "\" as the config folder" << endl;
+
+    rc_path = fname;
     if (!rc_path.empty()) {
         rc_file = rc_path + "/init";
     }
