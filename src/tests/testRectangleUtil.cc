@@ -94,6 +94,8 @@ int test_overlapRectangles() {
         { { 0, 0, 8, 8 }, {  9, 0, 5, 8 }, false }, // b completely right from a
         { { 0, 0, 8, 8 }, {  0,-9, 5, 8 }, false }, // b completely down below a
         { { 0, 0, 8, 8 }, {  0, 9, 5, 8 }, false }, // b completely up above a
+        { { 0, 0, 8, 8 }, {  8, 0, 5, 8 }, false }, // b touches a's right edge
+        { { 0, 0, 8, 8 }, {  0, 8, 5, 8 }, false }, // b touches a's bottom edge
     };
 
 
