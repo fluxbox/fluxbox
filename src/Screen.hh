@@ -474,6 +474,7 @@ private:
     void setupConfigmenu(FbTk::Menu &menu);
     void renderGeomWindow();
     void renderPosWindow();
+    void deferClearHeads();
     void placeInvisibleWindows(bool include_docks);
     void clearStrandedDocks();
     void focusedWinFrameThemeReconfigured();
@@ -562,6 +563,8 @@ private:
         std::vector<XineramaHeadInfo> heads;
     } m_xinerama;
 
+    FbTk::Timer m_clear_heads_timer; ///< waits for a RandR burst to settle
+    uint64_t m_clear_heads_burst_start; ///< when the current burst began
     FbTk::Timer m_clear_docks_timer; ///< late pass for docks left off-screen
 
     std::vector<HeadArea*> m_head_areas;
