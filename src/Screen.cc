@@ -224,6 +224,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_state.restart = false;
     m_state.shutdown = false;
     m_state.managed = false;
+    m_clear_heads_burst_start = 0;
 
     Fluxbox *fluxbox = Fluxbox::instance();
     Display *disp = fluxbox->display();
@@ -288,6 +289,11 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 # endif
     XRRSelectInput(disp, rootWindow().window(), randr_mask);
 #endif // HAVE_RANDR
+
+    m_clear_heads_timer.setTimeout(125 * FbTk::FbTime::IN_MILLISECONDS);
+    m_clear_heads_timer.fireOnce(true);
+    FbTk::RefCount<FbTk::Command<void> > clear_heads(new FbTk::SimpleCommand<BScreen>(*this, &BScreen::clearHeads));
+    m_clear_heads_timer.setCommand(clear_heads);
 
     m_clear_docks_timer.setTimeout(4 * FbTk::FbTime::IN_SECONDS);
     m_clear_docks_timer.fireOnce(true);
@@ -1605,8 +1611,28 @@ void BScreen::updateSize() {
         m_workspace_area_sig.emit(*this);
 
         // move windows out of inactive heads
-        clearHeads();
+        deferClearHeads();
+    } else if (m_clear_heads_timer.isTiming()) {
+        // still mid-burst
+        deferClearHeads();
     }
+}
+
+// RandR changes arrive in bursts, e.g. while a USB-C dock renegotiates,
+// and clients move themselves in response, so wait for things to settle.
+void BScreen::deferClearHeads() {
+    uint64_t now = FbTk::FbTime::mono();
+    if (!m_clear_heads_timer.isTiming())
+        m_clear_heads_burst_start = now;
+
+    m_clear_docks_timer.stop();
+    m_clear_heads_timer.stop();
+
+    // don't let a flickering output put this off forever
+    if (now - m_clear_heads_burst_start >= FbTk::FbTime::IN_SECONDS)
+        clearHeads();
+    else
+        m_clear_heads_timer.start();
 }
 
 
