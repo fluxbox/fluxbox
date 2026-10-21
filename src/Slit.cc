@@ -958,9 +958,6 @@ void Slit::buttonPressEvent(XButtonEvent &be) {
         return;
     }
 
-    if (be.button == 1)
-        frame.window.raise();
-
     if (be.button != Button3) {
         XAllowEvents(dpy, ReplayPointer, CurrentTime);
         return;
