@@ -475,6 +475,17 @@ void ArrangeWindowsCmd::execute() {
         std::swap(cols, rows);
     }
 
+    // In stacking modes, still approximate the screen's aspect ratio
+    // For STACKTOP, STACKBOTTOM: cols = 1.5 * rows
+    // For STACKLEFT, STACKRIGHT: rows = 1.5 * cols
+    if ((m_tile_method == STACKTOP) || (m_tile_method == STACKBOTTOM)) {
+        rows = int(sqrt(ceil((float)win_count / 1.5))); // truncate to lower
+        cols = int(0.99 + float(win_count) / float(rows));
+    } else if ((m_tile_method == STACKLEFT) || (m_tile_method == STACKRIGHT)) {
+        cols = int(sqrt(ceil((float)win_count / 1.5))); // truncate to lower
+        rows = int(0.99 + float(win_count) / float(cols));
+    }
+
     // Stacked mode only uses half the screen for tiled windows, so adjust
     // offset to half the screen (horizontal or vertical depending on 
     // stacking mode)
