@@ -127,4 +127,6 @@ handleWidth:                         4
 background: flat
 background.color: #d6d7e7
 
-*font:                               glisp
+*font: glisp-12
+
+! vim: ft=xdefaults

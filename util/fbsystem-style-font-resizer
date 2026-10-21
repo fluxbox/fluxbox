@@ -1,0 +1,51 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+	cat <<EOF
+Error!
+You need to run this script with the required
+font size as an argument.
+
+Example:
+$0 12
+EOF
+	exit 1
+fi
+
+FONTSIZE="$1"
+STYDIR="/usr/share/fluxbox/styles"
+
+# Fix the system style font sizes.
+if [ -n "$FONTSIZE" ]; then
+	echo "Setting font sizes to $FONTSIZE"
+
+	find "$STYDIR" -type f -name \* -exec sed -i \
+		"s%^\(.*[fF]ont:\)\([^a-zA-Z0-9:_*-]*\)\([A-Za-z0-9:_*-]*\)$%\1 \3%" {} \;
+
+	find "$STYDIR" -type f -name \* -exec sed -i \
+	"s%^\(.*[fF]ont:[\s]*\)\(.*-clean-.*\)$%\1 clean-${FONTSIZE}%" {} \;
+
+	find "$STYDIR" -type f -name \* -exec sed -i \
+	"s%^\(.*[fF]ont:[\s]*\)\(.*-gamow-.*\)$%\1 gamow-${FONTSIZE}%" {} \;
+
+	find "$STYDIR" -type f -name \* -exec sed -i \
+	"s%^\(.*[fF]ont:[\s]*\)\(.*gelly2\)$%\1 gelly2-${FONTSIZE}%" {} \;
+
+	find "$STYDIR" -type f -name \* -exec sed -i \
+	"s%^\(.*[fF]ont:[\s]*\)\(.*glisp\)$%\1 glisp-${FONTSIZE}%" {} \;
+
+	find "$STYDIR" -type f -name \* -exec sed -i \
+		"s%^\(.*[fF]ont: \)[*-]*[^a-zA-Z]*\(.*\)-\(bold\).*$%\1\2-${FONTSIZE}:\3%" {} \;
+
+	find "$STYDIR" -type f -name \* -exec sed -i \
+		"s%^\(.*[fF]ont: \)[*-]*[^a-zA-Z]*\(.*\)-\(medium\).*$%\1\2-${FONTSIZE}%" {} \;
+
+	find "$STYDIR" -type f -name \* -exec sed -i \
+		"s%^\(.*[fF]ont: \)\(.*\)\(-[0-9]*\)$%\1\2-${FONTSIZE}%" {} \;
+
+	find "$STYDIR" -type f -name \* -exec sed -i \
+		"s%^\(.*[fF]ont: \)\(.*\)\(-[0-9]*\)\(:[a-zA-Z]*\)$%\1\2-${FONTSIZE}\4%" {} \;
+
+	find "$STYDIR" -type f -name \* -exec sed -i \
+		"s%^\(.*[fF]ont:[\s]*\)\(.*lucidatypewriter.*\)$%\1 lucidatypewriter-${FONTSIZE}%" {} \;
+fi

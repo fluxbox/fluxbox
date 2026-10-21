@@ -115,9 +115,9 @@ borderWidth:                         1
 bevelWidth:                          1
 handleWidth:                         4
 
-*font:                               gelly2
-menu*font:                           glisp
-toolbar*font:                        glisp
+*font: gelly2-12
+menu*font: glisp-12
+toolbar*font: glisp-12
 
 *textColor:                          rgb:c/c/c
 ! - for fluxbox
@@ -127,3 +127,5 @@ window.tab.label.focus.textColor:    rgb:1a/04/08
 
 background: flat
 background.color: rgb:db/bc/83
+
+! vim: ft=xdefaults
