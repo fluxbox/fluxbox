@@ -25,11 +25,10 @@
 #include <algorithm>
 #include <iostream>
 
-HeadArea::HeadArea() : m_available_workspace_area(new Strut(0,0,0,0,0)) {
-}
+HeadArea::HeadArea() : m_available_workspace_area(new Strut()) {}
 
-Strut *HeadArea::requestStrut(int head, int left, int right, int top, int bottom, Strut* next) {
-    Strut *str = new Strut(head, left, right, top, bottom, next);
+Strut *HeadArea::requestStrut(int head, const StrutDimensions& dims, Strut* next) {
+    Strut *str = new Strut(head, dims, next);
     m_strutlist.push_back(str);
     return str;
 }
@@ -56,12 +55,7 @@ class MaxArea {
 public:
     MaxArea(Strut &max_area):m_available_workspace_area(max_area) { }
     void operator ()(const Strut *str) {
-        static int left, right, bottom, top;
-        left = std::max(m_available_workspace_area.left(), str->left());
-        right = std::max(m_available_workspace_area.right(), str->right());
-        bottom = std::max(m_available_workspace_area.bottom(), str->bottom());
-        top = std::max(m_available_workspace_area.top(), str->top());
-        m_available_workspace_area = Strut(0, left, right, top, bottom);
+        m_available_workspace_area.dims().max_by(str->dims());
     }
 private:
     Strut &m_available_workspace_area;
@@ -74,7 +68,7 @@ bool HeadArea::updateAvailableWorkspaceArea() {
 
     // clear old area
     Strut oldarea = *(m_available_workspace_area.get());
-    m_available_workspace_area.reset(new Strut(0, 0, 0, 0, 0));
+    m_available_workspace_area.reset(new Strut());
     
     // calculate max area
     std::for_each(m_strutlist.begin(),
