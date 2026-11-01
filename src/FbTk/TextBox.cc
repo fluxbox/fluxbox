@@ -519,7 +519,8 @@ void TextBox::adjustEndPos() {
     m_end_pos = text().size();
     m_start_pos = std::min(m_start_pos, m_end_pos);
     int text_width = font().textWidth(text().c_str() + m_start_pos, m_end_pos - m_start_pos);
-    while (text_width > (static_cast<signed>(width()) - 2*m_padding)) {
+    while (m_end_pos > m_start_pos &&
+           text_width > (static_cast<signed>(width()) - 2*m_padding)) {
         m_end_pos--;
         text_width = font().textWidth(text().c_str() + m_start_pos, m_end_pos - m_start_pos);
     }
@@ -533,8 +534,9 @@ void TextBox::adjustStartPos() {
     if (m_cursor_pos >= 0 && text_width < (static_cast<signed>(width()) - 2*m_padding))
         return;
 
-    int start_pos = 0;
-    while (text_width > (static_cast<signed>(width()) - 2 * m_padding)) {
+    std::string::size_type start_pos = 0;
+    while (start_pos < m_end_pos &&
+           text_width > (static_cast<signed>(width()) - 2 * m_padding)) {
         start_pos++;
         text_width = font().textWidth(visual + start_pos, m_end_pos - start_pos);
     }
