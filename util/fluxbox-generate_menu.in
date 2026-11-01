@@ -1852,8 +1852,14 @@ append_submenu "${FBSETTINGSMENU}"
 
     # Backgroundmenu
     addbackground() {
+                # fluxbox runs the command through the shell: single-quote the
+                # path, a ' in it becomes '"'"', and skip a '}' that ends it early
+                case $1 in
+                    *'}'*) return ;;
+                esac
                 picturename=`basename "$1"`
-                append "[exec] (${picturename%.???}) {@pkgprefix@fbsetbg@pkgsuffix@ -a \"$1\" }"
+                quotedpath=`printf '%s' "$1" | sed "s/'/'\"'\"'/g"`
+                append "[exec] (${picturename%.???}) {@pkgprefix@fbsetbg@pkgsuffix@ -a '$quotedpath' }"
     }
 
     if [ "$BACKGROUNDMENUITEM" = yes ]; then
