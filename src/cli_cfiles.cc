@@ -150,7 +150,7 @@ void FluxboxCli::updateConfigFilesIfNeeded(const std::string& rc_file) {
             << endl;
 
         string commandargs = realProgramName("fluxbox-update_configs");
-        commandargs += " -rc " + rc_file;
+        commandargs += " -rc " + FbTk::StringUtil::shellQuote(rc_file);
 
         if (system(commandargs.c_str())) {
             fbdbg << "running '" 
