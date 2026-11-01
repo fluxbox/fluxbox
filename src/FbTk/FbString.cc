@@ -271,8 +271,7 @@ std::string recode(iconv_t cd, const std::string &in) {
                 // need more space!
                 outsize += insize;
                 out.resize(outsize);
-                if (out.capacity() != outsize)
-                    again = true;
+                again = true;
                 outbytesleft += insize;
                 out_ptr = (&out[0] + outsize) - outbytesleft;
                 break;
