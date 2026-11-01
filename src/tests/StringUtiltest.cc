@@ -83,6 +83,23 @@ void testStrcasestr() {
 
 }
 
+void testShellQuote() {
+    const char *tests[][2] = {
+        { "", "''" },
+        { "plain", "'plain'" },
+        { "with space", "'with space'" },
+        { "it's", "'it'\\''s'" },
+        { "$(x)`y`\"z\\", "'$(x)`y`\"z\\'" },
+    };
+    for (size_t i = 0; i < sizeof(tests) / sizeof(tests[0]); ++i) {
+        cerr<<"test"<<i + 1<<" ";
+        if (StringUtil::shellQuote(tests[i][0]) == tests[i][1])
+            cerr<<"ok."<<endl;
+        else
+            cerr<<"faild: "<<StringUtil::shellQuote(tests[i][0])<<endl;
+    }
+}
+
 void showError(int line, int pos, string& instr) {
 
     cerr<<"Error on line: "<<line<<endl;
@@ -149,4 +166,6 @@ int main() {
     testExpandFilename();
     cerr<<"Testing strcasestr."<<endl;
     testStrcasestr();
+    cerr<<"Testing shellQuote."<<endl;
+    testShellQuote();
 }

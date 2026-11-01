@@ -27,15 +27,26 @@
 
 #include "FbTk/StringUtil.hh"
 
-RootCmdMenuItem::RootCmdMenuItem(const FbTk::FbString &label, 
+#include <vector>
+
+RootCmdMenuItem::RootCmdMenuItem(const FbTk::FbString &label,
                              const std::string &filename,
                              const std::string &cmd):
-    FbTk::MenuItem(label), 
+    FbTk::MenuItem(label),
     m_filename(filename) {
 
-    std::string prog = cmd.empty() ? realProgramName("fbsetbg") : cmd;
-    FbTk::RefCount<FbTk::Command<void> >
-        setwp_cmd(new FbCommands::ExecuteCmd(prog + " \"" + m_filename + "\""));
+    std::string fbsetbg = realProgramName("fbsetbg");
+    FbTk::Command<void> *setwp = 0;
+    if (cmd.empty() || cmd == fbsetbg) {
+        std::vector<std::string> args;
+        args.push_back(fbsetbg);
+        args.push_back(m_filename);
+        setwp = new FbCommands::SpawnCmd(args);
+    } else {
+        // cmd comes from the menu file and may rely on the shell
+        setwp = new FbCommands::ExecuteCmd(cmd + " " + FbTk::StringUtil::shellQuote(m_filename));
+    }
+    FbTk::RefCount<FbTk::Command<void> > setwp_cmd(setwp);
     setCommand(setwp_cmd);
     setToggleItem(true);
     setCloseOnClick(false);

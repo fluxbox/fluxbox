@@ -320,6 +320,10 @@ string replaceString(const string &original,
     return ret_str;
 }
 
+string shellQuote(const string &str) {
+    return "'" + replaceString(str, "'", "'\\''") + "'";
+}
+
 /**
    Parses a string between "first" and "last" characters
    and ignoring ok_chars as whitespaces. The value is
