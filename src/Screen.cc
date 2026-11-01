@@ -86,12 +86,9 @@ class Slit {};
 class Toolbar {};
 #endif // USE_TOOLBAR
 
-#ifdef STDC_HEADERS
 #include <sys/types.h>
-#endif // STDC_HEADERS
 
 #ifdef HAVE_UNISTD_H
-#include <sys/types.h>
 #include <unistd.h>
 #endif // HAVE_UNISTD_H
 

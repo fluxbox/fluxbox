@@ -13,7 +13,7 @@ AM_INIT_AUTOMAKE([foreign 1.10 tar-pax dist-bzip2 subdir-objects])
 dnl Determine default prefix
 AS_IF([test "x$prefix" = "xNONE"], [prefix="$ac_default_prefix"])
 
-AC_LANG_CPLUSPLUS
+AC_LANG([C++])
 AX_CXX_COMPILE_STDCXX([14], [ext], [mandatory])
 
 dnl Locate required external software
@@ -46,7 +46,6 @@ AS_IF([test "x$regex_cmd" = "x"], [
 ])
 
 dnl Check for system header files
-AC_HEADER_STDC
 AC_HEADER_STDBOOL
 AC_CHECK_HEADERS([ \
 	ctype.h \
@@ -581,13 +580,10 @@ AC_SUBST([LOCALE_PATH], [$locale_path])
 AC_SUBST([program_prefix])
 AC_SUBST([program_suffix])
 
-dnl Determine the return type of signal handlers
-AC_TYPE_SIGNAL
-
 dnl Output files
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 version.h
 nls/C/Makefile
@@ -629,6 +625,7 @@ nls/vi_VN/Makefile
 nls/zh_CN/Makefile
 nls/zh_TW/Makefile
 ])
+AC_OUTPUT
 
 MSG_RESULT_CXXFLAGS="$FRIBIDI_CFLAGS $XRANDR_CFLAGS $AM_CPPFLAGS $CXXFLAGS"
 MSG_RESULT_LIBS="$LDADD $FONTCONFIG_LIBS $FREETYPE2_LIBS $FRIBIDI_LIBS $IMLIB2_LIBS $RANDR_LIBS $XEXT_LIBS $XFT_LIBS $XINERAMA_LIBS $XPM_LIBS $XRENDER_LIBS"
