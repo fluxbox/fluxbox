@@ -186,12 +186,43 @@ AC_COMPILE_IFELSE([
 	AC_MSG_RESULT([no])
 ])
 
-AM_GNU_GETTEXT_VERSION([0.11.5])
-AM_ICONV
-AS_IF([test x$am_cv_proto_iconv_arg1 = "xconst"], [
-	AC_DEFINE([HAVE_CONST_ICONV], [1], [Is second argument of iconv() is of type 'const char **' or 'char **'])
+dnl iconv() is in libc on glibc and musl, in GNU libiconv elsewhere. libiconv's
+dnl header renames the symbols, so the check has to include it.
+AC_MSG_CHECKING([for library containing iconv_open])
+fb_save_LIBS=$LIBS
+fb_iconv=no
+for fb_lib in "" -liconv; do
+	LIBS="$fb_lib $fb_save_LIBS"
+	AC_LINK_IFELSE([
+		AC_LANG_PROGRAM([#include <iconv.h>], [[
+			iconv_close(iconv_open("UTF-8", "ISO8859-1"));
+		]])
+	], [fb_iconv=${fb_lib:-none required}])
+	AS_IF([test "x$fb_iconv" != xno], [break])
+done
+AC_MSG_RESULT([$fb_iconv])
+
+AS_IF([test "x$fb_iconv" = xno], [
+	LIBS=$fb_save_LIBS
+], [
+	AC_DEFINE([HAVE_ICONV], [1], [Define to 1 if you have the 'iconv' function.])
+
+	dnl C++, because C only warns about the mismatching pointer type
+	AC_LANG_PUSH([C++])
+	AC_MSG_CHECKING([whether iconv takes a const input buffer])
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([#include <iconv.h>], [[
+			size_t (*f)(iconv_t, const char **, size_t *, char **, size_t *) = iconv;
+			(void)f;
+		]])
+	], [
+		AC_DEFINE([HAVE_CONST_ICONV], [1], [Is second argument of iconv() is of type 'const char **' or 'char **'])
+		AC_MSG_RESULT([yes])
+	], [
+		AC_MSG_RESULT([no])
+	])
+	AC_LANG_POP([C++])
 ])
-LIBS="$LIBICONV $LIBS"
 
 dnl Check for networking libraries
 AC_CHECK_LIB([nsl], [t_open], [LIBS="-lnsl $LIBS"])
