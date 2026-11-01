@@ -167,6 +167,37 @@ int handleXIOErrors(Display* d) {
     exit(1);
 }
 
+/// puts the directory of the fluxbox binary in front of PATH, so programs
+/// built next to it (e.g. fbrun) are found without "make install"
+void setupPath(const char *argv0) {
+    char *self = realpath("/proc/self/exe", 0);
+    if (self == 0 && argv0 != 0 && strchr(argv0, '/') != 0)
+        self = realpath(argv0, 0);
+    if (self == 0)
+        return;
+
+    string dir = self;
+    free(self);
+    dir.erase(dir.rfind('/'));
+    if (dir.empty())
+        dir = "/";
+
+    string path;
+    const char *env_path = getenv("PATH");
+    if (env_path != 0)
+        path = env_path;
+
+    vector<string> dirs;
+    StringUtil::stringtok(dirs, path, ":");
+    if (find(dirs.begin(), dirs.end(), dir) != dirs.end())
+        return;
+
+    string new_path = dir;
+    if (!path.empty())
+        new_path += ":" + path;
+    App::setenv("PATH", new_path.c_str());
+}
+
 /// sets FLUXBOX_TERMINAL, the terminal the default menu and keys start.
 /// TERMINAL itself is left alone: other programs expect a single word
 /// there, the xterm fallback carries arguments.
@@ -374,6 +405,7 @@ Fluxbox::Fluxbox(int argc, char **argv,
 #endif // HAVE_GETPID
 
 
+    setupPath(argv[0]);
     setupTerminal();
 
     // setup theme manager to have our style file ready to be scanned
