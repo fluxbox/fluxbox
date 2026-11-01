@@ -167,6 +167,23 @@ int handleXIOErrors(Display* d) {
     exit(1);
 }
 
+/// sets FLUXBOX_TERMINAL, the terminal the default menu and keys start.
+/// TERMINAL itself is left alone: other programs expect a single word
+/// there, the xterm fallback carries arguments.
+void setupTerminal() {
+    if (getenv("FLUXBOX_TERMINAL") != 0)
+        return;
+
+    string terminal = "xterm -fa Monospace -fs 10 -bg #1b211f -fg #d5dcd8";
+    const char *user_terminal = getenv("TERMINAL");
+    if (user_terminal != 0 && *user_terminal != '\0') {
+        terminal = user_terminal;
+    } else if (FileUtil::isInPath("x-terminal-emulator")) {
+        terminal = "x-terminal-emulator";
+    }
+    App::setenv("FLUXBOX_TERMINAL", terminal.c_str());
+}
+
 
 
 class KeyReloadHelper {
@@ -356,6 +373,8 @@ Fluxbox::Fluxbox(int argc, char **argv,
     m_fluxbox_pid = XInternAtom(disp, "_BLACKBOX_PID", False);
 #endif // HAVE_GETPID
 
+
+    setupTerminal();
 
     // setup theme manager to have our style file ready to be scanned
     loadStyle();

@@ -46,6 +46,8 @@ namespace FileUtil {
     bool isRegularFile(const char* filename);
     /// @return true if a file executable for user
     bool isExecutable(const char* filename);
+    /// @return true if an executable 'name' is found in one of $PATH's dirs
+    bool isInPath(const std::string &name);
 
     /// gets timestamp of last status change
     /// @return timestamp

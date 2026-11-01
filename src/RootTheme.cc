@@ -38,8 +38,6 @@
 
 #include <X11/Xatom.h>
 #include <iostream>
-#include <vector>
-#include <cstdlib>
 
 #include <sys/types.h>
 #ifdef HAVE_SYS_WAIT_H
@@ -53,26 +51,6 @@
 #endif
 
 using std::string;
-
-namespace {
-
-bool inPath(const string &name) {
-    const char *path = getenv("PATH");
-    if (path == 0)
-        return false;
-
-    std::vector<string> dirs;
-    FbTk::StringUtil::stringtok(dirs, path, ":");
-    for (size_t i = 0; i < dirs.size(); ++i) {
-        string file = dirs[i] + "/" + name;
-        if (FbTk::FileUtil::isRegularFile(file.c_str()) &&
-            FbTk::FileUtil::isExecutable(file.c_str()))
-            return true;
-    }
-    return false;
-}
-
-} // anonymous namespace
 
 class BackgroundItem: public FbTk::ThemeItem<FbTk::Texture> {
 public:
@@ -248,8 +226,8 @@ void RootTheme::reconfigTheme() {
     } else if (FbTk::FileUtil::isDirectory(filename.c_str()) &&
                strstr(m_background->options().c_str(), "random") != 0) {
         cmd += "-r " + filename;
-    } else if (!inPath(realProgramName("fbsetbg")) ||
-               !inPath(realProgramName("fbsetroot"))) {
+    } else if (!FbTk::FileUtil::isInPath(realProgramName("fbsetbg")) ||
+               !FbTk::FileUtil::isInPath(realProgramName("fbsetroot"))) {
         m_first = false;
         renderBackground();
         return;

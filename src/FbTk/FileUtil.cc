@@ -20,12 +20,15 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "FileUtil.hh"
+#include "StringUtil.hh"
 
 #include <sys/stat.h>
 #include <unistd.h>
 
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <cstdlib>
 
 using std::ifstream;
 using std::ofstream;
@@ -71,6 +74,21 @@ bool FileUtil::isExecutable(const char* filename) {
         || buf.st_mode & S_IXOTH
 #endif
     ;
+}
+
+bool FileUtil::isInPath(const std::string &name) {
+    const char *path = getenv("PATH");
+    if (path == 0)
+        return false;
+
+    std::vector<std::string> dirs;
+    StringUtil::stringtok(dirs, path, ":");
+    for (size_t i = 0; i < dirs.size(); ++i) {
+        std::string file = dirs[i] + "/" + name;
+        if (isRegularFile(file.c_str()) && isExecutable(file.c_str()))
+            return true;
+    }
+    return false;
 }
 
 bool FileUtil::copyFile(const char* from, const char* to) {
