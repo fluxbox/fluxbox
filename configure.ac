@@ -503,9 +503,9 @@ AC_ARG_WITH([windowmenu],
 AC_SUBST([DEFAULT_WINDOWMENU], [$default_windowmenu])
 
 AC_ARG_WITH([style],
-	AS_HELP_STRING([--with-style=path], [style by default (PREFIX/share/fluxbox/styles/bloe)]),
+	AS_HELP_STRING([--with-style=path], [style by default (PREFIX/share/fluxbox/styles/sage)]),
 	[default_style="$withval"],
-	[default_style="$prefix/share/fluxbox/styles/bloe"]
+	[default_style="$prefix/share/fluxbox/styles/sage"]
 )
 AC_SUBST([DEFAULT_STYLE], [$default_style])
 

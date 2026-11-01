@@ -17,6 +17,7 @@ include data/styles/Makemodule.am
 include data/styles/zimek_bisque/Makemodule.am
 include data/styles/bloe/pixmaps/Makemodule.am
 include data/styles/bloe/Makemodule.am
+include data/styles/sage/Makemodule.am
 include data/styles/Emerge/pixmaps/Makemodule.am
 include data/styles/Emerge/Makemodule.am
 include data/styles/ostrich/Makemodule.am

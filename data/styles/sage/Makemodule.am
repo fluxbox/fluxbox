@@ -1,0 +1,3 @@
+sage_styledir = $(pkgdatadir)/styles/sage
+
+dist_sage_style_DATA = data/styles/sage/theme.cfg
