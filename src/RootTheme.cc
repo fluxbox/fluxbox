@@ -38,6 +38,8 @@
 
 #include <X11/Xatom.h>
 #include <iostream>
+#include <vector>
+#include <cstdlib>
 
 #include <sys/types.h>
 #ifdef HAVE_SYS_WAIT_H
@@ -51,6 +53,26 @@
 #endif
 
 using std::string;
+
+namespace {
+
+bool inPath(const string &name) {
+    const char *path = getenv("PATH");
+    if (path == 0)
+        return false;
+
+    std::vector<string> dirs;
+    FbTk::StringUtil::stringtok(dirs, path, ":");
+    for (size_t i = 0; i < dirs.size(); ++i) {
+        string file = dirs[i] + "/" + name;
+        if (FbTk::FileUtil::isRegularFile(file.c_str()) &&
+            FbTk::FileUtil::isExecutable(file.c_str()))
+            return true;
+    }
+    return false;
+}
+
+} // anonymous namespace
 
 class BackgroundItem: public FbTk::ThemeItem<FbTk::Texture> {
 public:
@@ -150,6 +172,7 @@ private:
 
 RootTheme::RootTheme(FbTk::ImageControl &image_control):
     FbTk::Theme(image_control.screenNumber()),
+    m_image_control(image_control),
     m_background(new BackgroundItem(*this, "background", "Background")),
     m_opgc(RootWindow(FbTk::App::instance()->display(), image_control.screenNumber())),
     m_first(true) {
@@ -225,6 +248,11 @@ void RootTheme::reconfigTheme() {
     } else if (FbTk::FileUtil::isDirectory(filename.c_str()) &&
                strstr(m_background->options().c_str(), "random") != 0) {
         cmd += "-r " + filename;
+    } else if (!inPath(realProgramName("fbsetbg")) ||
+               !inPath(realProgramName("fbsetroot"))) {
+        m_first = false;
+        renderBackground();
+        return;
     } else {
         // render normal texture with fbsetroot
         cmd += "-b ";
@@ -262,4 +290,23 @@ void RootTheme::reconfigTheme() {
     FbCommands::ExecuteCmd exec(cmd, screenNum());
     m_first = false;
     exec.execute();
+}
+
+void RootTheme::renderBackground() {
+    // plain Xlib: an FbRootWindow would remove the screen's event handler
+    // for the root window when it goes out of scope
+    Display *disp = FbTk::App::instance()->display();
+    Window root = RootWindow(disp, screenNum());
+    Pixmap pixmap = m_image_control.renderImage(DisplayWidth(disp, screenNum()),
+                                                DisplayHeight(disp, screenNum()),
+                                                **m_background,
+                                                FbTk::ROT0, false);
+    if (pixmap == None)
+        return;
+
+    // the root window keeps its background after the pixmap is freed.
+    // _XROOTPMAP_ID is left alone: it would point to a freed pixmap.
+    XSetWindowBackgroundPixmap(disp, root, pixmap);
+    XClearWindow(disp, root);
+    XFreePixmap(disp, pixmap);
 }

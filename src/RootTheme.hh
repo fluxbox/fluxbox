@@ -54,6 +54,10 @@ public:
     virtual const RootTheme &operator *() const { return *this; }
 
 private:
+    /// render the background texture onto the root window ourself
+    void renderBackground();
+
+    FbTk::ImageControl &m_image_control;
     BackgroundItem *m_background;///< background image/texture
     FbTk::GContext m_opgc;
     bool m_first;
