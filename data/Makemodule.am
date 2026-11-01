@@ -7,7 +7,8 @@ EXTRA_DIST += \
 
 PATHFILES += \
 	data/apps \
-	data/init
+	data/init \
+	data/rootmenu
 
 include data/styles/carp/Makemodule.am
 include data/styles/bora_blue/Makemodule.am

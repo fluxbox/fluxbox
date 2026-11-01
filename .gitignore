@@ -27,6 +27,7 @@ Makefile.in
 /configure
 /data/apps
 /data/init
+/data/rootmenu
 /data/menu
 /fbrun
 /fbsetroot
@@ -36,7 +37,7 @@ Makefile.in
 /libFbTk.a
 /src/defaults.cc
 /src/defaults.hh
-/src/builtinstyle.cc
+/src/builtindata.cc
 /stamp-h1
 /testDemandAttention
 /testFont

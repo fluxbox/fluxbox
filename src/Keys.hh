@@ -28,6 +28,7 @@
 #include <X11/Xlib.h>
 #include <string>
 #include <map>
+#include <iosfwd>
 
 class WinClient;
 
@@ -113,6 +114,8 @@ private:
 
     // Load default keybindings for when there are errors loading the keys file
     void loadDefaults();
+    /// replace all bindings with the ones read from in
+    void load(std::istream &in);
     void setKeyMode(const FbTk::RefCount<t_key> &keyMode);
 
 

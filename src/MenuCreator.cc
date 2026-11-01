@@ -488,6 +488,30 @@ bool getStart(FbMenuParser &parser, string &label, FbTk::StringConvertor &labelc
     return true;
 }
 
+/// fill inject_into from an opened parser; filename is watched by reloader
+bool createFromParser(FbMenuParser &parser, const string &filename,
+                      FbTk::Menu &inject_into,
+                      AutoReloadHelper *reloader, bool begin) {
+    startFile();
+    if (begin) {
+        string label;
+        if (!getStart(parser, label, s_stringconvertor)) {
+            endFile();
+            return false;
+        }
+        inject_into.setLabel(label);
+    }
+
+    // save menu filename, so we can check if it changes
+    if (reloader && !filename.empty())
+        reloader->addFile(filename);
+
+    parseMenu(parser, inject_into, s_stringconvertor, reloader);
+    endFile();
+
+    return true;
+}
+
 } // end of anonymous namespace
 
 
@@ -517,24 +541,15 @@ bool MenuCreator::createFromFile(const string &filename,
     if (!parser.isLoaded())
         return false;
 
-    startFile();
-    if (begin) {
-        string label;
-        if (!getStart(parser, label, s_stringconvertor)) {
-            endFile();
-            return false;
-        }
-        inject_into.setLabel(label);
-    }
+    return createFromParser(parser, real_filename, inject_into, reloader, begin);
+}
 
-    // save menu filename, so we can check if it changes
-    if (reloader)
-        reloader->addFile(real_filename);
-
-    parseMenu(parser, inject_into, s_stringconvertor, reloader);
-    endFile();
-
-    return true;
+bool MenuCreator::createFromString(const string &text,
+                                   FbTk::Menu &inject_into,
+                                   AutoReloadHelper *reloader, bool begin) {
+    FbMenuParser parser;
+    parser.openString(text);
+    return createFromParser(parser, "", inject_into, reloader, begin);
 }
 
 FbMenu *MenuCreator::createMenuType(const string &type, int screen_num) {

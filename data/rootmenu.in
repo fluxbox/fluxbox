@@ -1,0 +1,34 @@
+[begin] (Fluxbox)
+  [exec] (Terminal (Alt+F1\)) {$FLUXBOX_TERMINAL}
+  [exec] (Run... (Alt+F2\)) {$FLUXBOX_RUN -center -w 400 -h 30 -pad 8 -font sans-10 -fg '#d5dcd8' -bg '#1b211f'}
+  [separator]
+  [workspaces] (Workspaces)
+  [submenu] (Key bindings)
+    [nop] (Alt+F1: Terminal)
+    [nop] (Alt+F2: Run dialog)
+    [nop] (Alt+Space: Window menu)
+    [separator]
+    [nop] (Alt+Tab: Next window)
+    [nop] (Alt+F4: Close window)
+    [nop] (Alt+F9 / F10 / F11: Minimize / Maximize / Fullscreen)
+    [nop] (Alt+Left drag: Move window)
+    [nop] (Alt+Right drag: Resize window)
+    [separator]
+    [nop] (Ctrl+Alt+Left / Right: Previous / next workspace)
+    [nop] (Ctrl+F1 ... F12: Go to workspace 1 ... 12)
+    [nop] (Super+F1 ... F12: Send window to workspace 1 ... 12)
+    [separator]
+    [nop] (Ctrl+Alt+Delete: Exit fluxbox)
+  [end]
+  [submenu] (Fluxbox)
+    [config] (Configure)
+    [submenu] (Styles)
+      [stylesdir] (@pkgdatadir@/styles)
+      [stylesdir] (~/.@pkgprefix@fluxbox@pkgsuffix@/styles)
+    [end]
+    [reconfig] (Reload config)
+    [restart] (Restart)
+  [end]
+  [separator]
+  [exit] (Exit)
+[end]

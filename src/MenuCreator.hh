@@ -45,6 +45,11 @@ namespace MenuCreator {
                         FbTk::Menu &inject_into,
                         FbTk::AutoReloadHelper *reloader = NULL,
                         bool begin = true);
+    /// like createFromFile, but reads the menu from text
+    bool createFromString(const std::string &text,
+                          FbTk::Menu &inject_into,
+                          FbTk::AutoReloadHelper *reloader = NULL,
+                          bool begin = true);
     bool createWindowMenuItem(const std::string &type, const std::string &label, 
                                      FbTk::Menu &inject_into);
 };

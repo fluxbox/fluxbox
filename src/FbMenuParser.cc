@@ -26,10 +26,21 @@
 
 bool FbMenuParser::open(const std::string &filename) {
     m_file.open(filename.c_str());
+    m_in = &m_file;
     m_curr_pos = 0;
     m_row = 0;
     m_curr_token = DONE;
     return isLoaded();
+}
+
+bool FbMenuParser::openString(const std::string &text) {
+    m_text.str(text);
+    m_text.clear();
+    m_in = &m_text;
+    m_curr_pos = 0;
+    m_row = 0;
+    m_curr_token = DONE;
+    return true;
 }
 
 FbTk::Parser &FbMenuParser::operator >> (FbTk::Parser::Item &out) {
@@ -124,7 +135,7 @@ FbTk::Parser::Item FbMenuParser::nextItem() {
 }
 
 bool FbMenuParser::nextLine() {
-    if (!std::getline(m_file, m_curr_line))
+    if (!std::getline(*m_in, m_curr_line))
         return false;
 
     m_row++;

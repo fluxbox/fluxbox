@@ -75,19 +75,32 @@ src/defaults.cc: force
 
 force: ;
 
-CLEANFILES += src/builtinstyle.cc
+CLEANFILES += src/builtindata.cc
 
-src/builtinstyle.cc: $(top_srcdir)/data/styles/sage/theme.cfg
+# function:file pairs, one function per file returning its text
+builtin_data = \
+	builtinStyle:$(top_srcdir)/data/styles/sage/theme.cfg \
+	builtinKeys:$(top_srcdir)/data/keys \
+	builtinRootMenu:$(top_builddir)/data/rootmenu \
+	builtinWindowMenu:$(top_srcdir)/data/windowmenu
+
+src/builtindata.cc: \
+		$(top_srcdir)/data/styles/sage/theme.cfg \
+		$(top_srcdir)/data/keys \
+		$(top_builddir)/data/rootmenu \
+		$(top_srcdir)/data/windowmenu
 	@( \
 		echo '// This file is generated from Makefile. Do not edit!'; \
-		echo '#include "BuiltinStyle.hh"'; \
-		echo ''; \
-		echo 'const char* builtinStyle() {'; \
-		echo '  return'; \
-		sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' -e 's/^/    "/' -e 's/$$/\\n"/' \
-			$(top_srcdir)/data/styles/sage/theme.cfg; \
-		echo '    ;'; \
-		echo '}' ) > $(top_builddir)/src/builtinstyle.cc
+		echo '#include "BuiltinData.hh"'; \
+		for entry in $(builtin_data); do \
+			echo ''; \
+			echo "const char* $${entry%%:*}() {"; \
+			echo '  return'; \
+			sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' -e 's/^/    "/' -e 's/$$/\\n"/' \
+				"$${entry#*:}"; \
+			echo '    ;'; \
+			echo '}'; \
+		done ) > $(top_builddir)/src/builtindata.cc
 
 # an extra dep for fluxbox
 fluxbox.$(OBJEXT): src/defaults.hh
@@ -169,7 +182,7 @@ fluxbox_LDADD = \
 	$(XPM_LIBS) \
 	$(XRENDER_LIBS)
 
-nodist_fluxbox_SOURCES = src/builtinstyle.cc
+nodist_fluxbox_SOURCES = src/builtindata.cc
 
 fluxbox_SOURCES = \
 	src/AlphaMenu.cc \
@@ -179,7 +192,7 @@ fluxbox_SOURCES = \
 	src/AtomHandler.hh \
 	src/AttentionNoticeHandler.cc \
 	src/AttentionNoticeHandler.hh \
-	src/BuiltinStyle.hh \
+	src/BuiltinData.hh \
 	src/CascadePlacement.cc \
 	src/CascadePlacement.hh \
 	src/ClientMenu.cc \

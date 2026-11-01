@@ -36,7 +36,7 @@
 #include "Layer.hh"
 
 #include "defaults.hh"
-#include "BuiltinStyle.hh"
+#include "BuiltinData.hh"
 #include "Debug.hh"
 
 #include "FbTk/I18n.hh"

@@ -26,6 +26,7 @@
 #include "WinClient.hh"
 #include "WindowCmd.hh"
 #include "Debug.hh"
+#include "BuiltinData.hh"
 
 #include "FbTk/EventManager.hh"
 #include "FbTk/StringUtil.hh"
@@ -90,6 +91,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <list>
 #include <vector>
 #include <memory>
@@ -99,6 +101,7 @@ using std::endl;
 using std::string;
 using std::vector;
 using std::ifstream;
+using std::istringstream;
 using std::pair;
 
 using FbTk::STLUtil::destroyAndClearSecond;
@@ -311,6 +314,8 @@ void Keys::reload() {
     FbTk::App::instance()->sync(false);
 
     if (! FbTk::FileUtil::isRegularFile(m_filename.c_str())) {
+        if (firstload)
+            loadDefaults();
         return;
     }
 
@@ -322,6 +327,10 @@ void Keys::reload() {
         return; // failed to open file
     }
 
+    load(infile);
+}
+
+void Keys::load(std::istream &in) {
     // free memory of previous grabs
     deleteTree();
 
@@ -329,10 +338,10 @@ void Keys::reload() {
 
     unsigned int current_line = 0; //so we can tell the user where the fault is
 
-    while (!infile.eof()) {
+    while (!in.eof()) {
         string linebuffer;
 
-        getline(infile, linebuffer);
+        getline(in, linebuffer);
 
         current_line++;
 
@@ -354,21 +363,8 @@ void Keys::reload() {
 void Keys::loadDefaults() {
     fbdbg<<"Loading default key bindings"<<endl;
 
-    deleteTree();
-    m_map["default:"] = FbTk::makeRef<t_key>();
-    addBinding("OnDesktop Mouse1 :HideMenus");
-    addBinding("OnDesktop Mouse2 :WorkspaceMenu");
-    addBinding("OnDesktop Mouse3 :RootMenu");
-    addBinding("OnTitlebar Mouse3 :WindowMenu");
-    addBinding("OnWindow Mouse1 :MacroCmd {Focus} {Raise} {StartMoving}");
-    addBinding("OnTitlebar Mouse1 :MacroCmd {Focus} {Raise} {ActivateTab}");
-    addBinding("OnTitlebar Move1 :StartMoving");
-    addBinding("OnLeftGrip Move1 :StartResizing bottomleft");
-    addBinding("OnRightGrip Move1 :StartResizing bottomright");
-    addBinding("OnWindowBorder Move1 :StartMoving");
-    addBinding("Mod1 Tab :NextWindow (workspace=[current])");
-    addBinding("Mod1 Shift Tab :PrevWindow (workspace=[current])");
-    keyMode("default");
+    istringstream in(builtinKeys());
+    load(in);
 }
 
 bool Keys::addBinding(const string &linebuffer) {

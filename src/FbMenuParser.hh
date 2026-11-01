@@ -26,27 +26,32 @@
 #include "FbTk/Parser.hh"
 
 #include <fstream>
+#include <sstream>
 
 class FbMenuParser: public FbTk::Parser {
 public:
-    FbMenuParser():m_row(0), m_curr_pos(0), m_curr_token(TYPE) {}
-    FbMenuParser(const std::string &filename):m_row(0), m_curr_pos(0),
+    FbMenuParser():m_in(&m_file), m_row(0), m_curr_pos(0), m_curr_token(TYPE) {}
+    FbMenuParser(const std::string &filename):m_in(&m_file), m_row(0), m_curr_pos(0),
                                               m_curr_token(TYPE) { open(filename); }
     ~FbMenuParser() { close(); }
 
     bool open(const std::string &filename);
+    /// read the menu from text instead of a file
+    bool openString(const std::string &text);
     void close() { m_file.close(); }
     FbTk::Parser &operator >> (FbTk::Parser::Item &out);
     FbTk::Parser::Item nextItem();
 
-    bool isLoaded() const { return m_file.is_open(); }
-    bool eof() const { return m_file.eof(); }
+    bool isLoaded() const { return m_in == &m_text || m_file.is_open(); }
+    bool eof() const { return m_in->eof(); }
     int row() const { return m_row; }
     std::string line() const { return m_curr_line; }
 private:
     bool nextLine();
 
     mutable std::ifstream m_file;
+    std::istringstream m_text;
+    std::istream *m_in; ///< m_file or m_text
     int m_row;
     int m_curr_pos;
     std::string m_curr_line;

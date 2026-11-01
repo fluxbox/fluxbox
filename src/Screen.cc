@@ -25,6 +25,7 @@
 #include "Screen.hh"
 
 #include "fluxbox.hh"
+#include "BuiltinData.hh"
 #include "Keys.hh"
 #include "Window.hh"
 #include "WindowCmd.hh"
@@ -1347,19 +1348,9 @@ void BScreen::rereadMenu() {
         MenuCreator::createFromFile(fb->getMenuFilename(), *m_rootmenu,
                                     m_rootmenu->reloadHelper());
 
-    if (m_rootmenu->numberOfItems() == 0) {
-        _FB_USES_NLS;
-        m_rootmenu->setLabel(_FB_XTEXT(Menu, DefaultRootMenu, "Fluxbox default menu", "Title of fallback root menu"));
-        FbTk::RefCount<FbTk::Command<void> > restart_fb(FbTk::CommandParser<void>::instance().parse("restart"));
-        FbTk::RefCount<FbTk::Command<void> > exit_fb(FbTk::CommandParser<void>::instance().parse("exit"));
-        FbTk::RefCount<FbTk::Command<void> > execute_xterm(FbTk::CommandParser<void>::instance().parse("exec xterm"));
-        m_rootmenu->setInternalMenu();
-        m_rootmenu->insertCommand("xterm", execute_xterm);
-        m_rootmenu->insertCommand(_FB_XTEXT(Menu, Restart, "Restart", "Restart command"),
-                           restart_fb);
-        m_rootmenu->insertCommand(_FB_XTEXT(Menu, Exit, "Exit", "Exit command"),
-                           exit_fb);
-    }
+    if (m_rootmenu->numberOfItems() == 0)
+        MenuCreator::createFromString(builtinRootMenu(), *m_rootmenu,
+                                      m_rootmenu->reloadHelper());
 
 }
 
@@ -1377,6 +1368,10 @@ void BScreen::rereadWindowMenu() {
     if (!windowMenuFilename().empty())
         MenuCreator::createFromFile(windowMenuFilename(), *m_windowmenu,
                                     m_windowmenu->reloadHelper());
+
+    if (m_windowmenu->numberOfItems() == 0)
+        MenuCreator::createFromString(builtinWindowMenu(), *m_windowmenu,
+                                      m_windowmenu->reloadHelper());
 
 }
 
