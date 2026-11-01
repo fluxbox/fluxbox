@@ -204,6 +204,11 @@ int spawn(const std::vector<std::string> &args, int screen_num) {
 
 FbTk::Command<void> *ExportCmd::parse(const string &command, const string &args,
                                 bool trusted) {
+    // an untrusted caller could point SHELL, PATH, keyFile, ... at its own
+    // files and get them run by the next Exec or reconfigure
+    if (!trusted)
+        return 0;
+
     string name = args;
     FbTk::StringUtil::removeFirstWhitespace(name);
     if (command != "setresourcevalue")
