@@ -34,7 +34,7 @@ m4_ifndef([PKG_PROG_PKG_CONFIG],
 	[m4_fatal([Could not locate the pkg-config autoconf macros.  These are usually
 located in /usr/share/aclocal/pkg.m4.  If your macros are in a different
 location, try setting the environment variable
-export ACLOCAL_FLAGS="-I/other/macro/dir"
+export ACLOCAL_PATH="/other/macro/dir"
 before running ./autogen.sh or autoreconf again.])
 ])
 PKG_PROG_PKG_CONFIG
