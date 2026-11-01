@@ -1288,7 +1288,8 @@ bool Ewmh::propertyNotify(WinClient &winclient, Atom the_property) {
         if (!newtitle.empty())
             winclient.setTitle(newtitle);
         if (winclient.fbwindow())
-            winclient.fbwindow()->titleSig().emit(newtitle, *winclient.fbwindow());
+            winclient.fbwindow()->titleSig().emit(winclient.title().logical(),
+                                                  *winclient.fbwindow());
         return true;
     } else if (the_property == m_net->wm_icon_name) {
         // we don't use icon title, since we don't show icons
