@@ -148,9 +148,9 @@ private:
     ThemeItem<Justify> bullet_pos;
     ThemeItem<BulletType> m_bullet;
     ThemeItem<Shape::ShapePlace> m_shapeplace;
-    ThemeItem<unsigned int> m_title_height, m_item_height;
-    ThemeItem<unsigned int> m_border_width;
-    ThemeItem<unsigned int> m_bevel_width;
+    ThemeItem<int> m_title_height, m_item_height;
+    ThemeItem<int> m_border_width;
+    ThemeItem<int> m_bevel_width;
     ThemeItem<Color> m_border_color;
     ThemeItem<PixmapWithMask> m_bullet_pixmap, m_selected_pixmap, m_unselected_pixmap;
     ThemeItem<PixmapWithMask> m_hl_bullet_pixmap, m_hl_selected_pixmap, m_hl_unselected_pixmap;
@@ -160,8 +160,8 @@ private:
 
     int m_alpha;
     unsigned int m_delay; ///< in msec
-    unsigned int m_real_title_height; ///< the calculated item height (from font and menu.titleHeight)
-    unsigned int m_real_item_height; ///< the calculated item height (from font and menu.itemHeight)
+    int m_real_title_height; ///< the calculated item height (from font and menu.titleHeight)
+    int m_real_item_height; ///< the calculated item height (from font and menu.itemHeight)
 };
 
 } // end namespace FbTk
