@@ -36,22 +36,23 @@ namespace FbTk  {
 class Texture {
 public:
 
-    enum Bevel {
+    // all flags share one enum: they are or'ed together into type(), and
+    // mixing values of different enum types is deprecated since C++20
+    enum {
+        // bevel levels
         // why are we not using the lowest-order bit?
         FLAT =     0x00002,
         SUNKEN =   0x00004,
         RAISED =   0x00008,
-        DEFAULT_LEVEL = FLAT
-    };
+        DEFAULT_LEVEL = FLAT,
 
-    enum Textures {
+        // textures
         NONE =     0x00000,
         SOLID =    0x00010,
         GRADIENT = 0x00020,
-        DEFAULT_TEXTURE = SOLID
-    };
+        DEFAULT_TEXTURE = SOLID,
 
-    enum Gradients {
+        // gradients
         HORIZONTAL =     0x00040,
         VERTICAL =       0x00080,
         DIAGONAL =       0x00100,
@@ -59,10 +60,8 @@ public:
         RECTANGLE =      0x00400,
         PYRAMID =        0x00800,
         PIPECROSS =      0x01000,
-        ELLIPTIC =       0x02000
-    };
+        ELLIPTIC =       0x02000,
 
-    enum {
         BEVEL1 =         0x04000,
         BEVEL2 =         0x08000, // bevel types
         INVERT =         0x10000, ///< inverted image
