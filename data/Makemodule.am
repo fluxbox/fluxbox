@@ -10,6 +10,10 @@ PATHFILES += \
 	data/init \
 	data/rootmenu
 
+# PATHFILES are only rebuilt with Makefile; the built-in root menu
+# also has to follow its source
+data/rootmenu: data/rootmenu.in
+
 include data/styles/carp/Makemodule.am
 include data/styles/bora_blue/Makemodule.am
 include data/styles/green_tea/Makemodule.am
