@@ -433,7 +433,7 @@ append() {
         iconString="`echo $* | grep -o '<.*>'`"
         # echo "iconString=$iconString" >&2
         if [ -z "$iconString" ] && [ -z "$NO_ICON" ]; then
-            printf "      $* " >> ${MENUFILENAME}
+            printf '      %s ' "$*" >> ${MENUFILENAME}
             # get the program name between '{}' from parameters            
             execname="$*"
             execname=${execname#*\{}
