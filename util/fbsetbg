@@ -168,18 +168,32 @@ message() {
 }
 
 remembercommand() {
+    # the history file is '|'-separated, one entry per line
+    case $wallpaper in
+        *'|'*|*"
+"*) return ;;
+    esac
     grep -vs "|${DISPLAY}$\||${DISPLAY}\.0$" ${lastwallpaper} > ${lastwallpaper}.tmp
     mv -f ${lastwallpaper}.tmp ${lastwallpaper}
+    # printf, not echo: some echos expand backslashes in the wallpaper name
     if [ "$option" = fbsetroot ]; then
-        echo $option"|$wallpaper|$style|"$DISPLAY >> $lastwallpaper
+        printf '%s|%s|%s|%s\n' "$option" "$wallpaper" "$style" "$DISPLAY" >> $lastwallpaper
         return
     fi
     # Make dir/../../path/file.jpg work
     case $wallpaper in
         # no spaces allowed between the varname and '|'
-        /*) echo $option $option2"|$wallpaper|$style|"$DISPLAY >> $lastwallpaper ;;
-        *)  echo $option $option2"|$PWD/$wallpaper|$style|"$DISPLAY >> $lastwallpaper ;;
+        /*) printf '%s %s|%s|%s|%s\n' "$option" "$option2" "$wallpaper" "$style" "$DISPLAY" >> $lastwallpaper ;;
+        *)  printf '%s %s|%s|%s|%s\n' "$option" "$option2" "$PWD/$wallpaper" "$style" "$DISPLAY" >> $lastwallpaper ;;
     esac
+}
+
+# only these may come back from the history file as option/option2
+valid_option() {
+    case $1 in
+        ''|'$aspect'|'$full'|'$center'|'$tile'|fbsetroot|random) return 0 ;;
+    esac
+    return 1
 }
 
 debugfbsetbg() {
@@ -217,13 +231,13 @@ while [ $# -gt 0 ]; do
     case "$1" in
         -u)
             if find_it "$2"; then
-                grep -v wpsetters $lastwallpaper > ${lastwallpaper}.tmp
+                grep -v '^wpsetters ' $lastwallpaper > ${lastwallpaper}.tmp
                 echo "wpsetters $2" >> ${lastwallpaper}.tmp
                 mv ${lastwallpaper}.tmp $lastwallpaper
                 WPSETTER=$2
                 setterfromcommandline=true
             elif [ -z "$2" ]; then
-                grep -v wpsetters $lastwallpaper > ${lastwallpaper}.tmp
+                grep -v '^wpsetters ' $lastwallpaper > ${lastwallpaper}.tmp
                 mv ${lastwallpaper}.tmp $lastwallpaper
                 message "wpsetter removed from historyfile"
                 exit 0
@@ -295,6 +309,9 @@ while [ $# -gt 0 ]; do
                     option=`echo $option|cut -d' ' -f1`
                     wallpaper=`grep "|${DISPLAY}.0$" $lastwallpaper|cut -d'|' -f2`
                 fi
+                if ! valid_option "$option" || ! valid_option "$option2"; then
+                    wallpaper=
+                fi
                 if [ -z "$wallpaper" ]; then
                     message "No previous wallpaper recorded for display ${DISPLAY}"
                     exit 1
@@ -318,6 +335,9 @@ while [ $# -gt 0 ]; do
                     option=`echo $option|cut -d' ' -f1`
                     style=`grep "|${DISPLAY}.0$" $lastwallpaper|cut -d'|' -f3`
                     wallpaper=`grep "|${DISPLAY}.0$" $lastwallpaper|cut -d'|' -f2`
+                fi
+                if ! valid_option "$option" || ! valid_option "$option2"; then
+                    option= option2= style= wallpaper=
                 fi
             fi
             if [ "$style" != "style" -a -n "$wallpaper" ]; then
@@ -366,7 +386,7 @@ fi
 # Find the default wallpapersetter
 if [ "$setterfromcommandline" != true ]; then
     if [ -r "$lastwallpaper" ]; then
-        wpsetters="`awk '/wpsetters/ {print $2}' $lastwallpaper` $wpsetters"
+        wpsetters="`awk '/^wpsetters / {print $2}' $lastwallpaper` $wpsetters"
     fi
     for wpsetter in $wpsetters; do
         if find_it $wpsetter; then
@@ -553,10 +573,21 @@ if [ ! -r "$wallpaper" ]; then
 fi
 
 
-$WPSETTER `eval echo $option` "$wallpaper"
+case $option in
+    '')        setterargs= ;;
+    '$aspect') setterargs=$aspect ;;
+    '$full')   setterargs=$full ;;
+    '$center') setterargs=$center ;;
+    '$tile')   setterargs=$tile ;;
+    *)
+        message "Unknown wallpaper mode '$option'"
+        exit 1 ;;
+esac
+
+$WPSETTER $setterargs "$wallpaper"
 if [ "$?" != "0" -a "$WPSETTER" != "display" ]; then # display is broken, all IM falsely fail for "unrecognized event type FOO"...
     message "Something went wrong while setting the wallpaper.
-Run '$WPSETTER "`eval echo $option` $wallpaper"' from an xterm to find out what."
+Run '$WPSETTER $setterargs $wallpaper' from an xterm to find out what."
     exit 1
 fi
 
