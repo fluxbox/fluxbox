@@ -929,12 +929,12 @@ void Remember::save() {
             for (; git != git_end; ++git) {
                 if (git->second == &a) {
                     apps_file << (a.is_transient ? " [transient]" : " [app]") <<
-                                 git->first->toString()<<endl;
+                                 " " << git->first->toString()<<endl;
                 }
             }
         } else {
             apps_file << (a.is_transient ? "[transient]" : "[app]") <<
-                         it->first->toString()<<endl;
+                         " " << it->first->toString()<<endl;
         }
         if (a.workspace_remember) {
             apps_file << "  [Workspace]\t{" << a.workspace << "}" << endl;

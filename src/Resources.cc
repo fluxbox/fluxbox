@@ -79,40 +79,39 @@ setFromString(char const *strval) {
 template<>
 string FbTk::Resource<vector<WinButton::Type> >::
 getString() const {
-    string retval;
+    vector<string> names;
     for (size_t i = 0; i < m_value.size(); i++) {
         switch (m_value[i]) {
         case WinButton::SHADE:
-            retval.append("Shade");
+            names.push_back("Shade");
             break;
         case WinButton::MINIMIZE:
-            retval.append("Minimize");
+            names.push_back("Minimize");
             break;
         case WinButton::MAXIMIZE:
-            retval.append("Maximize");
+            names.push_back("Maximize");
             break;
         case WinButton::CLOSE:
-            retval.append("Close");
+            names.push_back("Close");
             break;
         case WinButton::STICK:
-            retval.append("Stick");
+            names.push_back("Stick");
             break;
         case WinButton::MENUICON:
-            retval.append("MenuIcon");
+            names.push_back("MenuIcon");
             break;
         case WinButton::LEFT_HALF:
-            retval.append("LHalf");
+            names.push_back("LHalf");
             break;
         case WinButton::RIGHT_HALF:
-            retval.append("RHalf");
+            names.push_back("RHalf");
             break;
         default:
             break;
         }
-        retval.append(" ");
     }
 
-    return retval;
+    return FbTk::StringUtil::join(names, " ");
 }
 
 

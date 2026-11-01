@@ -36,6 +36,7 @@
 
 #include <fstream>
 #include <string>
+#include <vector>
 #include <memory>
 #include <algorithm>
 #include <cstdio>
@@ -280,26 +281,28 @@ ClientPattern::~ClientPattern() {
 
 // return a string representation of this pattern
 string ClientPattern::toString() const {
-    string result;
+    std::vector<string> parts;
     Terms::const_iterator it = m_terms.begin();
     Terms::const_iterator it_end = m_terms.end();
     for (; it != it_end; ++it) {
         const Term& term = *(*it);
-        result.append(" (");
-        result.append(property_2_strings[term.prop].str);
+        string part("(");
+        part.append(property_2_strings[term.prop].str);
         if (term.prop == XPROP)
-            result.append(term.xpropstr);
-        result.append(term.negate ? "!=" : "=");
-        result.append(term.regstr);
-        result.append(")");
+            part.append(term.xpropstr);
+        part.append(term.negate ? "!=" : "=");
+        part.append(term.regstr);
+        part.append(")");
+        parts.push_back(part);
     }
 
     if (m_matchlimit > 0) {
-        result.append(" {");
-        result.append(FbTk::StringUtil::number2String(m_matchlimit));
-        result.append("}");
+        string part("{");
+        part.append(FbTk::StringUtil::number2String(m_matchlimit));
+        part.append("}");
+        parts.push_back(part);
     }
-    return result;
+    return FbTk::StringUtil::join(parts, " ");
 }
 
 // does this client match this pattern?

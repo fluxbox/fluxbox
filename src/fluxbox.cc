@@ -109,6 +109,7 @@
 #include <memory>
 #include <algorithm>
 #include <typeinfo>
+#include <vector>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -1186,10 +1187,10 @@ void Fluxbox::save_rc() {
         // users changes...
 
         const BScreen::WorkspaceNames& names = screen->getWorkspaceNames();
-        for (size_t i=0; i < names.size(); i++) {
-            workspaces_string += FbTk::FbStringUtil::FbStrToLocale(names[i]);
-            workspaces_string += ',';
-        }
+        std::vector<std::string> locale_names;
+        for (size_t i=0; i < names.size(); i++)
+            locale_names.push_back(FbTk::FbStringUtil::FbStrToLocale(names[i]));
+        workspaces_string += FbTk::StringUtil::join(locale_names, ",");
 
         XrmPutLineResource(&new_rc, workspaces_string.c_str());
 

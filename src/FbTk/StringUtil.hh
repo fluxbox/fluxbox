@@ -149,6 +149,21 @@ stringtok (Container &container, std::string const &in,
     }
 }
 
+/// Joins the elements of a container, with the separator between them
+template <typename Container>
+static std::string
+join(const Container &container, const std::string &separator) {
+
+    std::string out;
+    typename Container::const_iterator it = container.begin();
+    for (; it != container.end(); ++it) {
+        if (it != container.begin())
+            out += separator;
+        out += *it;
+    }
+    return out;
+}
+
 /// Parse token, which might be in formats as follows: <int>, <int>% or *.
 /// @param relative - parsed relative value (percentage suffix)
 /// @param ignore - this token should be ignored (asterisk)
