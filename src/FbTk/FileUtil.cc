@@ -74,18 +74,21 @@ bool FileUtil::isExecutable(const char* filename) {
 }
 
 bool FileUtil::copyFile(const char* from, const char* to) {
+    // check the source first: a failed copy must not leave an empty 'to'
     ifstream from_file(from);
-    ofstream to_file(to);
-
-    if (!to_file.good())
-        cerr << "Can't write file '"<<to<<"'."<<endl;
-    else if (from_file.good()) {
-        to_file<<from_file.rdbuf();
-        return true;
-    } else
+    if (!from_file.good()) {
         cerr << "Can't copy from '"<<from<<"' to '"<<to<<"'."<<endl;
-    
-    return false;
+        return false;
+    }
+
+    ofstream to_file(to);
+    if (!to_file.good()) {
+        cerr << "Can't write file '"<<to<<"'."<<endl;
+        return false;
+    }
+
+    to_file<<from_file.rdbuf();
+    return true;
 }
 
 Directory::Directory(const char *dir):m_dir(0),
