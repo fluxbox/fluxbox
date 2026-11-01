@@ -91,6 +91,42 @@ void showMenu(BScreen &screen, FbTk::Menu &menu) {
     screen.placementStrategy().placeAndShowMenu(menu, x, y, mouseInStrut);
 }
 
+#if !defined(__EMX__) && !defined(_WIN32)
+// returns like fork(); the child is a session leader whose DISPLAY points at
+// screen_num, or at the screen under the mouse if screen_num < 0
+pid_t forkForScreen(int screen_num) {
+    pid_t pid = fork();
+    if (pid)
+        return pid;
+
+    // 'display' is given as 'host:number.screen'. we want to give the
+    // new app a good home, so we remove '.screen' from what is given
+    // us from the xserver and replace it with the screen_num of the Screen
+    // the user currently points at with the mouse
+    string display = DisplayString(FbTk::App::instance()->display());
+    if (screen_num < 0) {
+        screen_num = 0;
+        BScreen *mouse = Fluxbox::instance()->mouseScreen();
+        if (mouse)
+            screen_num = mouse->screenNumber();
+    }
+
+    // strip away the '.screen'
+    size_t dot = display.rfind(':');
+    dot = display.find('.', dot);
+    if (dot != string::npos) { // 'display' has actually a '.screen' part
+        display.erase(dot);
+    }
+    display += '.';
+    display += FbTk::StringUtil::number2String(screen_num);
+
+    FbTk::App::setenv("DISPLAY", display.c_str());
+
+    setsid();
+    return pid;
+}
+#endif
+
 }
 
 namespace FbCommands {
@@ -126,33 +162,9 @@ int ExecuteCmd::run() {
 
     return spawnlp(P_NOWAIT, comspec, comspec, "/c", m_cmd.c_str(), static_cast<void*>(NULL));
 #else
-    pid_t pid = fork();
+    pid_t pid = forkForScreen(m_screen_num);
     if (pid)
         return pid;
-
-    // 'display' is given as 'host:number.screen'. we want to give the
-    // new app a good home, so we remove '.screen' from what is given
-    // us from the xserver and replace it with the screen_num of the Screen
-    // the user currently points at with the mouse
-    string display = DisplayString(FbTk::App::instance()->display());
-    int screen_num = m_screen_num;
-    if (screen_num < 0) {
-        if (Fluxbox::instance()->mouseScreen() == 0)
-            screen_num = 0;
-        else
-            screen_num = Fluxbox::instance()->mouseScreen()->screenNumber();
-    }
-
-    // strip away the '.screen'
-    size_t dot = display.rfind(':');
-    dot = display.find('.', dot);
-    if (dot != string::npos) { // 'display' has actually a '.screen' part
-        display.erase(dot);
-    }
-    display += '.';
-    display += FbTk::StringUtil::number2String(screen_num);
-
-    FbTk::App::setenv("DISPLAY", display.c_str());
 
     // get shell path from the environment
     // this process exits immediately, so we don't have to worry about memleaks
@@ -160,11 +172,33 @@ int ExecuteCmd::run() {
     if (!shell)
         shell = "/bin/sh";
 
-    setsid();
     execl(shell, shell, "-c", m_cmd.c_str(), static_cast<void*>(NULL));
     exit(EXIT_SUCCESS);
 
     return pid; // compiler happy -> we are happy ;)
+#endif
+}
+
+int spawn(const std::vector<std::string> &args, int screen_num) {
+    if (args.empty())
+        return -1;
+
+    std::vector<char *> argv;
+    for (size_t i = 0; i < args.size(); ++i)
+        argv.push_back(const_cast<char *>(args[i].c_str()));
+    argv.push_back(0);
+
+#if defined(__EMX__) || defined(_WIN32)
+    return spawnvp(P_NOWAIT, argv[0], &argv[0]);
+#else
+    pid_t pid = forkForScreen(screen_num);
+    if (pid)
+        return pid;
+
+    execvp(argv[0], &argv[0]);
+    _exit(EXIT_FAILURE);
+
+    return pid;
 #endif
 }
 

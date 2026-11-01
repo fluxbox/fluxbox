@@ -27,6 +27,7 @@
 #include "FbTk/Command.hh"
 
 #include <memory>
+#include <vector>
 
 #include "ClientMenu.hh"
 #include "ClientPattern.hh"
@@ -47,6 +48,9 @@ private:
     std::string m_cmd;
     const int m_screen_num;
 };
+
+/// runs args[0] with args as its argv, without a shell; returns the pid
+int spawn(const std::vector<std::string> &args, int screen_num = -1);
 
 /// sets environment
 class ExportCmd : public FbTk::Command<void> {
