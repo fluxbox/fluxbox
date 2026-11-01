@@ -52,6 +52,17 @@ private:
 /// runs args[0] with args as its argv, without a shell; returns the pid
 int spawn(const std::vector<std::string> &args, int screen_num = -1);
 
+/// runs a program with fixed arguments, without a shell
+class SpawnCmd: public FbTk::Command<void> {
+public:
+    explicit SpawnCmd(const std::vector<std::string> &args, int screen_num = -1):
+        m_args(args), m_screen_num(screen_num) { }
+    void execute() { spawn(m_args, m_screen_num); }
+private:
+    std::vector<std::string> m_args;
+    const int m_screen_num;
+};
+
 /// sets environment
 class ExportCmd : public FbTk::Command<void> {
 public:

@@ -76,6 +76,9 @@ std::string replaceString(const std::string &original,
                           const char *find_string,
                           const char *replace);
 
+/// @return str in single quotes for a POSIX shell; a ' inside becomes '\''
+std::string shellQuote(const std::string &str);
+
 ///  returns string between character first and last
 int getStringBetween(std::string& out, const char *instr,
                      char first, char last,
