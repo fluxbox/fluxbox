@@ -337,7 +337,10 @@ void Menu::cycleItems(bool reverse) {
         return;
     }
 
-    for (i = m_active_index + offset; i != m_active_index; i += offset ) {
+    // the wrap below never yields m_active_index if that is -1, so count
+    // the steps as well
+    int steps = 0;
+    for (i = m_active_index + offset; i != m_active_index && steps < l; i += offset, steps++) {
         if (i < 0) {
             i = l - 1;
         } else if (i >= l) {
