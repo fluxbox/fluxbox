@@ -36,6 +36,7 @@
 #include "Layer.hh"
 
 #include "defaults.hh"
+#include "BuiltinStyle.hh"
 #include "Debug.hh"
 
 #include "FbTk/I18n.hh"
@@ -357,7 +358,7 @@ Fluxbox::Fluxbox(int argc, char **argv,
 
 
     // setup theme manager to have our style file ready to be scanned
-    FbTk::ThemeManager::instance().load(getStyleFilename(), getStyleOverlayFilename());
+    loadStyle();
 
     // Create keybindings handler and load keys file
     // Note: this needs to be done before creating screens
@@ -1282,6 +1283,21 @@ static void rec_reconfigMenu(FbTk::Menu *menu) {
     }
 }
 
+
+void Fluxbox::loadStyle(int screen_num) {
+    FbTk::ThemeManager &manager = FbTk::ThemeManager::instance();
+    if (manager.load(getStyleFilename(), getStyleOverlayFilename(), screen_num)) {
+        m_failed_style.clear();
+        return;
+    }
+
+    if (m_failed_style != getStyleFilename()) {
+        m_failed_style = getStyleFilename();
+        cerr << "Fluxbox: failed to load style '" << m_failed_style
+             << "', using the built-in style.\n";
+    }
+    manager.loadString(builtinStyle(), getStyleOverlayFilename(), screen_num);
+}
 
 void Fluxbox::reconfigThemes() {
     for (ScreenList::iterator it = m_screens.begin(), end = m_screens.end(); it != end; ++it) {

@@ -141,6 +141,22 @@ bool ThemeManager::load(const string &filename,
     if (!m_database.load(location.c_str()))
         return false;
 
+    apply(prefix, overlay_filename, screen_num);
+    return true;
+}
+
+bool ThemeManager::loadString(const char *style,
+                              const string &overlay_filename, int screen_num) {
+
+    if (!m_database.loadString(style))
+        return false;
+
+    apply("", overlay_filename, screen_num);
+    return true;
+}
+
+void ThemeManager::apply(const string &prefix,
+                         const string &overlay_filename, int screen_num) {
 
     if (!overlay_filename.empty()) {
         string overlay_location = FbTk::StringUtil::expandFilename(overlay_filename);
@@ -164,10 +180,13 @@ bool ThemeManager::load(const string &filename,
 
     m_themelocation = prefix;
 
-    location = prefix;
-    Image::addSearchPath(location);
-    location.append("/pixmaps");
-    Image::addSearchPath(location);
+    // a style without a location has no pixmaps to search for
+    if (prefix != "") {
+        string location = prefix;
+        Image::addSearchPath(location);
+        location.append("/pixmaps");
+        Image::addSearchPath(location);
+    }
 
     LoadThemeHelper load_theme_helper;
 
@@ -178,8 +197,6 @@ bool ThemeManager::load(const string &filename,
     } else {
         load_theme_helper(m_themes[screen_num]);
     }
-
-    return true;
 }
 
 void ThemeManager::loadTheme(Theme &tm) {

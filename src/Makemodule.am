@@ -75,6 +75,20 @@ src/defaults.cc: force
 
 force: ;
 
+CLEANFILES += src/builtinstyle.cc
+
+src/builtinstyle.cc: $(top_srcdir)/data/styles/sage/theme.cfg
+	@( \
+		echo '// This file is generated from Makefile. Do not edit!'; \
+		echo '#include "BuiltinStyle.hh"'; \
+		echo ''; \
+		echo 'const char* builtinStyle() {'; \
+		echo '  return'; \
+		sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' -e 's/^/    "/' -e 's/$$/\\n"/' \
+			$(top_srcdir)/data/styles/sage/theme.cfg; \
+		echo '    ;'; \
+		echo '}' ) > $(top_builddir)/src/builtinstyle.cc
+
 # an extra dep for fluxbox
 fluxbox.$(OBJEXT): src/defaults.hh
 
@@ -155,6 +169,8 @@ fluxbox_LDADD = \
 	$(XPM_LIBS) \
 	$(XRENDER_LIBS)
 
+nodist_fluxbox_SOURCES = src/builtinstyle.cc
+
 fluxbox_SOURCES = \
 	src/AlphaMenu.cc \
 	src/AlphaMenu.hh \
@@ -163,6 +179,7 @@ fluxbox_SOURCES = \
 	src/AtomHandler.hh \
 	src/AttentionNoticeHandler.cc \
 	src/AttentionNoticeHandler.hh \
+	src/BuiltinStyle.hh \
 	src/CascadePlacement.cc \
 	src/CascadePlacement.hh \
 	src/ClientMenu.cc \

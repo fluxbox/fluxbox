@@ -142,6 +142,8 @@ public:
     static ThemeManager &instance();
     /// load style file "filename" to screen
     bool load(const std::string &filename, const std::string &overlay_filename, int screen_num = -1);
+    /// load style resources given as text, e.g. a style compiled into the binary
+    bool loadString(const char *style, const std::string &overlay_filename, int screen_num = -1);
     std::string resourceValue(const std::string &name, const std::string &altname);
     void loadTheme(Theme &tm);
     bool loadItem(ThemeItem_base &resource);
@@ -156,6 +158,9 @@ public:
 private:
     ThemeManager();
     ~ThemeManager() { }
+
+    /// merge the overlay into m_database and load all themes from it
+    void apply(const std::string &prefix, const std::string &overlay_filename, int screen_num);
 
     friend class FbTk::Theme; // so only theme can register itself in constructor
     /// @return false if screen_num if out of

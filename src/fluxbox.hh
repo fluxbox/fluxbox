@@ -153,6 +153,8 @@ public:
     void restart(const char *command = 0);
     void reconfigure();
     void reconfigThemes();
+    /// load the style file, or the built-in style if that fails
+    void loadStyle(int screen_num = -1);
 
     /// todo, remove this. just temporary
     void updateFrameExtents(FluxboxWindow &win);
@@ -295,6 +297,7 @@ private:
     char **m_argv;
     int m_argc;
     std::string m_restart_argument; ///< what to restart
+    std::string m_failed_style; ///< style already reported as not loadable
 
     ///< when we execute reconfig command we must wait until next event round
     FbTk::Timer m_reconfig_timer;

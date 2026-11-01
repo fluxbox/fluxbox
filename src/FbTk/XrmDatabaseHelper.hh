@@ -62,6 +62,16 @@ public:
         m_database = db; // set new and return true
         return true;
     }
+    bool loadString(const char *data) {
+        if (data == 0)
+            return false;
+        XrmDatabase db = XrmGetStringDatabase(data);
+        if (db == 0)
+            return false;
+        close();
+        m_database = db;
+        return true;
+    }
     void close() {
         if (m_database != 0) {
             XrmDestroyDatabase(m_database);
