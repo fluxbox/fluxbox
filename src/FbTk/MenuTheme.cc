@@ -26,6 +26,7 @@
 #include "Font.hh"
 #include "App.hh"
 #include "StringUtil.hh"
+#include "Util.hh"
 
 #ifdef HAVE_CSTDIO
   #include <cstdio>
@@ -85,23 +86,7 @@ MenuTheme::MenuTheme(int screen_num):
     *m_shapeplace = FbTk::Shape::NONE;
 
     ThemeManager::instance().loadTheme(*this);
-
-    if (*m_title_height < 1)
-        *m_title_height = 1;
-    const unsigned int pad = 2*bevelWidth();
-    m_real_item_height = std::max(std::max(pad + 1, *m_item_height),
-                                  std::max(frameFont().height() + pad,
-                                           hiliteFont().height() + pad));
-    m_real_title_height = std::max(std::max(pad + 1, *m_title_height),
-                                   titleFont().height() + pad);
-
-    t_text_gc.setForeground(*t_text);
-    f_text_gc.setForeground(*f_text);
-    u_text_gc.setForeground(*u_text);
-    h_text_gc.setForeground(*h_text);
-    d_text_gc.setForeground(*d_text);
-    hilite_gc.setForeground(hilite->color());
-
+    reconfigTheme();
 }
 
 MenuTheme::~MenuTheme() {
@@ -110,18 +95,18 @@ MenuTheme::~MenuTheme() {
 
 void MenuTheme::reconfigTheme() {
     // clamp to "normal" size
-    if (*m_bevel_width > 20)
-        *m_bevel_width = 20;
-    if (*m_border_width > 20)
-        *m_border_width = 20;
+    *m_bevel_width = Util::clamp(*m_bevel_width, 0, 20);
+    *m_border_width = Util::clamp(*m_border_width, 0, 20);
+    if (*m_title_height < 1)
+        *m_title_height = 1;
 
-
-    const unsigned int pad = 2*bevelWidth();
+    const int pad = 2 * *m_bevel_width;
+    const int item_font_h = std::max(frameFont().height(), hiliteFont().height());
+    const int title_font_h = titleFont().height();
     m_real_item_height = std::max(std::max(pad + 1, *m_item_height),
-                                  std::max(frameFont().height() + pad,
-                                           hiliteFont().height() + pad));
+                                  item_font_h + pad);
     m_real_title_height = std::max(std::max(pad + 1, *m_title_height),
-                                   titleFont().height() + pad);
+                                   title_font_h + pad);
 
     unsigned int item_pm_height = itemHeight();
 

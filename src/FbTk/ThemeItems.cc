@@ -120,20 +120,6 @@ void ThemeItem<bool>::setFromString(char const *strval) {
 }
 
 template <>
-void ThemeItem<unsigned int>::setDefaultValue() {
-    m_value = 0;
-}
-
-template <>
-void ThemeItem<unsigned int>::setFromString(const char *str) {
-    sscanf(str, "%u", &m_value);
-}
-
-template <>
-void ThemeItem<unsigned int>::load(const std::string *name, const std::string *altname) {
-}
-
-template <>
 void ThemeItem<Font>::setDefaultValue() {
     if (!m_value.load("__DEFAULT__")) {
         cerr<<"ThemeItem<Font>: Warning! Failed to load default value 'fixed'"<<endl;
