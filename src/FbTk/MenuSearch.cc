@@ -174,7 +174,7 @@ size_t MenuSearch::num_matches() {
 // the position where it matches in the string. an empty
 // 'pattern' always matches
 bool MenuSearch::get_match(size_t i, size_t& idx) {
-    if (i > m_items.size()) {
+    if (i >= m_items.size()) {
         return false;
     }
 
