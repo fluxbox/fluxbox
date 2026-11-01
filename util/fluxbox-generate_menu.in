@@ -480,8 +480,8 @@ append_menu_end() {
 menu_entry() {
     if [ -f "$1" ]; then
         #                   space&tab here
-        entry_name=`grep '^[     ]*Name=' "$1" | head -n 1 | cut -d = -f 2`
-        entry_exec=`grep '^[     ]*Exec=' "$1" | head -n 1 | cut -d = -f 2 | sed 's/ *%[fFuUdDnNickvm]//g; s/%%/%/g'`
+        entry_name=`grep '^[     ]*Name=' "$1" | head -n 1 | cut -d = -f 2-`
+        entry_exec=`grep '^[     ]*Exec=' "$1" | head -n 1 | cut -d = -f 2- | sed 's/ *%[fFuUdDnNickvm]//g; s/%%/%/g'`
         # '}' would end the menu command early
         case $entry_exec in
             *'}'*) return ;;
