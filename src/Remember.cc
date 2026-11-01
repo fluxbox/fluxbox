@@ -47,6 +47,7 @@
 
 #include <cstring>
 #include <set>
+#include <unistd.h>
 
 
 using std::cerr;
@@ -761,7 +762,9 @@ void Remember::reload() {
 
     if (apps_file.fail()) {
         ok = false;
-        cerr << "failed to open apps file " << apps_string << endl;
+        // a missing apps file just means nothing is remembered yet
+        if (access(apps_string.c_str(), F_OK) == 0)
+            cerr << "failed to open apps file " << apps_string << endl;
     }
 
     if (ok && apps_file.eof()) {
