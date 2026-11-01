@@ -374,6 +374,7 @@ AS_IF([test "x$enable_nls" = "xyes"], [
 	NLS="-DNLS"
 ], [])
 AC_SUBST([NLS])
+AM_CONDITIONAL([NLS_CATALOGS], [test "x$NLS" = "x-DNLS" && test "x$gencat_cmd" != "x"])
 
 dnl Check for new timed pixmap cache
 AC_MSG_CHECKING([whether to use a timed pixmap cache])
@@ -586,44 +587,6 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
 Makefile
 version.h
-nls/C/Makefile
-nls/be_BY/Makefile
-nls/bg_BG/Makefile
-nls/cs_CZ/Makefile
-nls/da_DK/Makefile
-nls/de_AT/Makefile
-nls/de_CH/Makefile
-nls/de_DE/Makefile
-nls/el_GR/Makefile
-nls/en_GB/Makefile
-nls/en_US/Makefile
-nls/es_AR/Makefile
-nls/es_ES/Makefile
-nls/et_EE/Makefile
-nls/fi_FI/Makefile
-nls/fr_CH/Makefile
-nls/fr_FR/Makefile
-nls/he_IL/Makefile
-nls/it_IT/Makefile
-nls/ja_JP/Makefile
-nls/ko_KR/Makefile
-nls/lv_LV/Makefile
-nls/mk_MK/Makefile
-nls/nb_NO/Makefile
-nls/nl_NL/Makefile
-nls/no_NO/Makefile
-nls/pl_PL/Makefile
-nls/pt_BR/Makefile
-nls/pt_PT/Makefile
-nls/ru_RU/Makefile
-nls/sk_SK/Makefile
-nls/sl_SI/Makefile
-nls/sv_SE/Makefile
-nls/tr_TR/Makefile
-nls/uk_UA/Makefile
-nls/vi_VN/Makefile
-nls/zh_CN/Makefile
-nls/zh_TW/Makefile
 ])
 AC_OUTPUT
 
