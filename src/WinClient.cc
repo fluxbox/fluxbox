@@ -31,6 +31,7 @@
 #include "Debug.hh"
 
 #include "FbTk/EventManager.hh"
+#include "FbTk/I18n.hh"
 #include "FbTk/MultLayers.hh"
 
 #include <iostream>
@@ -338,7 +339,13 @@ void WinClient::updateTitle() {
     if (m_title_override)
         return;
 
-    m_title.setLogical(limitTitle(Xutil::getWMName(window())));
+    FbTk::FbString name = textProperty(XA_WM_NAME);
+    if (name.empty()) {
+        _FB_USES_NLS;
+        name = _FB_XTEXT(Window, Unnamed, "Unnamed", "Default name for a window without a WM_NAME");
+    }
+
+    m_title.setLogical(limitTitle(name));
     m_title_update_timer.start();
 }
 

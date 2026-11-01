@@ -501,6 +501,77 @@ struct TextPropPtr {
     }
     XTextProperty& m_prop;
 };
+
+// text properties hold names and roles, but a client can make one as
+// big as the X server allows. 4 * 512 bytes leave room for multibyte
+// encodings before WinClient cuts a title to 512 bytes
+const long MAX_TEXT_PROPERTY_LENGTH = 2048;
+
+// like XGetTextProperty(), but reads at most MAX_TEXT_PROPERTY_LENGTH
+// bytes; 'truncated' tells whether the property holds more
+Status getTextProperty(Display *display, Window window, Atom prop,
+                       XTextProperty &text_prop, bool &truncated) {
+
+    Atom type = None;
+    int format = 0;
+    unsigned long nitems = 0, bytes_after = 0;
+    unsigned char *data = 0;
+
+    text_prop.value = 0;
+    text_prop.encoding = None;
+    text_prop.format = 0;
+    text_prop.nitems = 0;
+    truncated = false;
+
+    if (XGetWindowProperty(display, window, prop,
+                           0, MAX_TEXT_PROPERTY_LENGTH / 4, False,
+                           AnyPropertyType, &type, &format,
+                           &nitems, &bytes_after, &data) != Success)
+        return 0;
+
+    if (type == None) {
+        if (data)
+            XFree(data);
+        return 0;
+    }
+
+    text_prop.value = data;
+    text_prop.encoding = type;
+    text_prop.format = format;
+    text_prop.nitems = nitems;
+    truncated = bytes_after > 0;
+    return 1;
+}
+
+// the length of 'data' without an incomplete UTF-8 sequence at its end,
+// as left behind by a truncated read
+unsigned long completeUtf8Length(const unsigned char *data,
+                                 unsigned long len) {
+
+    // a sequence has at most 3 continuation bytes after its first byte
+    unsigned long start = len;
+    while (start > 0 && len - start < 3 && (data[start - 1] & 0xC0) == 0x80)
+        --start;
+
+    if (start == 0)
+        return len;
+
+    unsigned char first = data[start - 1];
+    unsigned long need = 1;
+    if ((first & 0xE0) == 0xC0) {
+        need = 2;
+    } else if ((first & 0xF0) == 0xE0) {
+        need = 3;
+    } else if ((first & 0xF8) == 0xF0) {
+        need = 4;
+    }
+
+    if (len - (start - 1) < need)
+        return start - 1;
+
+    return len;
+}
+
 }
 
 long FbWindow::cardinalProperty(Atom prop, bool* exists) const {
@@ -531,10 +602,14 @@ FbTk::FbString FbWindow::textProperty(Atom prop,bool*exists) const {
     static const Atom utf8string = XInternAtom(display(), "UTF8_STRING", False);
 
     if (exists) *exists=false;
-    Status stat = XGetTextProperty(display(), window(), &text_prop, prop);
+    bool truncated = false;
+    Status stat = getTextProperty(display(), window(), prop, text_prop, truncated);
     if ( stat == 0 || text_prop.value == 0 || text_prop.nitems == 0) {
         return ret;
     }
+
+    if (truncated && text_prop.encoding == utf8string && text_prop.format == 8)
+        text_prop.nitems = completeUtf8Length(text_prop.value, text_prop.nitems);
 
     if (text_prop.encoding == XA_STRING) {
         if (XTextPropertyToStringList(&text_prop, &stringlist, &count)
