@@ -35,6 +35,11 @@
 #else
   #include <string.h>
 #endif
+#ifdef HAVE_CSTDLIB
+  #include <cstdlib>
+#else
+  #include <stdlib.h>
+#endif
 
 using std::cerr;
 
@@ -62,6 +67,28 @@ void checkAtoms() {
             root_props[i].atom = XInternAtom(display, root_props[i].name, False);
         }
     }
+}
+
+// an empty client side image of the given size in the format of 'src':
+// fill it with XPutPixel(), send it with one XPutImage()
+XImage *createImageLike(Display *display, const XImage *src,
+                        unsigned int width, unsigned int height) {
+
+    // XPutPixel() does not need the visual's color masks
+    XImage *image = XCreateImage(display, 0, src->depth, ZPixmap, 0, 0,
+                                 width, height, src->bitmap_pad, 0);
+    if (image == 0)
+        return 0;
+
+    // malloc(), because XDestroyImage() releases the data with free()
+    image->data = static_cast<char *>(malloc(
+        static_cast<size_t>(image->bytes_per_line) * height));
+    if (image->data == 0) {
+        XDestroyImage(image);
+        return 0;
+    }
+
+    return image;
 }
 
 } // end of anonymous namespace
@@ -233,16 +260,20 @@ void FbPixmap::rotate(FbTk::Orientation orient) {
                                   oldw, oldh, // size
                                   ~0, // plane mask
                                   ZPixmap); // format
-    if (src_image) {
+    // TODO: with XRender the server could rotate, using a rotation
+    // transform instead of the scaling one; see scale() for the issues
+    XImage *dest_image = 0;
+    if (src_image)
+        dest_image = createImageLike(display(), src_image, neww, newh);
 
-        GContext gc(drawable());
+    if (dest_image) {
 
         if (orient == ROT180) {
             unsigned int srcx, srcy, destx, desty;
-            for (srcy = 0, desty = oldh; srcy < oldh; ++srcy, --desty) {
-                for (srcx = 0, destx = oldw; srcx < oldw; ++srcx, --destx) {
-                    gc.setForeground(XGetPixel(src_image, srcx, srcy));
-                    XDrawPoint(display(), new_pm.drawable(), gc.gc(), destx, desty);
+            for (srcy = 0, desty = oldh - 1; srcy < oldh; ++srcy, --desty) {
+                for (srcx = 0, destx = oldw - 1; srcx < oldw; ++srcx, --destx) {
+                    XPutPixel(dest_image, destx, desty,
+                              XGetPixel(src_image, srcx, srcy));
                 }
             }
         } else {
@@ -274,14 +305,21 @@ void FbPixmap::rotate(FbTk::Orientation orient) {
             unsigned int srcx, srcy, destx, desty;
             for (srcy = 0, destx = startx; srcy < oldh; ++srcy, destx+=dirx) {
                 for (srcx = 0, desty = starty; srcx < oldw; ++srcx, desty+=diry) {
-                    gc.setForeground(XGetPixel(src_image, srcx, srcy));
-                    XDrawPoint(display(), new_pm.drawable(), gc.gc(), destx, desty);
+                    XPutPixel(dest_image, destx, desty,
+                              XGetPixel(src_image, srcx, srcy));
                 }
             }
         }
 
-        XDestroyImage(src_image);
+        GContext gc(drawable());
+        XPutImage(display(), new_pm.drawable(), gc.gc(), dest_image,
+                  0, 0, 0, 0, neww, newh);
+
+        XDestroyImage(dest_image);
     }
+
+    if (src_image)
+        XDestroyImage(src_image);
 
     // free old pixmap and set new from new_pm
     free();
@@ -294,8 +332,16 @@ void FbPixmap::rotate(FbTk::Orientation orient) {
 
 void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
 
+    // X pixmap sizes are 16 bit; bigger values would also overflow
+    // the line size XCreateImage() computes in older libX11
+    const unsigned int max_size = 65535;
+
     if (drawable() == 0 ||
         (dest_width == width() && dest_height == height()))
+        return;
+
+    if (dest_width == 0 || dest_height == 0 ||
+        dest_width > max_size || dest_height > max_size)
         return;
 
     XImage *src_image = XGetImage(display(), drawable(),
@@ -306,10 +352,20 @@ void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
     if (src_image == 0)
         return;
 
-    // create new pixmap with dest size
-    FbPixmap new_pm(drawable(), dest_width, dest_height, depth());
+    // TODO: with XRender the server could scale: wrap source and
+    // destination in Pictures, set a scaling transform and a filter
+    // ("nearest" gives the same result as this code), then call
+    // XRenderComposite() once. Issues: XRender is optional at build and
+    // run time, so this code stays as the fallback; not every depth has
+    // a Picture format; a pixmap and its mask have to take the same
+    // path and filter, or they can end up a pixel apart.
+    XImage *dest_image = createImageLike(display(), src_image,
+                                         dest_width, dest_height);
+    if (dest_image == 0) {
+        XDestroyImage(src_image);
+        return;
+    }
 
-    GContext gc(drawable());
     // calc zoom
     float zoom_x = static_cast<float>(width())/static_cast<float>(dest_width);
     float zoom_y = static_cast<float>(height())/static_cast<float>(dest_height);
@@ -319,14 +375,23 @@ void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
     for (unsigned int tx=0; tx < dest_width; ++tx, src_x += zoom_x) {
         src_y = 0;
         for (unsigned int ty=0; ty < dest_height; ++ty, src_y += zoom_y) {
-            gc.setForeground(XGetPixel(src_image,
-                                       static_cast<int>(src_x),
-                                       static_cast<int>(src_y)));
-            XDrawPoint(display(), new_pm.drawable(), gc.gc(), tx, ty);
+            XPutPixel(dest_image, tx, ty,
+                      XGetPixel(src_image,
+                                static_cast<int>(src_x),
+                                static_cast<int>(src_y)));
         }
     }
 
     XDestroyImage(src_image);
+
+    // create new pixmap with dest size
+    FbPixmap new_pm(drawable(), dest_width, dest_height, depth());
+
+    GContext gc(drawable());
+    XPutImage(display(), new_pm.drawable(), gc.gc(), dest_image,
+              0, 0, 0, 0, dest_width, dest_height);
+
+    XDestroyImage(dest_image);
 
     // free old pixmap and set new from new_pm
     free();
