@@ -51,3 +51,6 @@ Makefile.in
 
 # off source build directory
 build
+
+# "git worktree" work folder
+.worktrees/
