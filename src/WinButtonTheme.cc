@@ -24,6 +24,7 @@
 #include "FbTk/App.hh"
 #include "FbTk/Image.hh"
 #include "FbTk/PixmapWithMask.hh"
+#include "FbTk/Util.hh"
 
 #include "FbWinFrameTheme.hh"
 
@@ -68,13 +69,19 @@ WinButtonTheme::~WinButtonTheme() {
 void WinButtonTheme::reconfigTheme() {
     // rescale the pixmaps to match frame theme height
 
-    unsigned int size = m_frame_theme->titleHeight()
-                        - 2 * m_frame_theme->bevelWidth();
-    if (m_frame_theme->titleHeight() == 0) {
+    // signed, so a bevel wider than half the title height can't wrap
+    // around to a huge size
+    int title_height = m_frame_theme->titleHeight();
+    int bevel = m_frame_theme->bevelWidth();
+    int size = title_height - 2 * bevel;
+    if (title_height == 0 || size < 1) {
         // calculate height from font and border width to scale pixmaps
         size = m_frame_theme->font().height() + 2;
 
     } // else  use specified height to scale pixmaps
+
+    // the font height has no limit of its own
+    size = FbTk::Util::clamp(size, 1, FbTk::THEME_MAX_SIZE);
 
     // scale all pixmaps
     m_close_pm->scale(size, size);
