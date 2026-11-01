@@ -1116,8 +1116,10 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
 
         // no need to alter number of desktops if they are the same
         // or if requested number of workspace is less than zero
+        // or more than the screen allows
         if (screen->numberOfWorkspaces() == static_cast<unsigned int>(ce.data.l[0]) ||
-            ce.data.l[0] < 0)
+            ce.data.l[0] < 0 ||
+            ce.data.l[0] > static_cast<long>(BScreen::MAX_WORKSPACES))
             return true;
 
         if (screen->numberOfWorkspaces() > static_cast<unsigned int>(ce.data.l[0])) {

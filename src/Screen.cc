@@ -347,7 +347,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_tooltip_window->setDelay(*resource.tooltip_delay);
 
     // setup workspaces and workspace menu
-    int nr_ws = *resource.workspaces;
+    int nr_ws = FbTk::Util::clamp<int>(*resource.workspaces, 1, MAX_WORKSPACES);
     addWorkspace(); // at least one
     for (int i = 1; i < nr_ws; ++i) {
         addWorkspace();
@@ -742,7 +742,8 @@ void BScreen::reconfigure() {
     m_menutheme->setDelay(*resource.menu_delay);
 
     // provide the number of workspaces from the init-file
-    const unsigned int nr_ws = *resource.workspaces;
+    // clamped, or the loops below wait for a count that can never be reached
+    const unsigned int nr_ws = FbTk::Util::clamp<int>(*resource.workspaces, 1, MAX_WORKSPACES);
     if (nr_ws > m_workspaces_list.size()) {
         while(nr_ws != m_workspaces_list.size()) {
             addWorkspace();
@@ -905,6 +906,9 @@ void BScreen::removeClient(WinClient &client) {
 }
 
 int BScreen::addWorkspace() {
+
+    if (m_workspaces_list.size() >= MAX_WORKSPACES)
+        return m_workspaces_list.size();
 
     bool save_name = getNameOfWorkspace(m_workspaces_list.size()) == "";
     std::string name = getNameOfWorkspace(m_workspaces_list.size());

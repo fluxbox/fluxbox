@@ -289,6 +289,10 @@ public:
     ScreenPlacement &placementStrategy() { return *m_placement_strategy; }
     const ScreenPlacement &placementStrategy() const { return *m_placement_strategy; }
 
+    /// upper bound for the number of workspaces, whoever asks for more
+    static const unsigned int MAX_WORKSPACES = 32;
+
+    /// @return number of workspaces; unchanged once MAX_WORKSPACES exist
     int addWorkspace();
     int removeLastWorkspace();
     // scroll workspaces
