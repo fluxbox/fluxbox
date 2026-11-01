@@ -37,6 +37,11 @@ namespace FbTk {
 
 class Theme;
 
+/// upper limit for every size in a style (heights, widths, bevels):
+/// far above any real style, yet sums and small multiples of it stay
+/// inside the 16 bit geometry of X11
+const int THEME_MAX_SIZE = 1024;
+
 /// Base class for ThemeItem, holds name and altname
 /**
   @see ThemeItem

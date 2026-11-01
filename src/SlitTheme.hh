@@ -25,6 +25,7 @@
 #include "FbTk/Theme.hh"
 #include "FbTk/Texture.hh"
 #include "FbTk/Color.hh"
+#include "FbTk/Util.hh"
 
 class SlitTheme: public FbTk::Theme, public FbTk::ThemeProxy<SlitTheme> {
 public:
@@ -35,8 +36,9 @@ public:
 
     const FbTk::Texture &texture() const { return *m_texture; }
     const FbTk::Color &borderColor() const { return *m_border_color; }
-    int borderWidth() const { return *m_border_width; }
-    int bevelWidth() const { return *m_bevel_width; }
+    // nothing calls reconfigTheme() for this theme, so clamp on read
+    int borderWidth() const { return FbTk::Util::clamp(*m_border_width, 0, FbTk::THEME_MAX_SIZE); }
+    int bevelWidth() const { return FbTk::Util::clamp(*m_bevel_width, 0, FbTk::THEME_MAX_SIZE); }
 
     virtual FbTk::Signal<> &reconfigSig() { return FbTk::Theme::reconfigSig(); }
 
