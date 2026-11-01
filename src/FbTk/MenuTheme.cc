@@ -95,18 +95,22 @@ MenuTheme::~MenuTheme() {
 
 void MenuTheme::reconfigTheme() {
     // clamp to "normal" size
-    *m_bevel_width = Util::clamp(*m_bevel_width, 0, 20);
-    *m_border_width = Util::clamp(*m_border_width, 0, 20);
-    if (*m_title_height < 1)
-        *m_title_height = 1;
+    *m_bevel_width = Util::clamp(*m_bevel_width, 0, THEME_MAX_SIZE);
+    *m_border_width = Util::clamp(*m_border_width, 0, THEME_MAX_SIZE);
+    *m_title_height = Util::clamp(*m_title_height, 1, THEME_MAX_SIZE);
+    *m_item_height = Util::clamp(*m_item_height, 0, THEME_MAX_SIZE);
 
+    // a big font raises the heights past the style values, so clamp
+    // the result too; Menu multiplies it by the row count
     const int pad = 2 * *m_bevel_width;
     const int item_font_h = std::max(frameFont().height(), hiliteFont().height());
     const int title_font_h = titleFont().height();
     m_real_item_height = std::max(std::max(pad + 1, *m_item_height),
                                   item_font_h + pad);
+    m_real_item_height = Util::clamp(m_real_item_height, 1, THEME_MAX_SIZE);
     m_real_title_height = std::max(std::max(pad + 1, *m_title_height),
                                    title_font_h + pad);
+    m_real_title_height = Util::clamp(m_real_title_height, 1, THEME_MAX_SIZE);
 
     unsigned int item_pm_height = itemHeight();
 

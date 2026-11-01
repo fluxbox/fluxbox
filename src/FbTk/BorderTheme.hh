@@ -25,6 +25,7 @@
 
 #include "Theme.hh"
 #include "Color.hh"
+#include "Util.hh"
 
 namespace FbTk {
 
@@ -34,7 +35,8 @@ public:
     BorderTheme(Theme &theme, const std::string &name, const std::string &altname);
     virtual ~BorderTheme() { }
 
-    int width() const { return *m_width; }
+    // BorderTheme has no reconfigTheme() of its own, so clamp on read
+    int width() const { return Util::clamp(*m_width, 0, THEME_MAX_SIZE); }
     const Color &color() const { return *m_color; }
 
 private:

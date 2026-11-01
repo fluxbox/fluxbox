@@ -25,6 +25,7 @@
 #include "FbTk/Theme.hh"
 #include "FbTk/Texture.hh"
 #include "FbTk/BorderTheme.hh"
+#include "FbTk/Util.hh"
 
 /// toolbar theme class container
 class ToolbarTheme: public FbTk::Theme, public FbTk::ThemeProxy<ToolbarTheme> {
@@ -39,10 +40,12 @@ public:
 
     bool fallback(FbTk::ThemeItem_base &item);
 
-    int bevelWidth() const { return *m_bevel_width; }    
+    // nothing calls reconfigTheme() for this theme, so clamp on read;
+    // a button size of 0 means "use the default"
+    int bevelWidth() const { return FbTk::Util::clamp(*m_bevel_width, 0, FbTk::THEME_MAX_SIZE); }
     bool shape() const { return *m_shape; }
-    int height() const { return *m_height; }
-    int buttonSize() const { return *m_button_size; }
+    int height() const { return FbTk::Util::clamp(*m_height, 0, FbTk::THEME_MAX_SIZE); }
+    int buttonSize() const { return FbTk::Util::clamp(*m_button_size, 0, FbTk::THEME_MAX_SIZE); }
 
     virtual FbTk::Signal<> &reconfigSig() { return FbTk::Theme::reconfigSig(); }
 

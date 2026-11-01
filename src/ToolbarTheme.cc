@@ -59,14 +59,4 @@ bool ToolbarTheme::fallback(FbTk::ThemeItem_base &item) {
 }
 
 void ToolbarTheme::reconfigTheme() {
-    if (*m_bevel_width > 20)
-        *m_bevel_width = 20;
-
-    if (*m_height > 100)
-        *m_height = 100;
-    else if (*m_height < 0)
-        *m_height = 0;
-
-    if (*m_button_size > 100)
-        *m_button_size = 100;
 }
