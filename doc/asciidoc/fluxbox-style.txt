@@ -222,6 +222,12 @@ in order to keep styles consistent it is  often the practice of stylists
 to provide all of the theme-items in their style file even if they are not
 used. This allows the user the ease of changing different components.
 
+Sizes in pixels (the borderWidth, bevelWidth, handleWidth and height items,
+menu.itemHeight and menu.titleHeight) are limited to 0 to 1024; a smaller
+value counts as 0, a larger one as 1024. menu.titleHeight is at least 1, and
+a negative window.handleWidth counts as 1. An <integer> that is not a number,
+or does not fit into an integer, counts as 0.
+
 WINDOW OPTIONS
 --------------
 Many, many things you can do with window design in fluxbox(1), below are your
