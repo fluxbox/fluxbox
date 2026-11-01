@@ -29,7 +29,7 @@ LDADD = libFbTk.a src/defaults.$(OBJEXT)
 
 bin_PROGRAMS += fluxbox
 
-src/defaults.hh:
+src/defaults.hh: Makefile
 	@( \
 		echo '// This file is generated from Makefile. Do not edit!'; \
 		echo '#include <string>'; \
