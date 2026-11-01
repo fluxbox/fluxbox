@@ -441,6 +441,10 @@ void Menu::updateMenu() {
         m_item_w = std::max(iw, m_item_w);
     }
 
+    // nothing wider than the screen can be seen; the limit also keeps
+    // the menu width in range of int and of the 16 bit X11 geometry
+    m_item_w = std::min(m_item_w, std::max(1u, m_screen.width));
+
     // calculate needed columns
     m_columns = 0;
     m_rows_per_column = 0;
