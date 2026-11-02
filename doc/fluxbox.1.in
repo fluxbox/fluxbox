@@ -1950,6 +1950,14 @@ Default:
 \fB40\fR
 .RE
 .PP
+\fBsession\&.screen0\&.ignoreOversizedWindows\fR: \fIboolean\fR
+.RS 4
+If this setting is enabled, windows larger than the screen width and height are not automatically resized\&. This is useful while using heads with different resolutions and moving windows between them\&.
+.sp
+Default:
+\fBFalse\fR
+.RE
+.PP
 \fBsession\&.screen0\&.workspaces\fR: \fIinteger\fR
 .RS 4
 Set this to the number of workspaces the users wants\&.
