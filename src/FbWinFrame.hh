@@ -58,15 +58,22 @@ public:
 
    /// Toolbar placement on the screen
     enum TabPlacement{
+        // Typically we just take the screen setting
+        DEFER_TO_SCREEN = 0,
         // top and bottom placement
         TOPLEFT = 1, TOP, TOPRIGHT,
         BOTTOMLEFT, BOTTOM, BOTTOMRIGHT,
         // left and right placement
         LEFTBOTTOM, LEFT, LEFTTOP,
         RIGHTBOTTOM, RIGHT, RIGHTTOP,
+        // Couldn't parse a placement
+        UNPARSEABLE,
 
         DEFAULT = TOPLEFT
     };
+
+    static std::string nameOfTabPlacement(TabPlacement place);
+    static TabPlacement tabPlacementNamed(const char *name);
 
     /// create a top level window
     FbWinFrame(BScreen &screen, unsigned int client_depth, WindowState &state,
@@ -108,6 +115,8 @@ public:
 
     void setFocusTitle(const FbTk::BiDiString &str) { m_label.setText(str); }
     bool setTabMode(TabMode tabmode);
+    TabPlacement tabPlacement() const;
+    void setTabPlacement(TabPlacement place);
     void updateTabProperties() { alignTabs(); }
 
     /// Alpha settings
@@ -345,6 +354,7 @@ private:
     //@}
 
     TabMode m_tabmode;
+    TabPlacement m_tab_placement;
 
     unsigned int m_active_orig_client_bw;
 
