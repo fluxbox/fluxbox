@@ -1240,7 +1240,8 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     return win;
 }
 
-Strut *BScreen::requestStrut(int head, int left, int right, int top, int bottom) {
+Strut *BScreen::requestStrut(int head, int left, int right, int top, int bottom,
+                             Strut *next) {
     if (head > numHeads() && head != 1) {
         // head does not exist (if head == 1, then numHeads() == 0,
         // which means no xinerama, but there's a head after all
@@ -1255,7 +1256,6 @@ Strut *BScreen::requestStrut(int head, int left, int right, int top, int bottom)
         end = (numHeads() ? numHeads() : 1);
     }
 
-    Strut* next = 0;
     for (int i = begin; i != end; i++) {
         next = m_head_areas[i]->requestStrut(i+1, left, right, top, bottom, next);
     }

@@ -314,6 +314,83 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
     winclient.setIcon(icon);
 }
 
+/* From Extended Window Manager Hints, 1.5:
+ *
+ * _NET_WM_STRUT_PARTIAL, left, right, top, bottom, left_start_y,
+ * left_end_y, right_start_y, right_end_y, top_start_x, top_end_x,
+ * bottom_start_x, bottom_end_x,CARDINAL[12]/32
+ *
+ * Struts MUST be specified in root window coordinates, that is, they
+ * are not relative to the edges of any view port or Xinerama monitor.
+ *
+ * Fluxbox keeps struts per head, measured from the head's edges. A
+ * strut edge reserves space on a head when the reserved band ends
+ * inside that head and its start/end range overlaps the head. A panel
+ * on an inner edge between two heads thus only reserves space on the
+ * head it sits on, and never swallows the whole neighbouring head.
+ */
+enum { SP_LEFT, SP_RIGHT, SP_TOP, SP_BOTTOM,
+       SP_LEFT_START, SP_LEFT_END, SP_RIGHT_START, SP_RIGHT_END,
+       SP_TOP_START, SP_TOP_END, SP_BOTTOM_START, SP_BOTTOM_END };
+
+// Pixel ranges on one root-window axis (x for top/bottom struts,
+// y for left/right struts):
+//   strut: [strut_first, strut_last]  inclusive, as in _NET_WM_STRUT_PARTIAL
+//   head:  [head_origin, head_origin + head_length)
+bool strutSpanOverlapsHead(long strut_first, long strut_last,
+                           int head_origin, int head_length) {
+    return (strut_first < (head_origin + head_length)) && (strut_last >= head_origin);
+}
+
+// head rectangle in root window pixels
+struct HeadGeometry {
+    HeadGeometry(const BScreen &screen, int head):
+        x(screen.getHeadX(head)), y(screen.getHeadY(head)),
+        width(screen.getHeadWidth(head)), height(screen.getHeadHeight(head)) { }
+
+    int x, y, width, height;
+};
+
+// space reserved at each edge of a head, in pixels from that edge
+struct EdgeInsets {
+    int left = 0, right = 0, top = 0, bottom = 0;
+
+    bool any() const { return left || right || top || bottom; }
+};
+
+Strut *requestPartialStrut(BScreen &screen, const long *sp) {
+    const long sw = screen.width(), sh = screen.height();
+    const int nh = screen.numHeads();
+    Strut *strut = 0;
+
+    // without Xinerama, head 0 is the whole root window
+    for (int head = (nh ? 1 : 0); head <= nh; ++head) {
+        const HeadGeometry h(screen, head);
+        EdgeInsets insets;
+
+        if ((sp[SP_LEFT] > h.x) && (sp[SP_LEFT] <= (h.x + h.width)) &&
+            strutSpanOverlapsHead(sp[SP_LEFT_START], sp[SP_LEFT_END], h.y, h.height))
+            insets.left = sp[SP_LEFT] - h.x;
+
+        if (((sw - sp[SP_RIGHT]) >= h.x) && ((sw - sp[SP_RIGHT]) < (h.x + h.width)) &&
+            strutSpanOverlapsHead(sp[SP_RIGHT_START], sp[SP_RIGHT_END], h.y, h.height))
+            insets.right = (h.x + h.width) - (sw - sp[SP_RIGHT]);
+
+        if ((sp[SP_TOP] > h.y) && (sp[SP_TOP] <= (h.y + h.height)) &&
+            strutSpanOverlapsHead(sp[SP_TOP_START], sp[SP_TOP_END], h.x, h.width))
+            insets.top = sp[SP_TOP] - h.y;
+
+        if (((sh - sp[SP_BOTTOM]) >= h.y) && ((sh - sp[SP_BOTTOM]) < (h.y + h.height)) &&
+            strutSpanOverlapsHead(sp[SP_BOTTOM_START], sp[SP_BOTTOM_END], h.x, h.width))
+            insets.bottom = (h.y + h.height) - (sh - sp[SP_BOTTOM]);
+
+        if (insets.any())
+            strut = screen.requestStrut(head, insets.left, insets.right,
+                                        insets.top, insets.bottom, strut);
+    }
+    return strut;
+}
+
 } // end anonymous namespace
 
 class Ewmh::EwmhAtoms {
@@ -391,6 +468,7 @@ public:
         wm_action_close = XInternAtom(disp, "_NET_WM_ACTION_CLOSE", False);
 
         wm_strut = XInternAtom(disp, "_NET_WM_STRUT", False);
+        wm_strut_partial = XInternAtom(disp, "_NET_WM_STRUT_PARTIAL", False);
         wm_icon_geometry = XInternAtom(disp, "_NET_WM_ICON_GEOMETRY", False);
         wm_icon = XInternAtom(disp, "_NET_WM_ICON", False);
         wm_pid = XInternAtom(disp, "_NET_WM_PID", False);
@@ -470,6 +548,7 @@ public:
          wm_action_close,
 
          wm_strut,
+         wm_strut_partial,
          wm_icon_geometry,
          wm_icon,
          wm_pid,
@@ -546,6 +625,7 @@ void Ewmh::initForScreen(BScreen &screen) {
     Atom atomsupported[] = {
         // window properties
         m_net->wm_strut,
+        m_net->wm_strut_partial,
         m_net->wm_state,
         m_net->wm_name,
         m_net->wm_icon,
@@ -1312,7 +1392,8 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
 
 
 bool Ewmh::propertyNotify(WinClient &winclient, Atom the_property) {
-    if (the_property == m_net->wm_strut) {
+    if (the_property == m_net->wm_strut ||
+        the_property == m_net->wm_strut_partial) {
         updateStrut(winclient);
         return true;
     } else if (the_property == m_net->wm_name) {
@@ -1436,15 +1517,41 @@ void Ewmh::updateStrut(WinClient &winclient) {
     int fmt = 0;
     unsigned long nitems = 0, bytes_after = 0;
     long *data = 0;
+
+    // the spec: a client that sets _NET_WM_STRUT_PARTIAL also sets
+    // _NET_WM_STRUT for older WMs, and the partial one takes precedence.
+    if (winclient.property(m_net->wm_strut_partial, 0, 12, False, XA_CARDINAL,
+                           &ret_type, &fmt, &nitems, &bytes_after,
+                           (unsigned char **) &data) && data) {
+        if (nitems >= 12) {
+            Strut *strut = requestPartialStrut(winclient.screen(), data);
+            XFree(data);
+            if (strut) {
+                winclient.setStrut(strut);
+                winclient.screen().updateAvailableWorkspaceArea();
+            } else {
+                winclient.clearStrut();
+            }
+            return;
+        }
+        XFree(data);
+        data = 0;
+    }
+
     if (winclient.property(m_net->wm_strut, 0, 4, False, XA_CARDINAL,
                                  &ret_type, &fmt, &nitems, &bytes_after,
                                  (unsigned char **) &data) && data) {
 
-        int head = winclient.screen().getHead(winclient);
-        winclient.setStrut(winclient.screen().requestStrut(head,
-                           data[0], data[1],
-                           data[2], data[3]));
-        winclient.screen().updateAvailableWorkspaceArea();
+        if (nitems >= 4) {
+            int head = winclient.screen().getHead(winclient);
+            winclient.setStrut(winclient.screen().requestStrut(head,
+                               data[0], data[1],
+                               data[2], data[3]));
+            winclient.screen().updateAvailableWorkspaceArea();
+        } else {
+            winclient.clearStrut();
+        }
+        XFree(data);
     } else {
         winclient.clearStrut();
     }
