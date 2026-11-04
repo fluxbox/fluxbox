@@ -145,7 +145,7 @@ void fbsetroot::setRootAtoms(Pixmap pixmap, int screen) {
     int format;
     unsigned long length, after;
 
-    atom_root = XInternAtom(display(), "_XROOTMAP_ID", true);
+    atom_root = XInternAtom(display(), "_XROOTPMAP_ID", true);
     atom_eroot = XInternAtom(display(), "ESETROOT_PMAP_ID", true);
     FbRootWindow root(screen);
 
