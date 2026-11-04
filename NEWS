@@ -1,30 +1,59 @@
-Version 1.3.7 is a bug fix release.
-
-Critical Bugfixes:
-    * Segfault on startup (mostly *BSD)
-    * Segfault on shutdown
-    * Segfault on clicking the Remember menu
-    * Menu crops on TypeAhead
-
-Minor Bugfixes:
-    * _NET_REQUEST_FRAME_EXTENTS
-    * Working autorepeat keys
-    * Working vertical rotated Tabs and Toolbar
-    * Proper size of titlebar buttons on restart / detaching tabs
-    * Missing windowmenu works again
-    * Several glitches in the menu
-    * Correct handling of 'maximized' statement in the apps file
+Version 1.5.0 is a feature release. See ChangeLog for the full list
+with contributors.
 
 Features:
-    * The improved TypeAhead sytem is not limited to matches on beginning
-      of menu items anymore, the behavior is configurable:
-      - Nowhere - disables TypeAhead support
-      - ItemStart - matches typed text only at the start of a menu item
-      - Somewhere - matches typed text somewhere in a menu item
-      (Currently this is a configfile-only option)
-    * Minor tweaks to the i18n system
-    * Updated turkish translations
+    * New default style 'sage'
+    * Vertical workspace warping: dragging a window over the top or
+      bottom screen edge switches the workspace, like the left and right
+      edges do. To switch it off, set
+        session.screenN.workspaceWarpingVertical: false
+    * Opaque resize (opaqueResize, opaqueResizeDelay)
+    * Iconbar: new alignment RelativeSmart, which gives long titles more
+      room
+    * Edge snapping while resizing (edgeResizeSnapThreshold)
+    * AutotabPlacement: new windows are tabbed into the focused one
+    * Drag tabs to other workspaces, tooltips for tabs
+    * Per-head artificial struts (session.screenN.struts[.<head>])
+    * Mark windows and jump back to them (MarkWindow, GotoMarkedWindow)
+    * apps file: FocusProtection (None, Lock, Deny, Gain, Refuse),
+      IgnoreSizeHints, mixed relative/absolute Position and Dimensions
+    * New commands: Unclutter, ActivateTab, SetFocusProtection,
+      ToggleToolbarAbove, ToggleToolbarVisible, ToggleSlitAbove,
+      ToggleSlitHidden; Next/PrevWorkspace 0 toggles to the last one
+    * New mouse contexts: OnWinButton, OnMinButton, OnMaxButton, OnSlit
+    * Toolbar: generic labeled command buttons (changeable via
+      fluxbox-remote), spacer, autoraise for toolbar and slit
+    * Systray icon pinning (systray.pinLeft, systray.pinRight)
+    * 4px click dead zone, 5s timeout for key chains
+    * fbrun: autocompletion (-autocomplete, -cf), -center, -preselect,
+      -pad, text selection, Ctrl+A, UTF-8 input, limited history
 
-End User unrelated:
-    * Code refactoring and cleanup, assisted by Coverity and
-      clang static code analysis
+General Improvements:
+    * Usable on first start even without config files: built-in keys,
+      menus and style; the menu and Alt+F1 start your preferred terminal
+    * Better placement: centered transients, oversized windows,
+      clients asking for off-screen positions, head changes
+    * Monitor changes: survives switching a monitor off and on, docking
+      stations and changed layouts; panels stay where they belong
+    * Smarter toolbar/iconbar layout, iconified windows marked
+    * UTF-8 and locale handling
+    * Updated vim syntax files
+
+Security:
+    * fluxbox-remote can no longer run SetEnv, Export or
+      SetResourceValue (allowRemoteActions); scripts that used it to
+      change resources or the environment stop working
+    * Shell metacharacters in style backgrounds, wallpaper file names,
+      fbsetbg's history and generated menus are no longer executed
+
+Critical Bugfixes:
+    * Infinite loops in menus and type-ahead search
+    * Crashes with some applications (e.g. pcmanfm-qt), without fonts,
+      with zero-size fonts, and on ArrangeWindows with shaded windows
+    * Pointer freezes after clicking window borders
+    * Hangs and glitches when cycling the focus (alt+tab)
+    * Wine windows stuck in withdrawn state
+    * Transparent (ARGB) windows broke after screen layout changes
+
+Translations:
+    * da_DK, fr_FR, he_IL, pt_BR, vi_VN, zh_CN
