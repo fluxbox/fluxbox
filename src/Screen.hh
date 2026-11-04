@@ -439,8 +439,11 @@ public:
     FluxboxWindow *createWindow(Window clientwin);
     /// creates a window frame for a winclient. The client is attached to the window
     FluxboxWindow *createWindow(WinClient &client);
-    /// request workspace space, i.e "don't maximize over this area"
-    Strut *requestStrut(int head, int left, int right, int top, int bottom);
+    /// request workspace space, i.e "don't maximize over this area".
+    /// 'next' chains the new strut(s) to struts on other heads, so one
+    /// clearStrut() removes them all.
+    Strut *requestStrut(int head, int left, int right, int top, int bottom,
+                        Strut *next = 0);
     /// remove requested space and destroy strut
     void clearStrut(Strut *strut);
     /// updates max avaible area for the workspace
