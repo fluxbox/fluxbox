@@ -1,6 +1,455 @@
  (Format: Year/Month/Day)
 
 -----------------------------
+Changes for 1.5.0
+
+*26/11/04:
+    * Bugfix: fbsetroot did not find _XROOTPMAP_ID when freeing the old
+      background (typo in the atom name since 2002)
+    * Bugfix: set _XROOTPMAP_ID for the background fluxbox renders itself,
+      pseudo-transparency works again on that path
+    * Build-System: build data files during 'make'
+
+*26/11/01:
+    * Feature: new default style 'sage'; 'bloe' is still installed
+    * Feature: fluxbox works without config files: built-in keys, root
+      menu, window menu and style; the style background is rendered
+      even if fbsetbg/fbsetroot are missing
+    * Improvement: pick the terminal for the default menu and keys at
+      startup ($FLUXBOX_TERMINAL <- $TERMINAL, x-terminal-emulator, xterm)
+    * Improvement: default menu starts fbrun centered, in the style's colors
+    * Improvement: do not warn about a missing apps file
+    * Security: refuse SetEnv, Export and SetResourceValue from untrusted
+      callers (fluxbox-remote with allowRemoteActions). Scripts using
+      fluxbox-remote to change resources or the environment no longer can
+    * Security: run fbsetbg without a shell when setting the style
+      background; shell metacharacters in 'background' and
+      'background.pixmap' were executed
+    * Security: the wallpaper menu no longer runs file names through the
+      shell
+    * Security: fbsetbg no longer executes the contents of
+      ~/.fluxbox/lastwallpaper
+    * Security: fluxbox-generate_menu no longer uses menu text as printf
+      format and single-quotes wallpaper paths
+    * Security: quote the rc file path passed to fluxbox-update_configs
+    * Bugfix: RandR: wait for bursts of events to settle before clearing
+      heads, give docks and desktop windows time to move, windows that
+      only touch a surviving head are no longer left off-screen
+      (Thanks Adam Spiers)
+    * Bugfix: infinite loop in Menu::cycleItems() without an active item
+    * Bugfix: off-by-one in MenuSearch::get_match()
+    * Bugfix: ArrangeWindows took a window from an empty list
+    * Bugfix: iconv did not retry after growing the buffer
+    * Bugfix: TextBox positions ran outside the text with large padding
+    * Bugfix: empty keys/menu/apps files were created when copying the
+      defaults failed
+    * Bugfix: lists in the init file (workspaceNames, titlebar.left/right)
+      ended with a separator
+    * Bugfix: fluxbox-generate_menu: strip field codes from .desktop Exec
+      lines, keep everything after the first '=' in Name and Exec
+    * Bugfix: bloe: grip color typo
+    * Code cleanup: put all texture flags into one enum
+    * Build-System: require C++14, modernize autogen.sh and configure,
+      run fluxbox from the build tree
+
+*26/10/15:
+    * Feature: new command SetFocusProtection, e.g.
+        ForEach {SetFocusProtection Deny} {Matches (name=vlc)}
+      (Thanks Adam Spiers)
+    * Bugfix: apply FocusProtection to windows managed during a restart
+      (Thanks Adam Spiers)
+    * Bugfix: refresh _NET_DESKTOP_GEOMETRY when the screen size changes
+      (Thanks Adam Spiers)
+
+*26/10/08:
+    * Bugfix: disable SIGALRM before launching other WMs (Thanks RVP)
+
+*26/02/15:
+    * Bugfix: handle RRNotify events; after a monitor power cycle new
+      windows were undecorated and could not be moved until a restart
+      (Thanks Brandon Enright)
+
+*25/12/14:
+    * Translation: update zh_CN (Thanks ykla)
+
+*25/07/14:
+    * Bugfix: set WithdrawnState when handling UnmapNotify; Wine windows
+      got stuck in withdrawn state (Thanks Zhiyi Zhang)
+
+*25/05/07:
+    * Build-System: allow build with gettext 0.24.1 (Thanks Rudi Heitbaum)
+
+*24/11/30:
+    * Translation: update pt_BR (Thanks Rodrigo Nery)
+
+*24/11/25:
+    * Code cleanup: remove compiler warnings (Thanks Glen Whitney)
+
+*24/06/09:
+    * Code cleanup: fbsetroot: don't use the 'register' keyword
+      (Thanks Brahmajit Das)
+
+*23/08/06:
+    * Documentation: fix name of ToggleToolbarVisible (Thanks Philippe Crama)
+
+*22/07/31:
+    * Bugfix: infinite loop in menus without selectable items
+      (closes #1185, Thanks Sébastien Ballet for reporting)
+
+*22/04/18:
+    * Feature: mark windows with a key and jump back to them:
+        Mod1 m ARG :MarkWindow
+        Mod1 g ARG :GotoMarkedWindow
+      (Thanks Richard Tamin)
+    * Bugfix: encoding of _NET_DESKTOP_NAMES
+    * Bugfix: warn and attempt a fallback for unsupported locales in text
+      property conversion (Thanks Glen Whitney)
+    * Build-System: fix 'make check' (Thanks Paolo E. Mazzon)
+
+*21/07/24:
+    * Documentation: add RelativeSmart (Thanks Alexey Ugnichev for
+      reporting its disappearance)
+
+*21/07/07:
+    * Documentation: opaque resizing, plus a config menu item
+      (Thanks Thomas Lübking)
+
+*21/07/06:
+    * Feature: opaque resize: session.screenN.opaqueResize,
+      session.screenN.opaqueResizeDelay (Thanks Thomas Lübking)
+    * Feature: horizontal and vertical workspace warping are symmetric:
+        session.screenN.workspaceWarping: true
+        session.screenN.workspaceWarpingHorizontal: true
+        session.screenN.workspaceWarpingVertical: true
+        session.screenN.workspaceWarpingHorizontalOffset: 1
+        session.screenN.workspaceWarpingVerticalOffset: 1
+      (Thanks Glen Whitney)
+    * Feature: iconbar.alignment: RelativeSmart gives long titles more room;
+      Relative keeps its classic behavior (Thanks Bo Simonsen)
+    * Bugfix: switching between 12h and 24h in the clock with formats
+      like %02k (Thanks Bo Simonsen)
+    * Bugfix: exit with an error instead of a segfault when no fonts are
+      available (Thanks Denis Gantsev)
+    * Bugfix: fbrun completion did not search the last directory in $PATH
+      (Thanks Dmytro Bagrii)
+
+*20/04/26:
+    * Translation: fix encoding of fr_FR (Thanks Sébastien Ballet)
+
+*20/04/19:
+    * Bugfix: crash on negative base_width/base_height size hints, e.g.
+      pcmanfm-qt (Thanks Bo Simonsen)
+    * Documentation: systray ordering; synchronize .in manpages with
+      their asciidoc sources; update xmlto URL (Thanks Jan Sucan)
+
+*20/04/09:
+    * Documentation: system tray ordering in fluxbox(1) (Thanks Jan Sucan)
+
+*20/04/05:
+    * Feature: systray icon pinning, session.screenN.systray.pinLeft and
+      session.screenN.systray.pinRight take lists of window classes
+      (Thanks Gregor Bollerhey)
+    * Code cleanup: add missing scope to a method definition
+      (Thanks Jan Sucan)
+
+*19/08/06:
+    * Code cleanup: explicitly expect unsigned int (Thanks Christian Hesse)
+
+*19/07/21:
+    * Improvement: vim: add fluxstyle.vim, add ftdetect to the Vimball
+      (Thanks boweevil)
+
+*19/07/06:
+    * Bugfix: division by zero with size zero fonts (Thanks Ryan Luchs)
+
+*19/04/22:
+    * Documentation: menu docs, esp. items allowed in the window menu
+      (Thanks Glen Whitney)
+
+*19/01/08:
+    * Translation: update vi_VN (Thanks Nguyễn Thái Ngọc Duy)
+
+*18/03/14:
+    * Feature: fbrun: -pad for horizontal padding (Thanks Pete Beardmore)
+    * Bugfix: TextBox: vertical centering of text, cursor position and
+      size, selection height, selection release on click, deselection on
+      overflow (Thanks Pete Beardmore)
+
+*18/03/11:
+    * Bugfix: evaluating variables in ExportCmd (Thanks Maik Broemme)
+    * Code cleanup: fbrun (Thanks kottroll)
+
+*17/11/19:
+    * Feature: vertical workspace warping (Thanks Mark Murawski)
+    * Bugfix: rotate toolbar buttons on rotated toolbars
+      (Thanks Lajos Koszti)
+
+*17/09/06:
+    * Improvement: vim syntax: recognize fluxbox files (Thanks Lajos Koszti)
+
+*17/04/24:
+    * Documentation: fix fluxbox-style manpage (Thanks sillyslux)
+
+*17/03/01:
+    * Translation: update da_DK (patch #215, Thanks scootergrinsen)
+    * Build-System: slit: add missing header (Thanks Petr Vorel)
+
+*16/11/20:
+    * Bugfix: stop focus cycling on explicit workspace changes
+      (Thanks Thomas Lübking)
+    * Bugfix: delay repositioning of labels (closes #1155,
+      Thanks Thomas Lübking)
+    * Code cleanup: fbrun: remove dead switch from help
+      (Thanks Thomas Lübking)
+
+*16/11/05:
+    * Build-System: add automake helpers to enforce --std=c++11
+
+*16/10/09:
+    * Bugfix: prevent range overflow in the container layout
+      (Thanks Thomas Lübking)
+
+*16/10/02:
+    * Improvement: more fair squeezing of toolbar items, preferred width
+      of icon buttons covers focused and unfocused font, compress resize
+      signals (Thanks Thomas Lübking)
+
+*16/09/22:
+    * Bugfix: pointer froze after clicking the window border; harden menu
+      triggers of slit and toolbar (Thanks Thomas Lübking)
+    * Bugfix: fbrun: segfault upon completing "~" or ".", escape special
+      chars in filenames (Thanks Thomas Lübking)
+
+*16/09/21:
+    * Feature: show tooltips for tabs (FR #95, Thanks Thomas Lübking)
+    * Feature: allow tabs to be dragged to other workspaces (FR #234,
+      Thanks Thomas Lübking)
+    * Feature: new mouse contexts OnWinButton, OnMinButton, OnMaxButton
+      and OnSlit (FR #113, Thanks Thomas Lübking)
+    * Bugfix: permanent synchronous button grab (Thanks Thomas Lübking)
+    * Bugfix: only apply size hints when desired (Thanks Thomas Lübking)
+    * Documentation: generic toolbar buttons (Thanks Thomas Lübking)
+
+*16/09/11:
+    * Feature: new placement policy AutotabPlacement: new windows are
+      tabbed into the focused window (Thanks Thomas Lübking)
+    * Feature: TextBox (e.g. fbrun): edit UTF-8 text (closes #720),
+      ctrl+a selects all (Thanks Thomas Lübking)
+    * Improvement: UTF-8 support (Thanks Thomas Lübking)
+    * Bugfix: do not break server grabs (Thanks Thomas Lübking)
+    * Bugfix: handle/grip context conflict (Thanks Thomas Lübking)
+    * Documentation: window placement (Thanks Thomas Lübking)
+    * Code cleanup: std::auto_ptr -> std::unique_ptr
+
+*16/09/04:
+    * Feature: NextWorkspace 0 / PrevWorkspace 0 toggle to the former
+      workspace (FR #185, Thanks Thomas Lübking)
+    * Feature: 4px dead zone for clicks, for the shaky ones (FR #178,
+      supersedes patch #134, Thanks Thomas Lübking)
+    * Bugfix: hide menus when clicking the title or the toolbar
+      (closes #1149, Thanks Thomas Lübking)
+    * Documentation: iconified title deco (Thanks Thomas Lübking)
+
+*16/09/03:
+    * Feature: indicate iconified windows in the iconbar
+      (Thanks Thomas Lübking)
+    * Bugfix: fbsetbg: handle subdirs and symlinks in $wallpaperdir
+      (closes #1065), fix $WPSETTER "display" (closes #1031)
+      (Thanks Thomas Lübking)
+    * Bugfix: handle DISPLAY :x and :x.0 alike (closes #1052,
+      Thanks Thomas Lübking)
+    * Translation: update fr_FR (Thanks gaspard)
+    * Translation: update he_IL (Thanks GreenLunar)
+
+*16/09/01:
+    * Feature: new command ActivateTab (Thanks Thomas Lübking)
+    * Improvement: delay mouse driven tab focus by the autoraise interval
+      (FR #190, Thanks Thomas Lübking)
+    * Bugfix: do not confine transients to the desktop layer
+      (originally patch #170 by Gregor Bollerhey, Thanks Thomas Lübking)
+
+*16/08/31:
+    * Feature: 5s timeout for emacs-style key chains (FR #291,
+      Thanks Thomas Lübking)
+    * Improvement: sanitize the position of modal windows
+      (Thanks Thomas Lübking)
+
+*16/08/30:
+    * Feature: new command Unclutter (FR #248, Thanks Thomas Lübking)
+    * Improvement: keep the relative position when moving a window to
+      another head (Thanks Thomas Lübking)
+    * Bugfix: MoveX actions; don't replay presses which are required for
+      motions (Thanks Thomas Lübking)
+
+*16/08/28:
+    * Code cleanup: compiler warning about std::auto_ptr
+
+*16/08/27:
+    * Feature: new apps key IgnoreSizeHints (closes #1075,
+      Thanks Thomas Lübking)
+    * Feature: tell OnTitlebar from OnWindow (closes #1035,
+      Thanks Thomas Lübking)
+    * Improvement: oversized windows get partially maximized instead of
+      ending up with both edges off-screen (#688, #984,
+      Thanks Thomas Lübking)
+    * Bugfix: titlebar ClickN handling (closes #1073), replay toolbar
+      button events (closes #940, #949), grab the keyboard synchronously
+      (closes #1137) (Thanks Thomas Lübking)
+    * Bugfix: tab under the mouse was not found for non-click events
+      (Thanks Thomas Lübking)
+    * Bugfix: apply size hints when applying the state (closes #914,
+      Thanks Thomas Lübking)
+    * Bugfix: rare division by zero (Thanks Thomas Lübking)
+    * Bugfix: iconbar was capped after altering its mode
+      (Thanks Thomas Lübking)
+
+*16/08/26:
+    * Feature: generic labeled toolbar buttons, labels can be changed via
+      fluxbox-remote:
+        session.screenN.toolbar.tools: button.foo, iconbar, ...
+        session.screenN.toolbar.button.foo.label: F
+        session.screenN.toolbar.button.foo.commands: RootMenu:Exec foo
+      (Thanks Thomas Lübking)
+    * Feature: autoraise for toolbar and slit (Thanks Thomas Lübking)
+    * Feature: new commands ToggleToolbarAbove, ToggleSlitAbove (FR #222),
+      ToggleToolbarVisible, ToggleSlitHidden (Thanks Thomas Lübking)
+    * Feature: artificial struts per head, session.screenN.struts and
+      session.screenN.struts.<head> (FR #150, Thanks Thomas Lübking)
+    * Improvement: stretching of relative toolbar items
+      (Thanks Thomas Lübking)
+    * Improvement: grab the server when showing or switching the desktop
+      (Thanks Thomas Lübking)
+    * Bugfix: autohiding/raising timer logic (Thanks Thomas Lübking)
+    * Bugfix: XAllowEvents for CurrentTime (Thanks Thomas Lübking)
+
+*16/08/06:
+    * Feature: new toolbar tool 'spacer' (#1141, Thanks Thomas Lübking)
+    * Improvement: relative toolbar items use their preferred width
+      (Thanks Thomas Lübking)
+    * Improvement: delay title updates (Thanks Thomas Lübking)
+
+*16/07/30:
+    * Bugfix: focus cycling: prefer the cycled window, do not lock or
+      protect focus while cycling (closes #1048, #1148,
+      Thanks Thomas Lübking)
+    * Bugfix: reconfigure all theme items when loading a new style and
+      reposition visible submenus (closes #715, #1017, #1146,
+      Thanks Thomas Lübking)
+    * Bugfix: hide the window before restoring the client on unmaps
+      (closes #1110, Thanks Thomas Lübking)
+    * Bugfix: transient dialog placement (Thanks Thomas Lübking)
+    * Bugfix: reconfigure the slit when it is shown (closes #1132,
+      Thanks Thomas Lübking)
+    * Bugfix: force moveResize on applyState (closes #992,
+      Thanks Thomas Lübking)
+
+*16/07/23:
+    * Feature: fbrun: autocompletion (-autocomplete), dedicated completion
+      data (-cf <file>), centered (-center, FR #282), limited history
+      size (FR #202) (Thanks Thomas Lübking)
+    * Improvement: fbrun completion (FR #223, Thanks Thomas Lübking)
+    * Bugfix: clear the selection on text input (Thanks Thomas Lübking)
+
+*16/07/03:
+    * Improvement: smart handling of NotifyUngrab crossing events: closing
+      a keyboard driven popup no longer moves the focus to the window
+      under the pointer (closes #730, #1012, Thanks Thomas Lübking)
+    * Bugfix: fewer bashisms in fluxbox-generate_menu (closes #961, #975,
+      #1057, Thanks Thomas Lübking)
+    * Documentation: strict mouse focus in FOCUS POLICY (closes #950,
+      Thanks Thomas Lübking)
+
+*16/07/02:
+    * Bugfix: fbsetroot: revert "use 24bit visuals" (closes #1093,
+      Thanks Thomas Lübking)
+    * Documentation: "transient" section (closes #1092,
+      Thanks Thomas Lübking)
+
+*16/07/01:
+    * Bugfix: alt+tab'bing through tabbed windows, tabbing of unfocusable
+      clients (closes #1055) (Thanks Thomas Lübking)
+    * Bugfix: deiconifying a window on another workspace left it
+      inaccessible (closes #1010, Thanks Thomas Lübking)
+    * Bugfix: geometry of the second head's root window (closes #1128,
+      Thanks Thomas Lübking)
+    * Bugfix: tab selection by mouse press (closes #1103), update the
+      current tab from the menu (closes #997) (Thanks Thomas Lübking)
+    * Bugfix: do not move unfocused windows to the desktop layer (#894,
+      Thanks Thomas Lübking)
+    * Bugfix: set _NET_WM_NAME on fluxbox's own windows (#702,
+      Thanks Thomas Lübking)
+    * Bugfix: ignore the font for the title height of menus without a
+      label (Thanks Thomas Lübking)
+
+*16/06/26:
+    * Feature: new apps key FocusProtection: None, Lock, Deny, Gain,
+      Refuse; FocusNewWindow maps onto it (Thanks Thomas Lübking)
+    * Improvement: prevent clients from positioning out of the workspace
+      (Thanks Thomas Lübking)
+    * Improvement: keep command menus off struts when opened with the
+      mouse (Thanks Thomas Lübking)
+    * Bugfix: frames for ARGB windows had the wrong depth after screen
+      layout changes (closes #1058, #1102, Thanks Thomas Lübking)
+    * Bugfix: remove the strut when the property is withdrawn (#1133),
+      track removal of MWM hints (Thanks Thomas Lübking)
+
+*16/05/28:
+    * Bugfix: harden focus cycling against client focussing
+      (Thanks Thomas Lübking)
+    * Bugfix: broken text selection in FbTk::TextBox
+    * Documentation: fbrun -preselect (Thanks Thomas Lübking)
+
+*16/04/25:
+    * Feature: fbrun: text selection, -preselect (Thanks Thomas Lübking)
+    * Bugfix: fbsetbg with picky shells (patch #160)
+    * Bugfix: menus wider than a single column (Thanks Juan Gonzalez Lopez)
+
+*16/04/06:
+    * Improvement: place transients centered on their parent
+      (Thanks Thomas Lübking)
+
+*16/02/28:
+    * Feature: mixed relative and absolute values in the apps file, e.g.
+      [Dimensions] {300 100%} (Thanks Arkadiusz Bokowy)
+
+*16/01/09:
+    * Bugfix: send ConfigureNotify events using root coordinates
+      (Thanks foobar0815)
+    * Bugfix: fluxbox-remote: bad "if"-test (closes #1138,
+      Thanks John Sennesael)
+
+*16/01/04:
+    * Feature: snap to edges when resizing,
+      session.screenN.edgeResizeSnapThreshold (Thanks Nephiel; Ulrich
+      Eckhardt for the documentation)
+
+*15/08/10:
+    * Improvement: fbsetbg reports an invalid wallpaper directory
+      (Thanks Oliver Gondža)
+
+*15/07/29:
+    * Improvement: smart placement strategies skip windows on other
+      layers (Thanks Ken Moore)
+
+*15/05/14:
+    * Bugfix: hidden toolbar placement (Thanks Peter Ganzhorn)
+
+*15/05/02:
+    * Bugfix: detecting text in MenuSearch
+
+*15/05/01:
+    * Improvement: shape only toolbar corners not touching a screen edge
+      (Thanks Peter Ganzhorn)
+    * Bugfix: shaped toolbar at TOPCENTER, RIGHTCENTER placement
+      (Thanks Peter Ganzhorn)
+    * Bugfix: render new styles into the full menu (Thanks Lajos Koszti)
+    * Code cleanup: const-correctness, fewer copies
+      (Thanks Mario J. Rugiero)
+
+*15/04/11:
+    * Bugfix: don't assume ICONV_NULL = 0 (Thanks Casey Dahlin)
+
+-----------------------------
 Changes for 1.3.7
 
 *15/02/07:
