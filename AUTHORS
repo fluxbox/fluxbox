@@ -56,6 +56,10 @@ Contributors:
       - Latvian Localisation
     Xavier Brouckaert <xbr(at)info.ucl.ac.be>
       - infamous "remember patch", now integrated into main
+    Thomas Luebking <thomas.luebking(at)gmail.com>
+      - focus handling and focus protection, window placement,
+        toolbar and slit features, fbrun completion, opaque resize,
+        many bugfixes
 
 -- AUTHORS for Blackbox 0.61.1  - an X11 Window manager
 
