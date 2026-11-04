@@ -559,7 +559,7 @@ Changes for 1.3.6
 
 13/09/15:
     * Bugfix: Fix integer math which caused problems with Focus, Resize and
-      Move commands. (Thanks Amadeusz Søawiøski)
+      Move commands. (Thanks Amadeusz S≈Çawi≈Ñski)
 
 13/08/02:
     * Feature: Add 'ArrangeWindowsStack' (Thanks John Sennesael)
@@ -2140,7 +2140,7 @@ Changes for 1.0rc3:
      properties (Mark)
    * Updated spanish translations (thanks bobbens)
    * Updated german translations (thanks tenner)
-   * Updated portuguese translations (thanks F·bio C. P. Navarro)
+   * Updated portuguese translations (thanks F√°bio C. P. Navarro)
    * Updated spanish translations (thanks Guillermo Patterer)
 
 *06/08/03:
@@ -2454,7 +2454,7 @@ Changes for 1.0rc:
      (Simon + thanks Jonas Koelker), sf.net rfe #1333003, patch #1475578
    * Fix up comments for doxygen (Thanks Jonas Koelker)
    * Output the error message on fallback restart execs (sf patch#1475213)
-     (Thanks Jonas Kˆlker, jonaskoelker at users.sourceforge.net).
+     (Thanks Jonas K√∂lker, jonaskoelker at users.sourceforge.net).
 
 *06/04/24:
    * Use -Wall when --enable-debug and some warning fixes 
@@ -2505,7 +2505,7 @@ Changes for 1.0rc:
    * Update Norwegian Bokml translation, nb_NO, sf.net patch #1393780
      (Thanks Alexander N. Sornes, emptydoor at users.sourceforge.net)
    * Update Danish translation, da_DK, sf.net patch #1455023
-     (Thanks Jonas Kˆlker, jonaskoelker at users.sourceforge.net).
+     (Thanks Jonas K√∂lker, jonaskoelker at users.sourceforge.net).
    * Fixes to Mouse Focus (thanks Scott Kuhl; skuhl AT cs utah edu)
    * Allow ~ in "background" pixmap options (Simon + thanks Mark Tiefenbruck)
    * Windows keep relative position in ArrangeWindows (Mathias)
@@ -2682,7 +2682,7 @@ Changes for 0.9.15:
 
 *06/03/05:
    * Update da_DK (danish) translation.
-     (Thanks Jonas Kˆlker, jonaskoelker at users.sourceforge.net).
+     (Thanks Jonas K√∂lker, jonaskoelker at users.sourceforge.net).
 
 *06/03/02:
    * closed bug #1409775, gcc4.1 problems (thanx to Andreas Bierfert)
@@ -3429,7 +3429,7 @@ Changes for 0.9.11
   * Fix for (possible) segfaults at Restart/Exit
     and fix start of former iconic windows (Mathias)
     should close  #1067582, #1067580, #1060912
-  * Fix for adding/removing Workspaces via Menu (thanx ÿyvind Albrigtsen)
+  * Fix for adding/removing Workspaces via Menu (thanx √òyvind Albrigtsen)
 
 *04/11/19:
   * Some changes to avoid invisible fonts (Mathias)
@@ -3774,7 +3774,7 @@ Changes for 0.9.10:
     "click raises" = false,
     Consistent with the title bar.  (Henrik)
   * Mouse scroll on icons in toolbar changes workspace (Henrik)
-  * Minor fix for Resource<bool> (Thanks David J˙lio)
+  * Minor fix for Resource<bool> (Thanks David J√∫lio)
   * Fixed so the delete key is working for fbrun (Henrik)
   * Fixed minor bug when time_t is long long  (Henrik)
   * Removed ugly toolbar at startup (Henrik)
@@ -3874,7 +3874,7 @@ Changes for 0.9.10:
 
 *04/05/21:
   * fluxbox-generate_menu:
-    Updated polish locales from: £ukasz Wrzosek (unl at poczta dot fm)
+    Updated polish locales from: ≈Åukasz Wrzosek (unl at poczta dot fm)
 
 *04/05/18:
   * Make the size of arrows in buttons half the button size (grubert).
@@ -4009,7 +4009,7 @@ Changes for 0.9.9:
     Making sure there's not more than one GrabPointer at once in FluxboxWindow.
 
 *04/04/10:
-  * Some cleaning in Makefile.am's (Thanks  FrÈdÈric L. W. Meunier (1 at pervalidus dot net))
+  * Some cleaning in Makefile.am's (Thanks  Fr√©d√©ric L. W. Meunier (1 at pervalidus dot net))
 
 *04/04/03:
   * French nls for fluxbox-generate_menu (Thanks LaLu <mathieu dot buffenoir at ece dot fr>
@@ -4187,7 +4187,7 @@ Changes for 0.9.9:
 
 *04/01/17:
   * Enter nls/pl_PL into configure.in and add a Makefile.am to pl_PL.
-  * Add nls/sl_SI (thanks Ale® Jagodnik)
+  * Add nls/sl_SI (thanks Ale≈° Jagodnik)
 
 *04/01/16:
   * Updated nl_NL locales (Han)
@@ -5825,7 +5825,7 @@ Changes for 0.1.10:
    * Fixed language support in fluxbox-generate_menu:
       * sv_SE
       * nl_NL - Thanks Han Boetes
-      * fi_FI - Thanks Christian Rˆnn
+      * fi_FI - Thanks Christian R√∂nn
    * Fixed inverted highlight on toggle-items that are selected (Thanks Junichiro Kita)
 
 *02/05/25:
@@ -6004,11 +6004,11 @@ Changes for 0.1.8:
     * Xinerama support, maximizes windows to the current heads size, places
       windows on the current head, makes it possible to place toolbar on
       the different heads, also possible with the slit. Menus will be placed
-      on the current head too. (Claes N‰sten)
+      on the current head too. (Claes N√§sten)
 
 *02/03/13:
     * Fixed window placement, now tabs are taking in account. Also,
-      no spaced are put inbetween windows to save space. (Claes N‰sten)
+      no spaced are put inbetween windows to save space. (Claes N√§sten)
 
 *02/03/11:
    * Fixed some KDE stuff in Slit.cc (Thanks Tommi Komulainen)
@@ -6096,8 +6096,8 @@ Changes for 0.1.7:
 
 *02/02/02:
    * Added leftWorkspace and rightWorkspace, now those keybindings
-     actually work. (Claes N‰stÈn)
-   * Fixed small glitch in Tab.cc. (Claes N‰stÈn)
+     actually work. (Claes N√§st√©n)
+   * Fixed small glitch in Tab.cc. (Claes N√§st√©n)
 
 *02/01/31:
    * Fixed _WIN_WORKSPACE and _WIN_WORKSPACE_COUNT
@@ -6130,7 +6130,7 @@ Changes for 0.1.7:
 
 *02/01/18:
    * Fixed bsetroot, now Eterm's, XChat's and similar will be able to use
-     bsetroot's background images. (Claes N‰stÈn)
+     bsetroot's background images. (Claes N√§st√©n)
    * Fixed ResourceManager
    * Changed resources to Resource<T> in class Fluxbox
    * Added Resource.hh/.cc, XrmDatabaseHelper.hh,
@@ -6142,7 +6142,7 @@ Changes for 0.1.7:
 *02/01/15:
    * Fixed exception in FluxboxWindow::FluxboxWindow
    * Fixed lower/raise of windows when using windowmenu/keybinding
-     so now tabs should follow. (Claes N‰stÈn)
+     so now tabs should follow. (Claes N√§st√©n)
 
 *02/01/14:
    * Fixed throw statement in FluxboxWindow
@@ -6150,18 +6150,18 @@ Changes for 0.1.7:
 Changes for 0.1.6:
 *02/01/11:
    * Fixed small bug in keybindings code, now killwindow and shade will
-     work as supposed with tabs. (Claes N‰stÈn)
+     work as supposed with tabs. (Claes N√§st√©n)
    * Fixed so it compiles with cygwin (Thanks Eric Nicolas)
    * Fixed bug in maximize over slit option
    * Updated documents (Thanks Rando Christensen)
 
 *02/01/10:
    * Fixed {VERT,HORIZ}{INC,DEC} keybindings so that tabs will
-     resize/reposition. (Claes N‰stÈn)
+     resize/reposition. (Claes N√§st√©n)
    * Updated documentation (Thanks Rando Christensen)
-   * All enums are now changed to uppercase letters. (Claes N‰stÈn)
+   * All enums are now changed to uppercase letters. (Claes N√§st√©n)
    * Now tabs won't appear on some apps where they shouldn't,
-     for example bbpager and mplayer. (Claes N‰stÈn)
+     for example bbpager and mplayer. (Claes N√§st√©n)
    * Fixed rootCommand to screen, so we can have
      different rootcommands on the different screens
    * Fixed so we can disable lines in the keyfile with a #
@@ -6184,13 +6184,13 @@ Changes for 0.1.6:
    * Fixed memory leak in Keys
 
 *02/01/06:
-   * Changed toolbar placement enums to uppercase letters (Claes N‰stÈn)
+   * Changed toolbar placement enums to uppercase letters (Claes N√§st√©n)
    * Moved strcasestr from Theme.cc to StringUtil
    * Created StringUtil and DrawUtil and moved all functions from Misc to them
 
 *02/01/05:
-   * Changed placement/alignment enums to uppercase letters (Claes N‰stÈn)
-   * Fixed tab/iconbar resource bug (Claes N‰stÈn)
+   * Changed placement/alignment enums to uppercase letters (Claes N√§st√©n)
+   * Fixed tab/iconbar resource bug (Claes N√§st√©n)
    * Applied "maximize slit stop"-patch  (Thanks Andrew Livesay)
    * Fixed stickytoggle bug in Windowmenu (Thanks Chris Elston)
    * Fixed shade bug in Windowmenu
@@ -6213,18 +6213,18 @@ Changes for 0.1.6:
      to clean up the global namespace
 
 *01/12/27:
-   * Fixed grabVertMax and grabHorizMax + 1 pixel maximise bug. (Claes N‰stÈn)
+   * Fixed grabVertMax and grabHorizMax + 1 pixel maximise bug. (Claes N√§st√©n)
    * Now relative and vertical tabs gets textures rendered ok, still
-    interlaced and gradients aren't rendered in right direction. (Claes N‰stÈn)
+    interlaced and gradients aren't rendered in right direction. (Claes N√§st√©n)
 
 *01/12/26:
    * Fixed tab and iconbar uppdating so that tab and iconbar labels will have
-    the right text. (Claes N‰stÈn)
+    the right text. (Claes N√§st√©n)
 
 *01/12/23:
    * Fixed a bug in Tab::buttonReleaseEvent and added sloppyWindowGrouping
      wich lets you release windows tabs on other windows and not only other
-     tabs to group them (Claes N‰stÈn)
+     tabs to group them (Claes N√§st√©n)
 
 *01/12/19:
    * Moved some structs from file scope of BaseDisplay.hh in to class BaseDisplay
@@ -6237,7 +6237,7 @@ Changes for 0.1.6:
 
 *01/12/14:
    * Moved Tab width and height functions to screen, new syntax is
-      session.screenX.tab.width (Claes N‰stÈn)
+      session.screenX.tab.width (Claes N√§st√©n)
 
 *01/12/13:
    * Moved all free functions in misc.cc/.hh into a class Misc
@@ -6255,11 +6255,11 @@ Changes for 0.1.6:
 
 *01/12/11:
    * Fixed alt+resize and pressing button1 bug (me)
-   * Cleaned Tab::insert up and fix a bug in it. (Claes N‰stÈn)
+   * Cleaned Tab::insert up and fix a bug in it. (Claes N√§st√©n)
 
 *01/12/10:
-   * Added NLS for Windowmenu Tab toggle (Claes N‰stÈn)
-   * Fixed Tab toggle texture / positioning "bug" (Claes N‰stÈn)
+   * Added NLS for Windowmenu Tab toggle (Claes N√§st√©n)
+   * Fixed Tab toggle texture / positioning "bug" (Claes N√§st√©n)
 
 Changes for 0.1.5:
 
@@ -6274,7 +6274,7 @@ Changes for 0.1.5:
    * Updated AUTHORS (me)
    * Fixed ungrabbing keys in Keys::load (me)
    * Added rootCommand override (Joel Carlbark)
-   * Updated Tab code (Cleas N‰stÈn)
+   * Updated Tab code (Cleas N√§st√©n)
    * Moved some structs and enums in to the classes
      to clean up the global namespace. (me)
    * Added grabNextTab, grabPrevTab, grabAbortKeychain (me)
@@ -6287,11 +6287,11 @@ Changes for 0.1.5:
    * Fixed reversed justify in menustyle (me)
 
 *01/12/05:
-   * Updated Tab code (Claes N‰stÈn)
+   * Updated Tab code (Claes N√§st√©n)
 
 *01/12/03:
    * Added "tab" in Windowmenu.cc (me)
-   * Updated Tab code (Claes N‰stÈn)
+   * Updated Tab code (Claes N√§st√©n)
 
 *01/12/01:
    * Fixed chained keybinding so we can do "emacs-keybindingstyle" (me)
@@ -6303,7 +6303,7 @@ Changes for 0.1.5:
    * Removed old bbkeys code (me)
 
 *01/11/29:
-   * applied Tab position patch (Claes N‰stÈn)
+   * applied Tab position patch (Claes N√§st√©n)
    * Fixed transient_for-bug, Fluxbox::~FluxboxWindow (me)
      client.transient_for didn't got focus and caused the (me)
      Fluxbox::focused_window to be a badpointer since
@@ -6337,7 +6337,7 @@ Changes for 0.1.5:
 *01/11/13:
    * Fixed grabs for window. No we can Alt+Move window with
      Numlock, Capslock and Scrolllock on. (me)
-   * Fixed nls for "Use Icons" and "Use Tabs" (Claes N‰stÈn)
+   * Fixed nls for "Use Icons" and "Use Tabs" (Claes N√§st√©n)
    * Removed BScreen::LoadStyle() (me)
 
 *01/11/12:
