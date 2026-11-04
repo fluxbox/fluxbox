@@ -93,6 +93,71 @@ string gradientSpec(unsigned long type) {
     return spec;
 }
 
+int ignoreXErrors(Display *, XErrorEvent *) {
+    return 0;
+}
+
+Pixmap rootPixmapProperty(Display *disp, Window root, Atom atom) {
+    Atom type;
+    int format;
+    unsigned long items, after;
+    unsigned char *data = 0;
+    Pixmap pm = None;
+
+    if (XGetWindowProperty(disp, root, atom, 0L, 1L, False, AnyPropertyType,
+                           &type, &format, &items, &after, &data) == Success &&
+        data != 0) {
+        if (type == XA_PIXMAP && format == 32 && items == 1)
+            pm = *reinterpret_cast<Pixmap *>(data);
+        XFree(data);
+    }
+    return pm;
+}
+
+// Publish 'src' as the root background the way Esetroot and fbsetroot do,
+// so pseudo-transparent clients (fluxbox's own alpha included) find it via
+// _XROOTPMAP_ID. The published pixmap lives on a short-lived connection
+// closed with RetainPermanent: the next setter XKillClient()s the owner of
+// a pixmap both atoms point to, and that must never be fluxbox itself.
+bool publishRootPixmap(const char *display_name, int screen, Pixmap src,
+                       unsigned int width, unsigned int height,
+                       unsigned int depth) {
+    Display *disp = XOpenDisplay(display_name);
+    if (disp == 0)
+        return false;
+
+    Window root = RootWindow(disp, screen);
+    Atom atom_root = XInternAtom(disp, "_XROOTPMAP_ID", False);
+    Atom atom_eroot = XInternAtom(disp, "ESETROOT_PMAP_ID", False);
+
+    // free what the previous setter left behind. the id may be stale,
+    // so do not let the resulting BadValue reach fluxbox's error log.
+    Pixmap old_root = rootPixmapProperty(disp, root, atom_root);
+    if (old_root != None &&
+        old_root == rootPixmapProperty(disp, root, atom_eroot)) {
+        XErrorHandler old_handler = XSetErrorHandler(ignoreXErrors);
+        XKillClient(disp, old_root);
+        XSync(disp, False);
+        XSetErrorHandler(old_handler);
+    }
+
+    Pixmap pm = XCreatePixmap(disp, root, width, height, depth);
+    GC gc = XCreateGC(disp, pm, 0, 0);
+    XCopyArea(disp, src, pm, gc, 0, 0, width, height, 0, 0);
+    XFreeGC(disp, gc);
+
+    XSetWindowBackgroundPixmap(disp, root, pm);
+    XClearWindow(disp, root);
+    XChangeProperty(disp, root, atom_root, XA_PIXMAP, 32, PropModeReplace,
+                    reinterpret_cast<unsigned char *>(&pm), 1);
+    XChangeProperty(disp, root, atom_eroot, XA_PIXMAP, 32, PropModeReplace,
+                    reinterpret_cast<unsigned char *>(&pm), 1);
+
+    XSetCloseDownMode(disp, RetainPermanent);
+    XCloseDisplay(disp);
+    return true;
+}
+
 }
 
 class BackgroundItem: public FbTk::ThemeItem<FbTk::Texture> {
@@ -327,9 +392,20 @@ void RootTheme::renderBackground() {
     if (pixmap == None)
         return;
 
-    // the root window keeps its background after the pixmap is freed.
-    // _XROOTPMAP_ID is left alone: it would point to a freed pixmap.
-    XSetWindowBackgroundPixmap(disp, root, pixmap);
-    XClearWindow(disp, root);
+    Window pm_root;
+    int x, y;
+    unsigned int width, height, border, depth;
+    // a round trip: 'pixmap' exists server-side before the second
+    // connection copies from it
+    XGetGeometry(disp, pixmap, &pm_root, &x, &y, &width, &height, &border, &depth);
+
+    if (!publishRootPixmap(DisplayString(disp), screenNum(), pixmap,
+                           width, height, depth)) {
+        // no second connection: at least show the background. the root
+        // window keeps it after the pixmap is freed, but _XROOTPMAP_ID
+        // must not point to a pixmap owned by (or freed by) fluxbox.
+        XSetWindowBackgroundPixmap(disp, root, pixmap);
+        XClearWindow(disp, root);
+    }
     XFreePixmap(disp, pixmap);
 }
