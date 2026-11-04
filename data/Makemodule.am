@@ -36,6 +36,11 @@ include data/styles/arch/Makemodule.am
 
 pkgdata_FILES = data/init data/keys data/apps data/overlay data/menu
 
+# Generate the data files during "make", not during "make install":
+# otherwise "sudo make install" creates them root-owned in the build tree.
+all-local: $(pkgdata_FILES)
+CLEANFILES += data/menu
+
 install-data-local: $(pkgdata_FILES)
 	@echo "Installing menu file in $(DESTDIR)$(DEFAULT_MENU)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_MENU))
@@ -56,7 +61,7 @@ install-data-local: $(pkgdata_FILES)
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_WINDOWMENU))
 	$(INSTALL_DATA) $(srcdir)/data/windowmenu $(DESTDIR)$(DEFAULT_WINDOWMENU)
 
-data/menu:
+data/menu: util/fluxbox-generate_menu
 	env MENUFILENAME=$@ \
 		PREFIX="${prefix}" \
 		MENUTITLE="Fluxbox-${VERSION}" \
