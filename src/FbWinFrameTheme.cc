@@ -88,10 +88,11 @@ bool FbWinFrameTheme::fallback(FbTk::ThemeItem_base &item) {
 }
 
 void FbWinFrameTheme::reconfigTheme() {
-    *m_bevel_width = FbTk::Util::clamp(*m_bevel_width, 0, 20);
+    *m_bevel_width = FbTk::Util::clamp(*m_bevel_width, 0, FbTk::THEME_MAX_SIZE);
+    *m_title_height = FbTk::Util::clamp(*m_title_height, 0, FbTk::THEME_MAX_SIZE);
     if (*m_handle_width < 0)
         *m_handle_width = 1;
-    *m_handle_width = FbTk::Util::clamp(*m_handle_width, 0, 200);
+    *m_handle_width = FbTk::Util::clamp(*m_handle_width, 0, FbTk::THEME_MAX_SIZE);
     m_button_pic_gc.setForeground(*m_button_color);
     m_iconbar_theme.reconfigTheme();
 }

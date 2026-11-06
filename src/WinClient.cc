@@ -31,6 +31,7 @@
 #include "Debug.hh"
 
 #include "FbTk/EventManager.hh"
+#include "FbTk/I18n.hh"
 #include "FbTk/MultLayers.hh"
 
 #include <iostream>
@@ -73,6 +74,35 @@ void sendMessage(const WinClient& win, Atom atom, Time time) {
     ce.xclient.data.l[3] = 0l;
     ce.xclient.data.l[4] = 0l;
     XSendEvent(win.display(), win.window(), false, NoEventMask, &ce);
+}
+
+// why 512? very very long wmnames seem to either
+// crash fluxbox or to make it have high cpuload
+// see also:
+//    http://www.securityfocus.com/archive/1/382398/2004-11-24/2004-11-30/2
+//
+// TODO: - find out why this mostly happens when using xft-fonts
+//       - why other windowmanagers (pekwm/pwm3/openbox etc) are
+//         also influenced
+//
+// the limitation to 512 bytes only avoids running in that trap. it
+// applies to every title, as clients set _NET_WM_NAME as well
+const size_t MAX_TITLE_LENGTH = 512;
+
+// cut 'title' to MAX_TITLE_LENGTH bytes without splitting a UTF-8
+// sequence
+FbTk::FbString limitTitle(const FbTk::FbString &title) {
+    if (title.size() <= MAX_TITLE_LENGTH)
+        return title;
+
+    // step back while the first byte left out continues a sequence;
+    // a sequence has at most 3 such bytes, invalid input won't cost more
+    size_t len = MAX_TITLE_LENGTH;
+    while (len > MAX_TITLE_LENGTH - 3 &&
+           (static_cast<unsigned char>(title[len]) & 0xC0) == 0x80)
+        --len;
+
+    return title.substr(0, len);
 }
 
 } // end of anonymous namespace
@@ -306,20 +336,16 @@ void WinClient::updateTransientInfo() {
 
 
 void WinClient::updateTitle() {
-    // why 512? very very long wmnames seem to either
-    // crash fluxbox or to make it have high cpuload
-    // see also:
-    //    http://www.securityfocus.com/archive/1/382398/2004-11-24/2004-11-30/2
-    //
-    // TODO: - find out why this mostly happens when using xft-fonts
-    //       - why other windowmanagers (pekwm/pwm3/openbox etc) are
-    //         also influenced
-    //
-    // the limitation to 512 chars only avoids running in that trap
     if (m_title_override)
         return;
 
-    m_title.setLogical(FbTk::FbString(Xutil::getWMName(window()), 0, 512));
+    FbTk::FbString name = textProperty(XA_WM_NAME);
+    if (name.empty()) {
+        _FB_USES_NLS;
+        name = _FB_XTEXT(Window, Unnamed, "Unnamed", "Default name for a window without a WM_NAME");
+    }
+
+    m_title.setLogical(limitTitle(name));
     m_title_update_timer.start();
 }
 
@@ -328,7 +354,7 @@ void WinClient::emitTitleSig() {
 }
 
 void WinClient::setTitle(const FbTk::FbString &title) {
-    m_title.setLogical(title);
+    m_title.setLogical(limitTitle(title));
     m_title_override = true;
     m_title_update_timer.start();
 }

@@ -441,15 +441,24 @@ void Menu::updateMenu() {
         m_item_w = std::max(iw, m_item_w);
     }
 
+    // nothing wider than the screen can be seen; the limit also keeps
+    // the menu width in range of int and of the 16 bit X11 geometry
+    m_item_w = std::min(m_item_w, std::max(1u, m_screen.width));
+
     // calculate needed columns
     m_columns = 0;
     m_rows_per_column = 0;
     if (!m_items.empty()) {
-        m_columns = 1;
-
-        while (ih * (l + 1) / m_columns + th + bw > m_screen.height) {
-            m_columns++;
+        // fewest columns with ih * (l + 1) / columns + th + bw <= screen
+        // height; a single row if title and border alone don't fit
+        size_t needed = static_cast<size_t>(ih) * (l + 1);
+        size_t reserved = static_cast<size_t>(th) + static_cast<size_t>(bw);
+        size_t columns = l;
+        if (m_screen.height > reserved) {
+            size_t avail = m_screen.height - reserved;
+            columns = std::min(l, needed / (avail + 1) + 1);
         }
+        m_columns = static_cast<int>(columns);
 
         m_columns = std::max(m_min_columns, m_columns);
 

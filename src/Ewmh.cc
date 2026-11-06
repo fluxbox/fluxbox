@@ -1116,8 +1116,10 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
 
         // no need to alter number of desktops if they are the same
         // or if requested number of workspace is less than zero
+        // or more than the screen allows
         if (screen->numberOfWorkspaces() == static_cast<unsigned int>(ce.data.l[0]) ||
-            ce.data.l[0] < 0)
+            ce.data.l[0] < 0 ||
+            ce.data.l[0] > static_cast<long>(BScreen::MAX_WORKSPACES))
             return true;
 
         if (screen->numberOfWorkspaces() > static_cast<unsigned int>(ce.data.l[0])) {
@@ -1286,7 +1288,8 @@ bool Ewmh::propertyNotify(WinClient &winclient, Atom the_property) {
         if (!newtitle.empty())
             winclient.setTitle(newtitle);
         if (winclient.fbwindow())
-            winclient.fbwindow()->titleSig().emit(newtitle, *winclient.fbwindow());
+            winclient.fbwindow()->titleSig().emit(winclient.title().logical(),
+                                                  *winclient.fbwindow());
         return true;
     } else if (the_property == m_net->wm_icon_name) {
         // we don't use icon title, since we don't show icons

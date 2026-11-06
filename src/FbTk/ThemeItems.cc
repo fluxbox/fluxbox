@@ -51,6 +51,8 @@
   #include <stdlib.h>
 #endif
 
+#include <cerrno>
+#include <climits>
 #include <iostream>
 #include <memory>
 
@@ -90,8 +92,16 @@ void ThemeItem<int>::setFromString(const char *str) {
         return;
     }
 
-    if (sscanf(str, "%d", &m_value) < 1)
+    // strtoll() reports overflow, sscanf("%d") does not
+    char *end = 0;
+    errno = 0;
+    long long value = strtoll(str, &end, 10);
+    if (end == str || errno != 0 || value < INT_MIN || value > INT_MAX) {
         setDefaultValue();
+        return;
+    }
+
+    m_value = static_cast<int>(value);
 }
 template<>
 void ThemeItem<bool>::load(const std::string *name, const std::string *altname) { }
@@ -107,20 +117,6 @@ void ThemeItem<bool>::setFromString(char const *strval) {
         *(*this) = true;
     else
         *(*this) = false;
-}
-
-template <>
-void ThemeItem<unsigned int>::setDefaultValue() {
-    m_value = 0;
-}
-
-template <>
-void ThemeItem<unsigned int>::setFromString(const char *str) {
-    sscanf(str, "%u", &m_value);
-}
-
-template <>
-void ThemeItem<unsigned int>::load(const std::string *name, const std::string *altname) {
 }
 
 template <>

@@ -24,6 +24,7 @@
 #include "Font.hh"
 #include "Theme.hh"
 
+#include <algorithm>
 #include <cstring>
 
 namespace {
@@ -54,9 +55,16 @@ void maxTextLength(int n_pixels, const FbTk::Font& font, const char* const text,
         //             +------left
         //              n_pixels
 
-        int right = n_pixels / (font.textWidth(".", 1) + 1);
-        int left = n_pixels / (font.textWidth("WW", 2) + 1);
+        // signed division: textWidth() is unsigned, and a negative
+        // n_pixels would otherwise turn into a huge estimate
+        int right = n_pixels / (static_cast<int>(font.textWidth(".", 1)) + 1);
+        int left = n_pixels / (static_cast<int>(font.textWidth("WW", 2)) + 1);
         int middle;
+
+        // the estimates can lie outside of 'text': past its end for a
+        // short text of wide glyphs, below 0 if there is no room at all
+        right = std::max(0, std::min(right, static_cast<int>(text_len)));
+        left = std::max(0, std::min(left, right));
 
         // binary search for longest substring fitting into 'max_width' pixels
         for ( ; left < (right - 1); ) {
