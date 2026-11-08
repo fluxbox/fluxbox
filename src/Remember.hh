@@ -68,6 +68,7 @@ public:
         REM_SHADEDSTATE,
         REM_STUCKSTATE,
         //REM_TABSTATE, ... external tabs disabled atm
+        REM_TABPLACEMENT,
         REM_WORKSPACE,
         REM_HEAD,
         REM_ALPHA,
