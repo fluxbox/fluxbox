@@ -235,7 +235,7 @@ menu\&.title\&.halo\&.color: green
 .\}
 .SS "FONT PROBLEMS"
 .sp
-If you have problems installing fonts or getting them to work, you should read the docs page at xfree\&.org\&. Here is a link to one of these: http://xfree\&.org/4\&.3\&.0/fonts2\&.html#3
+If you have problems installing fonts or getting them to work, you should read the docs page at xfree\&.org\&. Here is a link to one of these: \m[blue]\fBhttp://xfree\&.org/4\&.3\&.0/fonts2\&.html#3\fR\m[]
 .SH "FULL COMPONENT LIST"
 .sp
 Here is the exhaustive component list for fluxbox(1) styles\&. Each one is listed with their type of value required\&. Comments in a style file are preceded with an exclamation point (!) which we also use here so that these can be pasted into a new theme\&.cfg to be customized appropriately\&. Please note that in order to keep styles consistent it is often the practice of stylists to provide all of the theme\-items in their style file even if they are not used\&. This allows the user the ease of changing different components\&.
@@ -532,7 +532,7 @@ Blackbox was written and maintained by Brad Hughes <blackbox at alug\&.org> and 
 .sp
 fluxbox(1) is written and maintained by Henrik Kinnunen <fluxgen at fluxbox\&.org> with contributions and patches merged from many individuals around the world\&.
 .sp
-The Official fluxbox(1) website: http://www\&.fluxbox\&.org You can find a lot of styles here: http://tenr\&.de/
+The Official fluxbox(1) website: \m[blue]\fBhttp://www\&.fluxbox\&.org\fR\m[] You can find a lot of styles here: \m[blue]\fBhttp://tenr\&.de/\fR\m[]
 .sp
 This manpage was composed from various resources including the official documentation, fluxbox(1) man page and numerous other resources by Curt "Asenchi" Micol\&. If you notice any errors or problems with this page, please contact him here: <asenchi at asenchi\&.com> and using the great contributions of <grubert at users\&.sourceforge\&.net>\&. Numerous other languages could be available if someone jumps in\&.
 .SH "SEE ALSO"
