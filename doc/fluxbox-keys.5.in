@@ -1,7 +1,7 @@
 '\" t
 .\"     Title: fluxbox-keys
 .\"    Author: Jim Ramsay <i.am@jimramsay.com>
-.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
 .\"      Date: 08 February 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-keys.txt
@@ -356,6 +356,24 @@ should be one of
 for a discussion of layers\&.
 .RE
 .PP
+\fBSetFocusProtection\fR \fIvalue\fR[, \fIvalue\fR \&...]
+.RS 4
+Replaces the focus protection of the current window\&.
+\fIvalue\fR
+has the same format as the \(oq[FocusProtection]\(cq parameter in the apps file; see
+\fIfluxbox\-apps(5)\fR\&. Only that window changes, and only until it closes or fluxbox restarts\&. The apps file is not changed, so windows opened later still follow their apps rules\&.
+\fBGain\fR
+and
+\fBRefuse\fR
+only act when a window or tab first appears, so on an open window
+\fBDeny\fR
+and
+\fBLock\fR
+are the values that matter\&. Use
+\fBForEach\fR
+to change several open windows at once, e\&.g\&. \(oqForEach {SetFocusProtection Deny} {Matches (name=vlc)}\(cq\&.
+.RE
+.PP
 \fBClose\fR
 .RS 4
 Close the current window, equivalent to the window button\&.
@@ -707,7 +725,7 @@ Toggles the slit\(cqs autohiding state (autohide doesn\(cqt have to be enabled)
 Toggles the toolbar between its regular and the AboveDock layer
 .RE
 .PP
-\fBToggleToolbarHidden\fR
+\fBToggleToolbarVisible\fR
 .RS 4
 Toggles the toolbar\(cqs autohiding state (autohide doesn\(cqt have to be enabled)
 .RE
@@ -892,7 +910,8 @@ These commands have special meanings or behaviors\&.
 \fBMacroCmd\fR {\fIcommand1\fR} {\fIcommand2\fR} {\fIcommand3\fR} \fI\&...\fR
 .RS 4
 Allows you to execute more than one command with one keybinding\&. The commands will be executed in series\&. The
-\fB{\fR\fB}\fR
+\fB{\fR
+\fB}\fR
 brackets are literally required, as in the following example:
 .sp
 .if n \{\
@@ -1364,7 +1383,7 @@ Curt Micol <asenchi at asenchi com> (>fluxbox\-0\&.9\&.11)
 .sp -1
 .IP \(bu 2.3
 .\}
-Tobias Klausmann <klausman at users sourceforge net> (\(lafluxbox\-0\&.9\&.11)
+Tobias Klausmann <klausman at users sourceforge net> (⇐fluxbox\-0\&.9\&.11)
 .RE
 .sp
 .RS 4
