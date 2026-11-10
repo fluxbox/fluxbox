@@ -27,11 +27,13 @@
 
 #include "FbTk/NotCopyable.hh"
 
+#include <list>
 #include <memory>
 
 class ToolbarItem;
 class BScreen;
 class Toolbar;
+class Focusable;
 
 namespace FbTk {
 class FbWindow;
@@ -57,6 +59,8 @@ private:
     std::unique_ptr<ToolTheme> m_systray_theme;
     IconbarTheme m_iconbar_theme, m_focused_iconbar_theme,
                  m_unfocused_iconbar_theme;
+    /// the order of the iconbar icons, it outlives the iconbar itself
+    std::shared_ptr<std::list<Focusable *> > m_iconbar_order;
 };
 
 #endif // TOOLFACTORY_HH

@@ -202,6 +202,7 @@ enum {
 	ToolbarShowIcons = 16,
 	ToolbarIconbarModeNoIcons = 17,
 	ToolbarIconbarModeWorkspaceNoIcons = 18,
+	ToolbarUserOrder = 19,
 
 	WindowSet = 15,
 	WindowUnnamed = 1,
@@ -219,6 +220,11 @@ enum {
 	WindowmenuKill = 10,
 	WindowmenuDefaultAlpha = 11,
 	WindowmenuSetTitle = 12,
+	WindowmenuIconbar = 13,
+	WindowmenuIconbarLeft = 14,
+	WindowmenuIconbarRight = 15,
+	WindowmenuIconbarStart = 16,
+	WindowmenuIconbarEnd = 17,
 
 	WorkspaceSet = 17,
 	WorkspaceDefaultNameFormat = 1,

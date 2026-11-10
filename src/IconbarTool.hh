@@ -31,22 +31,41 @@
 #include "FbTk/Resource.hh"
 #include "FbTk/Timer.hh"
 
+#include <list>
 #include <map>
+#include <memory>
+#include <vector>
 
 class IconbarTheme;
 class BScreen;
 class IconButton;
 class Focusable;
 class FocusableList;
+class FluxboxWindow;
 
 class IconbarTool: public ToolbarItem {
 public:
     typedef std::map<Focusable *, IconButton *> IconMap;
 
+    /// the position of a button along the axis the buttons are laid out on
+    struct AxisBox {
+        int start;  ///< start of the button
+        int length; ///< length of the button
+    };
+
+    /// where to move an icon to
+    enum MoveIconTarget {
+        MOVE_ICON_LEFT,  ///< one slot towards the front of the iconbar
+        MOVE_ICON_RIGHT, ///< one slot towards the end of the iconbar
+        MOVE_ICON_START, ///< the first slot of the iconbar
+        MOVE_ICON_END    ///< the last slot of the iconbar
+    };
+
     IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
                 FbTk::ThemeProxy<IconbarTheme> &focused_theme,
                 FbTk::ThemeProxy<IconbarTheme> &unfocused_theme,
-                BScreen &screen, FbTk::Menu &menu);
+                BScreen &screen, FbTk::Menu &menu,
+                std::shared_ptr<std::list<Focusable *> > order);
     ~IconbarTool();
 
     void move(int x, int y);
@@ -71,6 +90,47 @@ public:
     FbTk::Container::Alignment alignment() const { return m_icon_container.alignment(); }
     static std::string &iconifiedPrefix() { return s_iconifiedDecoration[0]; }
     static std::string &iconifiedSuffix() { return s_iconifiedDecoration[1]; }
+
+    /**
+       Move the icon of the given window in the iconbar.
+       @param win the window whose icon should be moved
+       @param target where the icon should go
+       @return true if the icon was moved
+     */
+    bool moveIcon(FluxboxWindow &win, MoveIconTarget target);
+    /**
+       Move the icon of the given window to the given slot.
+       @param win the window whose icon should be moved
+       @param index the zero based slot the icon should end up in
+       @return true if the icon was moved
+     */
+    bool moveIconTo(FluxboxWindow &win, int index);
+
+    /// @return the number of icons in the iconbar
+    int iconCount() const;
+    /**
+       Set whether the order of the icons is controlled by the user.
+
+       While the order is user controlled, the iconbar does not follow the
+       focus or creation order of the windows any more. Moving an icon
+       turns this on automatically.
+       @param manual true to let the user control the order
+     */
+    void setManualOrder(bool manual);
+    /// @return true if the order of the icons is controlled by the user
+    bool isManualOrder() const { return *m_rc_manual_order; }
+
+    /**
+       @name drag and drop
+     */
+    //@{
+    /// a drag gesture started on the button of the given window
+    void dragStarted(Focusable &win, int root_x, int root_y);
+    /// the pointer moved during a drag gesture
+    void dragMoved(int root_x, int root_y);
+    /// a drag gesture ended
+    void dragEnded();
+    //@}
 
     const BScreen &screen() const { return m_screen; }
 private:
@@ -98,6 +158,20 @@ private:
     /// add icons to the list
     void updateList();
 
+    /// move the icon of the given focusable to the given slot
+    bool moveFocusableTo(Focusable &win, int index);
+    /// apply the manual order resource to the window list
+    void applyManualOrder();
+    /// @return the focusable of the given window that is in the iconbar, or 0
+    Focusable *focusableFor(FluxboxWindow &win);
+    /// @return the index of the given focusable in the iconbar, or -1
+    int indexOf(const Focusable &win);
+    /// @return the slot a button should be dropped at for a pointer position
+    int indexForPosition(int root_x, int root_y);
+    /// remember the position of the buttons, so that the pointer keeps
+    /// referring to the same place during a drag
+    void snapshotGeometry();
+
     void updateMaxSizes(unsigned int width, unsigned int height);
     /// called when the list emits a signal
     void update(UpdateReason reason, Focusable *win);
@@ -118,15 +192,28 @@ private:
     FbTk::SignalTracker m_tracker;
 
     std::unique_ptr<FocusableList> m_winlist;
+    /// the order of the icons, kept here so that it survives a new mode
+    std::shared_ptr<std::list<Focusable *> > m_order;
     IconMap m_icons;
     std::string m_mode;
     FbTk::Resource<std::string> m_rc_mode;
+    FbTk::Resource<bool> m_rc_manual_order; ///< true if the user controls the order
     FbTk::Resource<FbTk::Container::Alignment> m_rc_alignment; ///< alignment of buttons
     FbTk::Resource<int> m_rc_client_width; ///< size of client button in LEFT/RIGHT mode
     FbTk::Resource<unsigned int> m_rc_client_padding; ///< padding of the text
     FbTk::Resource<bool> m_rc_use_pixmap; ///< if iconbar should use win pixmap or not
     FbMenu m_menu;
     int m_alpha;
+
+    Focusable *m_drag_win; ///< the window whose icon is being dragged
+    bool m_dragging; ///< true while a drag gesture is in progress
+    int m_drag_index; ///< the slot the dragged icon would end up in
+    int m_drag_slot; ///< the slot the dragged icon started in
+    int m_drag_border; ///< border width of the dragged icon
+    int m_drag_origin_x; ///< x of the icon container, in root window coordinates
+    int m_drag_origin_y; ///< y of the icon container, in root window coordinates
+    /// the position of the buttons when the drag started
+    std::vector<AxisBox> m_drag_geometry;
     static std::string s_iconifiedDecoration[2];
 };
 

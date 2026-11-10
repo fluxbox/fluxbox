@@ -127,7 +127,8 @@ void Button::buttonReleaseEvent(XButtonEvent &event) {
     // This command may result in this object being deleted
     // hence the mark_if_deleted mechanism so that we can
     // update our state after the command
-    if (event.button > 0 && event.button <= 5 &&
+    if (acceptClick(event) &&
+        event.button > 0 && event.button <= 5 &&
         event.x >= -static_cast<signed>(borderWidth()) &&
         event.x <= static_cast<signed>(width()+borderWidth()) &&
         event.y >= -static_cast<signed>(borderWidth()) &&

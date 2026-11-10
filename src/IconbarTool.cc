@@ -39,6 +39,7 @@
 
 #include "FbTk/STLUtil.hh"
 #include "FbTk/I18n.hh"
+#include "FbTk/App.hh"
 #include "FbTk/Menu.hh"
 #include "FbTk/RadioMenuItem.hh"
 #include "FbTk/BoolMenuItem.hh"
@@ -54,6 +55,7 @@
 
 #include <typeinfo>
 #include <iterator>
+#include <algorithm>
 #include <cstring>
 
 using std::string;
@@ -241,7 +243,8 @@ std::string IconbarTool::s_iconifiedDecoration[2];
 IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
                          FbTk::ThemeProxy<IconbarTheme> &focused_theme,
                          FbTk::ThemeProxy<IconbarTheme> &unfocused_theme,
-                         BScreen &screen, FbTk::Menu &menu):
+                         BScreen &screen, FbTk::Menu &menu,
+                         std::shared_ptr<std::list<Focusable *> > order):
     ToolbarItem(ToolbarItem::RELATIVE),
     m_screen(screen),
     m_icon_container(parent, false),
@@ -250,9 +253,13 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
     m_unfocused_theme(unfocused_theme),
     m_empty_pm( screen.imageControl() ),
     m_winlist(new FocusableList(screen)),
+    m_order(order),
     m_mode("none"),
     m_rc_mode(screen.resourceManager(), "{static groups} (workspace)",
               screen.name() + ".iconbar.mode", screen.altName() + ".Iconbar.Mode"),
+    m_rc_manual_order(screen.resourceManager(), false,
+                      screen.name() + ".iconbar.manualOrder",
+                      screen.altName() + ".Iconbar.ManualOrder"),
     m_rc_alignment(screen.resourceManager(), FbTk::Container::RELATIVE,
                    screen.name() + ".iconbar.alignment", screen.altName() + ".Iconbar.Alignment"),
     m_rc_client_width(screen.resourceManager(), 128,
@@ -263,7 +270,14 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
                     screen.name() + ".iconbar.usePixmap", screen.altName() + ".Iconbar.UsePixmap"),
     m_menu(screen.menuTheme(), screen.imageControl(),
            *screen.layerManager().getLayer(ResourceLayer::MENU)),
-    m_alpha(255) {
+    m_alpha(255),
+    m_drag_win(0),
+    m_dragging(false),
+    m_drag_index(-1),
+    m_drag_slot(-1),
+    m_drag_border(0),
+    m_drag_origin_x(0),
+    m_drag_origin_y(0) {
 
     updateIconifiedPattern();
 
@@ -281,6 +295,13 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
     m_menu.insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Toolbar, ShowIcons,
                     "Show Pictures", "chooses if little icons are shown next to title in the iconbar"),
                            m_rc_use_pixmap, s_and_reconfig));
+
+    // the order of the icons can be controlled by the user
+    RefCount<Command<void> > manual_order_cmd(
+                new SimpleCommand<IconbarTool>(*this, &IconbarTool::applyManualOrder));
+    m_menu.insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Toolbar, UserOrder,
+                    "User Order", "lets you drag the icons in the iconbar to change their order"),
+                           m_rc_manual_order, manual_order_cmd));
     m_menu.updateMenu();
     // must be internal menu, otherwise toolbar main menu tries to delete it.
     m_menu.setInternalMenu();
@@ -368,6 +389,8 @@ void IconbarTool::setMode(string mode) {
         m_winlist.reset(new FocusableList(m_screen,
                                            mode + " (iconhidden=no)"));
     if (m_winlist.get()) {
+        m_winlist->setOrder(m_order);
+        m_winlist->setManualOrder(*m_rc_manual_order);
         m_winlist->addSig().connect(
                     std::bind(FbTk::MemFun(*this, &IconbarTool::update), LIST_ADD, _1)
                 );
@@ -436,6 +459,15 @@ void IconbarTool::update(UpdateReason reason, Focusable *win) {
     }
 
     m_icon_container.setAlignment(*m_rc_alignment);
+
+    // the slots the drag was mapped onto say nothing any more once buttons
+    // appear or disappear, and the dragged window may be gone with them, so
+    // give up on the gesture. Its button keeps suppressing the click until
+    // it is released, which is better than dropping the icon at a stale
+    // position.
+    if (m_dragging && (reason == LIST_ADD || reason == LIST_REMOVE
+                       || reason == LIST_RESET))
+        dragEnded();
 
     // lock graphic update
     m_icon_container.setUpdateLock(true);
@@ -596,7 +628,7 @@ IconButton *IconbarTool::makeButton(Focusable &win) {
     fbdbg<<"IconbarTool::addWindow(0x"<<&win<<" title = "<<win.title().logical()<<")"<<endl;
 
     IconButton *button = new IconButton(m_icon_container, m_focused_theme,
-                                        m_unfocused_theme, win);
+                                        m_unfocused_theme, win, this);
 
     RefCmd focus_cmd(new ::FocusCommand(win));
     RefCmd menu_cmd(new ::ShowMenu(*fbwin));
@@ -622,5 +654,251 @@ void IconbarTool::updateList() {
 void IconbarTool::setOrientation(FbTk::Orientation orient) {
     m_icon_container.setOrientation(orient);
     ToolbarItem::setOrientation(orient);
+}
+
+bool IconbarTool::moveIcon(FluxboxWindow &win, MoveIconTarget target) {
+    Focusable *focusable = focusableFor(win);
+    if (!focusable)
+        return false; // the window has no icon in the iconbar
+
+    int index = indexOf(*focusable);
+    if (index < 0)
+        return false;
+
+    switch (target) {
+    case MOVE_ICON_LEFT:
+        index--;
+        break;
+    case MOVE_ICON_RIGHT:
+        index++;
+        break;
+    case MOVE_ICON_START:
+        index = 0;
+        break;
+    case MOVE_ICON_END:
+        index = static_cast<int>(m_winlist->clientList().size()) - 1;
+        break;
+    }
+
+    if (index < 0)
+        return false; // the icon is already at the start
+
+    return moveFocusableTo(*focusable, index);
+}
+
+bool IconbarTool::moveIconTo(FluxboxWindow &win, int index) {
+    Focusable *focusable = focusableFor(win);
+    if (!focusable)
+        return false; // the window has no icon in the iconbar
+
+    return moveFocusableTo(*focusable, index);
+}
+
+bool IconbarTool::moveFocusableTo(Focusable &win, int index) {
+    if (index < 0)
+        return false;
+
+    int current = indexOf(win);
+    if (current < 0)
+        return false; // the window has no icon in the iconbar
+
+    // the index is the slot the icon should end up in, so the last slot is
+    // the highest one that means anything
+    int last = iconCount() - 1;
+    if (index > last)
+        index = last;
+    if (index == current)
+        return false; // the icon is already in that slot
+
+    // the iconbar must not derive the order from the window order any
+    // more, otherwise the new position would be undone. Only turn it on
+    // once there is something to keep, so that a move that does nothing
+    // does not change the saved setting either.
+    setManualOrder(true);
+
+    return m_winlist->moveTo(win, static_cast<size_t>(index));
+}
+
+int IconbarTool::iconCount() const {
+    return static_cast<int>(m_winlist->clientList().size());
+}
+
+void IconbarTool::setManualOrder(bool manual) {
+    if (*m_rc_manual_order == manual)
+        return;
+
+    *m_rc_manual_order = manual;
+    applyManualOrder();
+}
+
+void IconbarTool::applyManualOrder() {
+    if (m_winlist)
+        m_winlist->setManualOrder(*m_rc_manual_order);
+}
+
+Focusable *IconbarTool::focusableFor(FluxboxWindow &win) {
+    FocusableList::Focusables &list = m_winlist->clientList();
+
+    // the list holds windows when the iconbar shows window groups and
+    // clients otherwise
+    FocusableList::Focusables::iterator it =
+        std::find(list.begin(), list.end(), static_cast<Focusable *>(&win));
+    if (it != list.end())
+        return *it;
+
+    const FluxboxWindow::ClientList &clients = win.clientList();
+    FluxboxWindow::ClientList::const_iterator client_it = clients.begin();
+    FluxboxWindow::ClientList::const_iterator client_it_end = clients.end();
+    for (; client_it != client_it_end; ++client_it) {
+        it = std::find(list.begin(), list.end(),
+                       static_cast<Focusable *>(*client_it));
+        if (it != list.end())
+            return *it;
+    }
+
+    return 0;
+}
+
+int IconbarTool::indexOf(const Focusable &win) {
+    FocusableList::Focusables &list = m_winlist->clientList();
+    FocusableList::Focusables::iterator it =
+        std::find(list.begin(), list.end(), &win);
+    if (it == list.end())
+        return -1;
+
+    return static_cast<int>(std::distance(list.begin(), it));
+}
+
+void IconbarTool::dragStarted(Focusable &win, int root_x, int root_y) {
+    m_drag_win = &win;
+    m_dragging = true;
+    snapshotGeometry();
+    m_drag_index = indexForPosition(root_x, root_y);
+}
+
+void IconbarTool::dragMoved(int root_x, int root_y) {
+    if (!m_dragging || !m_drag_win)
+        return;
+
+    int index = indexForPosition(root_x, root_y);
+    if (index < 0 || index == m_drag_index)
+        return;
+
+    m_drag_index = index;
+
+    moveFocusableTo(*m_drag_win, index);
+}
+
+void IconbarTool::dragEnded() {
+    m_dragging = false;
+    m_drag_win = 0;
+    m_drag_index = -1;
+    m_drag_slot = -1;
+    m_drag_geometry.clear();
+}
+
+void IconbarTool::snapshotGeometry() {
+    m_drag_geometry.clear();
+    m_drag_slot = -1;
+    m_drag_border = 0;
+    m_drag_origin_x = 0;
+    m_drag_origin_y = 0;
+
+    Display *display = FbTk::App::instance()->display();
+    Window dummy = 0;
+    // remember where the container is, so that the pointer position does
+    // not have to be asked from the X server on every motion event
+    XTranslateCoordinates(display, m_icon_container.window(),
+                          FbTk::FbWindow::rootWindow(display,
+                                                   m_icon_container.window()),
+                          0, 0, &m_drag_origin_x, &m_drag_origin_y, &dummy);
+
+    FbTk::Orientation orient = m_icon_container.orientation();
+    bool horizontal = (orient == FbTk::ROT0 || orient == FbTk::ROT180);
+
+    // the button that is being dragged
+    IconButton *dragged = 0;
+    if (m_drag_win) {
+        IconMap::const_iterator drag_it = m_icons.find(m_drag_win);
+        if (drag_it != m_icons.end())
+            dragged = drag_it->second;
+    }
+
+    int index = 0;
+    FbTk::Container::ItemList::iterator item_it = m_icon_container.begin();
+    for (; item_it != m_icon_container.end(); ++item_it, ++index) {
+        AxisBox box;
+        box.start = horizontal ? (*item_it)->x() : (*item_it)->y();
+        box.length = horizontal ? (*item_it)->width() : (*item_it)->height();
+        m_drag_geometry.push_back(box);
+
+        if (*item_it == dragged) {
+            m_drag_slot = index;
+            m_drag_border = (*item_it)->borderWidth();
+        }
+    }
+}
+
+int IconbarTool::indexForPosition(int root_x, int root_y) {
+    // the buttons are rearranged while the icon is dragged, so the current
+    // position of the buttons cannot be used to work out where the icon
+    // should go. The position the buttons had when the drag started is used
+    // instead, with the dragged icon taken out, so that the pointer keeps
+    // referring to the same place.
+    const std::vector<AxisBox> &boxes = m_drag_geometry;
+    if (boxes.empty())
+        return -1;
+
+    FbTk::Orientation orient = m_icon_container.orientation();
+    bool horizontal = (orient == FbTk::ROT0 || orient == FbTk::ROT180);
+
+    // the position of the pointer along the axis the buttons are laid out
+    // on, relative to the container
+    int pos = (horizontal ? root_x : root_y)
+            - (horizontal ? m_drag_origin_x : m_drag_origin_y);
+
+    // the buttons may be laid out from right to left, so find out in which
+    // direction the list runs
+    int dir = 1;
+    if (boxes.size() > 1 && boxes[1].start < boxes[0].start)
+        dir = -1;
+
+    // the width of the gap the dragged icon leaves behind; it is closed
+    // while calculating instead of by shifting the snapshot, so that the
+    // snapshot does not have to be copied
+    int drag_len = 0;
+    if (m_drag_slot >= 0 && m_drag_slot < static_cast<int>(boxes.size()))
+        drag_len = boxes[m_drag_slot].length + m_drag_border;
+
+    // work in a coordinate system that grows with the position in the list
+    int list_pos = (dir > 0) ? pos : -pos;
+
+    int index = 0;
+    for (size_t i = 0; i < boxes.size(); ++i) {
+        if (static_cast<int>(i) == m_drag_slot)
+            continue; // the dragged icon is not part of the new order
+
+        int start = boxes[i].start;
+        if (drag_len > 0 && static_cast<int>(i) > m_drag_slot)
+            start -= dir * drag_len; // close the gap
+
+        int from, to;
+        if (dir > 0) {
+            from = start;
+            to = start + boxes[i].length;
+        } else {
+            from = -(start + boxes[i].length);
+            to = -start;
+        }
+
+        if (list_pos < from)
+            return index; // the pointer is before this button
+        if (list_pos < to)
+            return index + ((list_pos - from) > boxes[i].length / 2 ? 1 : 0);
+
+        ++index;
+    }
+
+    return index; // the pointer is after the last button
 }
 

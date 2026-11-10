@@ -38,19 +38,32 @@
 #include <X11/extensions/shape.h>
 #endif // SHAPE
 
+/// how far the pointer must move before a button press becomes a drag
+const int DRAG_THRESHOLD = 4;
+
 
 IconButton::IconButton(const FbTk::FbWindow &parent,
         FbTk::ThemeProxy<IconbarTheme> &focused_theme,
-        FbTk::ThemeProxy<IconbarTheme> &unfocused_theme, Focusable &win):
+        FbTk::ThemeProxy<IconbarTheme> &unfocused_theme, Focusable &win,
+        IconbarTool *iconbar):
     FbTk::TextButton(parent, focused_theme->text().font(), win.title()),
     m_win(win),
     m_icon_window(*this, 1, 1, 1, 1,
                   ExposureMask |EnterWindowMask | LeaveWindowMask |
-                  ButtonPressMask | ButtonReleaseMask),
+                  ButtonPressMask | ButtonReleaseMask | ButtonMotionMask),
     m_use_pixmap(true),
+    m_iconbar(iconbar),
+    m_dragging(false),
+    m_press_button(0),
+    m_press_x(0),
+    m_press_y(0),
     m_has_tooltip(false),
     m_theme(win, focused_theme, unfocused_theme),
     m_pm(win.screen().imageControl()) {
+
+    // motion events are needed to detect a drag gesture
+    setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask |
+                 ButtonMotionMask | EnterWindowMask | LeaveWindowMask);
 
     m_title_update_timer.setTimeout(updateLaziness());
     m_title_update_timer.fireOnce(true);
@@ -87,6 +100,55 @@ void IconButton::exposeEvent(XExposeEvent &event) {
         m_icon_window.clear();
     else
         FbTk::TextButton::exposeEvent(event);
+}
+
+void IconButton::buttonPressEvent(XButtonEvent &event) {
+    m_press_button = event.button;
+    m_press_x = event.x_root;
+    m_press_y = event.y_root;
+    m_dragging = false;
+
+    FbTk::TextButton::buttonPressEvent(event);
+}
+
+void IconButton::motionNotifyEvent(XMotionEvent &event) {
+    if (!m_iconbar || !pressed() || m_press_button != Button1)
+        return; // this button is not draggable, it is not pressed, or the
+                // drag was started with another button
+
+    if (!m_dragging) {
+        int dx = event.x_root - m_press_x;
+        int dy = event.y_root - m_press_y;
+        if (dx * dx + dy * dy < DRAG_THRESHOLD * DRAG_THRESHOLD)
+            return; // the pointer did not move far enough yet
+
+        m_dragging = true;
+        // the drag starts where the button was pressed, not where the
+        // pointer happens to be when the drag is noticed
+        m_iconbar->dragStarted(m_win, m_press_x, m_press_y);
+    } else
+        m_iconbar->dragMoved(event.x_root, event.y_root);
+}
+
+void IconButton::buttonReleaseEvent(XButtonEvent &event) {
+    const bool was_dragging = m_dragging;
+
+    // the drag flag must still be set here, so that acceptClick() can
+    // suppress the click command
+    FbTk::TextButton::buttonReleaseEvent(event);
+
+    if (was_dragging) {
+        // the click command was suppressed, so this button was not
+        // deleted by the base class and it is safe to use it again
+        m_dragging = false;
+        if (m_iconbar)
+            m_iconbar->dragEnded();
+    }
+}
+
+bool IconButton::acceptClick(XButtonEvent &event) {
+    // a drag gesture must not also trigger the click
+    return !m_dragging;
 }
 
 void IconButton::enterNotifyEvent(XCrossingEvent &ev) {
