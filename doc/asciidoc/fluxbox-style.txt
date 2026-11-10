@@ -486,7 +486,6 @@ fluxbox(1) is written and maintained by Henrik Kinnunen <fluxgen at fluxbox.org>
 with contributions and patches merged from many individuals around the world.
 
 The Official fluxbox(1) website: http://www.fluxbox.org
-You can find a lot of styles here: http://tenr.de/
 
 This manpage was composed from various resources including the official
 documentation, fluxbox(1) man page and numerous other resources by Curt

@@ -1402,10 +1402,6 @@ ONLINE DOCUMENTATION
 --------------------
 The Official fluxbox website: http://www.fluxbox.org
 
-The Official fluxbox wiki: http://www.fluxbox-wiki.org
-
-Many compatible themes: http://tenr.de
-
 BUGS
 ----
 If you find any bugs, please visit the #fluxbox irc channel on
