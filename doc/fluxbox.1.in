@@ -2318,7 +2318,7 @@ Numerous other languages could be available if someone jumps in\&.
 The Official fluxbox website: \m[blue]\fBhttp://www\&.fluxbox\&.org\fR\m[]
 .SH "BUGS"
 .sp
-If you find any bugs, please visit the #fluxbox irc channel on irc\&.freenode\&.net or submit them to the bug tracker at \m[blue]\fBhttp://sf\&.net/projects/fluxbox\fR\m[] \&. Or you may subscribe to one of the mailinglists\&. More information can be found on the official website\&.
+If you find any bugs, please visit the #fluxbox irc channel on irc\&.libera\&.chat or submit them to the bug tracker at \m[blue]\fBhttp://sf\&.net/projects/fluxbox\fR\m[] \&. Or you may subscribe to one of the mailinglists\&. More information can be found on the official website\&.
 .SH "SEE ALSO"
 .sp
 fluxbox\-apps(5) fluxbox\-keys(5) fluxbox\-style(5) fluxbox\-menu(5) fluxbox\-remote(1) fbsetroot(1) fbsetbg(1) fbrun(1) startfluxbox(1)
