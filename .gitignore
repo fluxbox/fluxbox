@@ -29,6 +29,7 @@ Makefile.in
 /data/init
 /data/rootmenu
 /data/menu
+/data/menu.bak
 /fbrun
 /fbsetroot
 /fluxbox
