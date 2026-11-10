@@ -32,6 +32,8 @@
 #include "WinClient.hh"
 
 #include "FocusControl.hh"
+#include "IconbarTool.hh"
+#include "Toolbar.hh"
 #include "FbTk/CommandParser.hh"
 #include "FbTk/I18n.hh"
 #include "FbTk/stringstream.hh"
@@ -128,8 +130,77 @@ REGISTER_COMMAND_PARSER(movetableft, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(movetabright, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(detachclient, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(windowmenu, createCurrentWindowCmd, void);
+REGISTER_COMMAND_PARSER(moveicon, MoveIconCmd::parse, void);
+REGISTER_COMMAND_PARSER(moveiconleft, MoveIconCmd::parse, void);
+REGISTER_COMMAND_PARSER(moveiconright, MoveIconCmd::parse, void);
+REGISTER_COMMAND_PARSER(moveiconstart, MoveIconCmd::parse, void);
+REGISTER_COMMAND_PARSER(moveiconend, MoveIconCmd::parse, void);
 
 } // end anonymous namespace
+
+MoveIconCmd::MoveIconCmd(Target target, int index):
+    m_target(target), m_index(index) { }
+
+void MoveIconCmd::real_execute() {
+    FluxboxWindow &win = fbwindow();
+
+    Toolbar *toolbar = win.screen().toolbar();
+    if (!toolbar)
+        return;
+
+    IconbarTool *iconbar = toolbar->iconbarTool();
+    if (!iconbar)
+        return; // this screen has no iconbar
+
+    switch (m_target) {
+    case MOVE_ICON_LEFT:
+        iconbar->moveIcon(win, IconbarTool::MOVE_ICON_LEFT);
+        break;
+    case MOVE_ICON_RIGHT:
+        iconbar->moveIcon(win, IconbarTool::MOVE_ICON_RIGHT);
+        break;
+    case MOVE_ICON_START:
+        iconbar->moveIcon(win, IconbarTool::MOVE_ICON_START);
+        break;
+    case MOVE_ICON_END:
+        iconbar->moveIcon(win, IconbarTool::MOVE_ICON_END);
+        break;
+    case MOVE_ICON_TO: {
+        int index = m_index;
+        if (index > 0)
+            index--; // the first slot is 1
+        else
+            index += iconbar->iconCount(); // -1 is the last slot
+        iconbar->moveIconTo(win, index);
+        break;
+    }
+    }
+}
+
+FbTk::Command<void> *MoveIconCmd::parse(const string &command,
+                                        const string &args, bool trusted) {
+    string target = args;
+    FbTk::StringUtil::removeFirstWhitespace(target);
+    FbTk::StringUtil::removeTrailingWhitespace(target);
+
+    if (command == "moveiconleft" || target == "left")
+        return new MoveIconCmd(MOVE_ICON_LEFT);
+    if (command == "moveiconright" || target == "right")
+        return new MoveIconCmd(MOVE_ICON_RIGHT);
+    if (command == "moveiconstart" || target == "start")
+        return new MoveIconCmd(MOVE_ICON_START);
+    if (command == "moveiconend" || target == "end")
+        return new MoveIconCmd(MOVE_ICON_END);
+
+    if (target.empty())
+        return 0;
+
+    int index = atoi(target.c_str());
+    if (index == 0)
+        return 0; // there is no such slot
+
+    return new MoveIconCmd(MOVE_ICON_TO, index);
+}
 
 void WindowHelperCmd::execute() {
     if (WindowCmd<void>::window() || FocusControl::focusedFbWindow())
