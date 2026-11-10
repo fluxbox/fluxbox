@@ -374,7 +374,7 @@ void IconbarTool::setMode(string mode) {
         m_winlist->removeSig().connect(
                     std::bind(FbTk::MemFun(*this, &IconbarTool::update), LIST_REMOVE, _1)
                 );
-        m_winlist->addSig().connect(
+        m_winlist->orderSig().connect(
                     std::bind(FbTk::MemFun(*this, &IconbarTool::update), LIST_ORDER, _1)
                 );
         m_winlist->resetSig().connect(FbTk::MemFunBind(
