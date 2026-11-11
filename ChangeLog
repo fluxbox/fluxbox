@@ -3,6 +3,20 @@
 -----------------------------
 Changes for 1.next
 
+*2026-11-11:
+    * Improvement: without a running compositor, alpha for windows,
+      menus, toolbar and slit falls back to pseudo-transparency; fluxbox
+      notices a compositor (e.g. picom) starting or stopping and switches
+      on the fly
+    * Improvement: fluxbox's own windows (menus, toolbar, slit, tooltip,
+      move/resize popups) carry a window role and _NET_WM_WINDOW_TYPE,
+      so compositor rules can match them
+    * Bugfix: fully opaque windows no longer carry _NET_WM_WINDOW_OPACITY,
+      which overrode the compositor's own opacity rules
+    * Bugfix: borders around ARGB (32 bit) windows were transparent under
+      a compositor
+    * Build-System: optional dependency on libXfixes (--disable-xfixes)
+
 *2026-11-04:
     * Bugfix: fbsetroot did not find _XROOTPMAP_ID when freeing the old
       background (typo in the atom name since 2002)
@@ -19,6 +33,8 @@ Changes for 1.next
       startup ($FLUXBOX_TERMINAL <- $TERMINAL, x-terminal-emulator, xterm)
     * Improvement: default menu starts fbrun centered, in the style's colors
     * Improvement: do not warn about a missing apps file
+    * Improvement: scale and rotate style pixmaps in client memory with a
+      single XPutImage() instead of one request per pixel
     * Security: refuse SetEnv, Export and SetResourceValue from untrusted
       callers (fluxbox-remote with allowRemoteActions). Scripts using
       fluxbox-remote to change resources or the environment no longer can
@@ -32,6 +48,15 @@ Changes for 1.next
     * Security: fluxbox-generate_menu no longer uses menu text as printf
       format and single-quotes wallpaper paths
     * Security: quote the rc file path passed to fluxbox-update_configs
+    * Security: limit every size in a style to 1024 pixels and reject out
+      of range integers; huge, negative or wrapped values hung fluxbox or
+      made it render huge pixmaps. Menu sizes are signed now, so "-1" no
+      longer turns into 4294967295
+    * Security: any X client could keep fluxbox busy with a
+      _NET_NUMBER_OF_DESKTOPS request for up to 2147483647 workspaces
+    * Security: limit window titles to 512 bytes on every path (titles
+      from _NET_WM_NAME had no limit), read at most 2048 bytes of a text
+      property, and make menu items at most as wide as the screen
     * Bugfix: RandR: wait for bursts of events to settle before clearing
       heads, give docks and desktop windows time to move, windows that
       only touch a surviving head are no longer left off-screen
@@ -48,9 +73,18 @@ Changes for 1.next
     * Bugfix: fluxbox-generate_menu: strip field codes from .desktop Exec
       lines, keep everything after the first '=' in Name and Exec
     * Bugfix: bloe: grip color typo
+    * Bugfix: window button pixmaps were scaled to about 4 billion pixels
+      when the title was lower than twice the bevel width
+    * Bugfix: fitting a label's text into its width measured beyond the
+      end of the text
+    * Documentation: fluxbox-style(5) describes the limits for sizes
     * Code cleanup: put all texture flags into one enum
     * Build-System: require C++14, modernize autogen.sh and configure,
       run fluxbox from the build tree
+
+*2026-10-31:
+    * Security: a style with a menu title height (plus border) at least as
+      tall as the screen hung fluxbox in the menu layout at startup
 
 *2026-10-15:
     * Feature: new command SetFocusProtection, e.g.
@@ -60,6 +94,10 @@ Changes for 1.next
       (Thanks Adam Spiers)
     * Bugfix: refresh _NET_DESKTOP_GEOMETRY when the screen size changes
       (Thanks Adam Spiers)
+
+*2026-10-14:
+    * Bugfix: an iconified window moved to another workspace twice stayed
+      in two workspace lists; Restart then crashed (Thanks Adam Spiers)
 
 *2026-10-08:
     * Bugfix: disable SIGALRM before launching other WMs (Thanks RVP)
