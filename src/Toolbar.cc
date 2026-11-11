@@ -220,6 +220,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::Layer &layer, size_t width):
     _FB_USES_NLS;
 
     frame.window.setWindowRole("fluxbox-toolbar");
+    frame.window.setWindowType("_NET_WM_WINDOW_TYPE_DOCK");
 
     // get this on antialias change
     m_signal_tracker.join(screen().reconfigureSig(),

@@ -342,6 +342,10 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
             FbTk::MemFun(*this, &BScreen::focusedWinFrameThemeReconfigured));
 
 
+    m_geom_window->setWindowRole("fluxbox-geometry");
+    m_geom_window->setWindowType("_NET_WM_WINDOW_TYPE_NOTIFICATION");
+    m_pos_window->setWindowRole("fluxbox-position");
+    m_pos_window->setWindowType("_NET_WM_WINDOW_TYPE_NOTIFICATION");
     renderGeomWindow();
     renderPosWindow();
     m_tooltip_window->setDelay(*resource.tooltip_delay);

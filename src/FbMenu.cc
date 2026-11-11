@@ -42,6 +42,7 @@ FbMenu::FbMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
     m_layeritem(fbwindow(), layer) {
 
     fbwindow().setWindowRole("fluxbox-menu");
+    fbwindow().setWindowType("_NET_WM_WINDOW_TYPE_POPUP_MENU");
 }
 
 void FbMenu::buttonPressEvent(XButtonEvent &be) {

@@ -280,6 +280,13 @@ void FbWindow::setWindowRole(const char *windowRole) {
     XFree(tp.value);
 }
 
+void FbWindow::setWindowType(const char *windowType) {
+    static const Atom typeatom = XInternAtom(display(), "_NET_WM_WINDOW_TYPE", False);
+    Atom type = XInternAtom(display(), windowType, False);
+    changeProperty(typeatom, XA_ATOM, 32, PropModeReplace,
+                   reinterpret_cast<unsigned char *>(&type), 1);
+}
+
 void FbWindow::setEventMask(long mask) {
     XSelectInput(display(), m_window, mask);
 }

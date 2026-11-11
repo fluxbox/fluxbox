@@ -87,6 +87,8 @@ public:
     void setName(const char *name);
     /// set window role
     void setWindowRole(const char *windowRole);
+    /// set _NET_WM_WINDOW_TYPE, e.g. "_NET_WM_WINDOW_TYPE_POPUP_MENU"
+    void setWindowType(const char *windowType);
     void setEventMask(long mask);
     /// clear window with background pixmap or color
     virtual void clear();

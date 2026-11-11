@@ -252,6 +252,7 @@ Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
     _FB_USES_NLS;
 
     frame.window.setWindowRole("fluxbox-slit");
+    frame.window.setWindowType("_NET_WM_WINDOW_TYPE_DOCK");
 
     // attach to theme and root window change signal
     join(theme().reconfigSig(), FbTk::MemFun(*this, &Slit::reconfigure));

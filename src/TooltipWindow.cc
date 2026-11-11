@@ -30,6 +30,9 @@ TooltipWindow::TooltipWindow(const FbTk::FbWindow &parent, BScreen &screen,
     OSDWindow(parent, screen, theme),
     m_delay(-1) {
 
+    setWindowRole("fluxbox-tooltip");
+    setWindowType("_NET_WM_WINDOW_TYPE_TOOLTIP");
+
     FbTk::RefCount<FbTk::Command<void> > 
         raisecmd(new FbTk::SimpleCommand<TooltipWindow>(*this, 
                                                         &TooltipWindow::raiseTooltip));
