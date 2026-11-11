@@ -35,7 +35,13 @@ General Improvements:
       clients asking for off-screen positions, head changes
     * Monitor changes: survives switching a monitor off and on, docking
       stations and changed layouts; panels stay where they belong
+    * Compositors (e.g. picom): their opacity rules apply to fluxbox
+      windows, fluxbox's own windows can be matched by role and window
+      type, borders of ARGB windows stay visible; without a running
+      compositor, transparency falls back to pseudo-transparency and
+      switches automatically when one starts or stops
     * Smarter toolbar/iconbar layout, iconified windows marked
+    * Much faster scaling of style pixmaps
     * UTF-8 and locale handling
     * Updated vim syntax files
 
@@ -45,11 +51,16 @@ Security:
       change resources or the environment stop working
     * Shell metacharacters in style backgrounds, wallpaper file names,
       fbsetbg's history and generated menus are no longer executed
+    * Styles and other X clients can no longer hang fluxbox: sizes in
+      styles are limited to 1024 pixels, window titles to 512 bytes,
+      menus to the screen width, and _NET_NUMBER_OF_DESKTOPS requests
+      are bounded
 
 Critical Bugfixes:
     * Infinite loops in menus and type-ahead search
     * Crashes with some applications (e.g. pcmanfm-qt), without fonts,
       with zero-size fonts, and on ArrangeWindows with shaded windows
+    * Crash on Restart after iconified windows changed workspaces
     * Pointer freezes after clicking window borders
     * Hangs and glitches when cycling the focus (alt+tab)
     * Wine windows stuck in withdrawn state
