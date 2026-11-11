@@ -253,7 +253,15 @@ void FbWindow::updateBackground(bool only_if_alpha) {
 }
 
 void FbWindow::setBorderColor(const FbTk::Color &border_color) {
-    XSetWindowBorder(display(), m_window, border_color.pixel());
+    unsigned long pixel = border_color.pixel();
+    // colors are allocated in the default (24 bit) colormap and carry no
+    // alpha. on a 32 bit ARGB window (frames of ARGB clients) that pixel
+    // means "fully transparent" to a compositor, so force it opaque.
+    // m_border_color keeps the theme pixel for comparisons by callers.
+    if (depth() == 32) {
+        pixel |= 0xff000000UL;
+    }
+    XSetWindowBorder(display(), m_window, pixel);
     m_border_color = border_color.pixel();
 }
 
