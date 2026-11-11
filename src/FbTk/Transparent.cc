@@ -102,6 +102,14 @@ bool s_init = false;
 bool s_render = false;
 bool s_composite = false;
 bool s_use_composite = false;
+bool s_force_pseudo = false;
+// assume a compositor until the window manager tells otherwise, so
+// FbTk users that never call setCompositorRunning() keep the old behavior
+bool s_compositor_running = true;
+
+void updateUseComposite() {
+    s_use_composite = (s_composite && s_compositor_running && !s_force_pseudo);
+}
 
 void init() {
 
@@ -119,10 +127,10 @@ void init() {
                             &first_event, &first_error)) {
             // we have Composite support
             s_composite = true;
-            s_use_composite = true;
         }
     }
     s_init = true;
+    updateUseComposite();
 }
 
 }
@@ -138,7 +146,19 @@ bool Transparent::haveRender() {
 void Transparent::usePseudoTransparent(bool force) {
     if (!s_init)
         init();
-    s_use_composite = (!force && s_composite);
+    s_force_pseudo = force;
+    updateUseComposite();
+}
+
+void Transparent::setCompositorRunning(bool running) {
+    if (!s_init)
+        init();
+    s_compositor_running = running;
+    updateUseComposite();
+}
+
+bool Transparent::compositorRunning() {
+    return s_compositor_running;
 }
 
 bool Transparent::haveComposite(bool for_real) {

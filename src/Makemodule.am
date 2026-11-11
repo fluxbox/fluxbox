@@ -164,6 +164,7 @@ endif
 fluxbox_CPPFLAGS = \
 	$(FRIBIDI_CFLAGS) \
 	$(XRANDR_CFLAGS) \
+	$(XFIXES_CFLAGS) \
 	$(AM_CPPFLAGS) \
 	-I$(src_incdir) \
 	-I$(fbtk_incdir) \
@@ -177,6 +178,7 @@ fluxbox_LDADD = \
 	$(IMLIB2_LIBS) \
 	$(RANDR_LIBS) \
 	$(XEXT_LIBS) \
+	$(XFIXES_LIBS) \
 	$(XFT_LIBS) \
 	$(XINERAMA_LIBS) \
 	$(XPM_LIBS) \

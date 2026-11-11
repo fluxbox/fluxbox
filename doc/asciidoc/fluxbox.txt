@@ -405,8 +405,11 @@ increase the value. 0 is invisible, 255 is not transparent at all.
 The transparency of individual application windows can be overridden in the
 `apps' file (*fluxbox-apps(5)*).
 +
+fluxbox uses true transparency while a compositing manager (e.g. picom) is
+running, and falls back to pseudo-transparency when none is. It notices a
+compositor starting or stopping and switches on the fly.
 The *Force Pseudo Transparency* option will force fluxbox to ignore the
-xcomposite extension and use pseudo-transparency instead of true transparency.
+compositor and use pseudo-transparency instead of true transparency.
 Note: When pseudo-transparency is on, the transparency values here only affect
 titlebars, not window contents.
 
@@ -1248,9 +1251,10 @@ consider a double click.
 Default: *250*
 
 *session.forcePseudoTransparency*: 'boolean'::
-If you have Xorg's composite extension enabled, this setting will force
+If a compositing manager is running, this setting will force
 the menu, windows, toolbar, and slit to use pseudo-transparency instead of
-true transparency.
+true transparency. Without a compositor fluxbox uses pseudo-transparency
+anyway.
 +
 Default: *False*
 

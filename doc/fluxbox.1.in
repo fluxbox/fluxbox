@@ -816,9 +816,9 @@ This sets the default transparency for a focused windows, unfocused window and t
 .sp
 The transparency of individual application windows can be overridden in the \(oqapps\(cq file (\fBfluxbox\-apps(5)\fR)\&.
 .sp
-The
+fluxbox uses true transparency while a compositing manager (e\&.g\&. picom) is running, and falls back to pseudo\-transparency when none is\&. It notices a compositor starting or stopping and switches on the fly\&. The
 \fBForce Pseudo Transparency\fR
-option will force fluxbox to ignore the xcomposite extension and use pseudo\-transparency instead of true transparency\&. Note: When pseudo\-transparency is on, the transparency values here only affect titlebars, not window contents\&.
+option will force fluxbox to ignore the compositor and use pseudo\-transparency instead of true transparency\&. Note: When pseudo\-transparency is on, the transparency values here only affect titlebars, not window contents\&.
 .RE
 .PP
 \fBOpaque Window Moving\fR
@@ -2017,7 +2017,7 @@ Default:
 .PP
 \fBsession\&.forcePseudoTransparency\fR: \fIboolean\fR
 .RS 4
-If you have Xorg\(cqs composite extension enabled, this setting will force the menu, windows, toolbar, and slit to use pseudo\-transparency instead of true transparency\&.
+If a compositing manager is running, this setting will force the menu, windows, toolbar, and slit to use pseudo\-transparency instead of true transparency\&. Without a compositor fluxbox uses pseudo\-transparency anyway\&.
 .sp
 Default:
 \fBFalse\fR

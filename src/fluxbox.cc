@@ -81,6 +81,10 @@
 #include <X11/extensions/Xrandr.h>
 #endif // HAVE_RANDR
 
+#ifdef HAVE_XFIXES
+#include <X11/extensions/Xfixes.h>
+#endif // HAVE_XFIXES
+
 // system headers
 
 #ifdef HAVE_UNISTD_H
@@ -271,6 +275,10 @@ struct CallMemFunWithRefArg {
 
 int s_randr_event_type = 0; ///< the type number of randr event
 int s_shape_eventbase = 0;  ///< event base for shape events
+#ifdef HAVE_XFIXES
+bool s_have_xfixes = false;
+int s_xfixes_eventbase = 0; ///< event base for xfixes events
+#endif // HAVE_XFIXES
 bool s_have_shape = false ; ///< if shape is supported by server
 
 Fluxbox* s_singleton = 0;
@@ -379,6 +387,11 @@ Fluxbox::Fluxbox(int argc, char **argv,
     XRRQueryExtension(disp, &s_randr_event_type, &randr_error_base);
 #endif // HAVE_RANDR
 
+#ifdef HAVE_XFIXES
+    int xfixes_error_base;
+    s_have_xfixes = XFixesQueryExtension(disp, &s_xfixes_eventbase, &xfixes_error_base);
+#endif // HAVE_XFIXES
+
     load_rc();
     grab();
 
@@ -451,6 +464,24 @@ Fluxbox::Fluxbox(int argc, char **argv,
             opts &= ~OPT_TOOLBAR;
         }
     }
+
+    // decide between real and pseudo-transparency before the screens
+    // create their menus, toolbar and slit
+    for (i = 0; i < static_cast<int>(screens.size()); i++) {
+        std::string cm_name = "_NET_WM_CM_S" + FbTk::StringUtil::number2String(screens[i]);
+        Atom cm_atom = XInternAtom(disp, cm_name.c_str(), False);
+        m_compositor_atoms.push_back(cm_atom);
+#ifdef HAVE_XFIXES
+        // get told when a compositor takes over or goes away
+        if (s_have_xfixes) {
+            XFixesSelectSelectionInput(disp, RootWindow(disp, screens[i]), cm_atom,
+                                       XFixesSetSelectionOwnerNotifyMask |
+                                       XFixesSelectionWindowDestroyNotifyMask |
+                                       XFixesSelectionClientCloseNotifyMask);
+        }
+#endif // HAVE_XFIXES
+    }
+    FbTk::Transparent::setCompositorRunning(compositorRunning());
 
 
     // create screens
@@ -861,9 +892,41 @@ void Fluxbox::handleEvent(XEvent * const e) {
         }
 #endif // HAVE_RANDR
 
+#ifdef HAVE_XFIXES
+        if (s_have_xfixes && e->type == s_xfixes_eventbase + XFixesSelectionNotify) {
+            updateCompositorState();
+        }
+#endif // HAVE_XFIXES
+
     }
 
     }
+}
+
+bool Fluxbox::compositorRunning() const {
+    for (size_t i = 0; i < m_compositor_atoms.size(); i++) {
+        if (XGetSelectionOwner(display(), m_compositor_atoms[i]) != None) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void Fluxbox::updateCompositorState() {
+    // ask the server instead of trusting the event: a restarting compositor
+    // sends "gone" and "new owner" back to back
+    bool running = compositorRunning();
+    if (running == FbTk::Transparent::compositorRunning()) {
+        return;
+    }
+
+    fbdbg << "Fluxbox::updateCompositorState(): compositor "
+          << (running ? "started" : "stopped") << endl;
+
+    FbTk::Transparent::setCompositorRunning(running);
+    // same path as toggling "Force Pseudo-Transparency": every frame,
+    // menu, toolbar and slit re-applies its alpha in the new mode
+    reconfigure();
 }
 
 void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {

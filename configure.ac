@@ -503,6 +503,17 @@ AS_IF([test "x$enable_xrandr" != "xno"], [
 ])
 AM_CONDITIONAL([RANDR], [test "$have_xrandr" = "yes"])
 
+dnl Check for XFixes, used to notice a compositor starting or stopping.
+have_xfixes=no
+AC_ARG_ENABLE([xfixes], AS_HELP_STRING([--disable-xfixes], [disable xfixes support]))
+AS_IF([test "x$enable_xfixes" != "xno"], [
+	PKG_CHECK_MODULES([XFIXES], [ xfixes ],
+		[AC_DEFINE([HAVE_XFIXES], [1], [Define if xfixes is available]) have_xfixes=yes], [have_xfixes=no])
+	AS_IF([test "x$have_xfixes" = xno -a "x$enable_xfixes" = xyes], [
+		AC_MSG_ERROR([*** xfixes support requested but libraries not found])
+	])
+])
+
 dnl Check for fribidi
 have_fribidi=no
 AC_ARG_ENABLE([fribidi], AS_HELP_STRING([--disable-fribidi], [disable fribidi support]))

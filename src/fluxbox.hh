@@ -197,6 +197,11 @@ private:
     void handleEvent(XEvent *xe);
     void handleUnmapNotify(XUnmapEvent &ue);
     void handleClientMessage(XClientMessageEvent &ce);
+    /// true if a compositing manager owns _NET_WM_CM_Sn of any of our screens
+    bool compositorRunning() const;
+    /// switch between real and pseudo-transparency if the compositor
+    /// came or went; reconfigures on change
+    void updateCompositorState();
 
     /// Called when workspace count on a specific screen changed.
     void workspaceCountChanged( BScreen& screen );
@@ -292,6 +297,7 @@ private:
     } m_active_screen;
 
     Atom m_fluxbox_pid;
+    std::vector<Atom> m_compositor_atoms; ///< _NET_WM_CM_Sn of the screens we run on
 
     bool m_reconfigure_wait;
     char **m_argv;

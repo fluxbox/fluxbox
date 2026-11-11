@@ -30,9 +30,15 @@ namespace FbTk {
 class Transparent {
 public:
 
+    /// for_real: Composite extension present; otherwise: use it, i.e.
+    /// extension present, compositor running and pseudo-transparency not forced
     static bool haveComposite(bool for_real = false);
     static bool haveRender();
     static void usePseudoTransparent(bool force);
+    /// tell whether a compositing manager is running (_NET_WM_CM_Sn owned).
+    /// without one, alpha falls back to pseudo-transparency.
+    static void setCompositorRunning(bool running);
+    static bool compositorRunning();
 
 
     Transparent(Drawable source, Drawable dest, int alpha, int screen_num);
