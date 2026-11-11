@@ -32,6 +32,7 @@
 #include "WindowMenuAccessor.hh"
 
 #include "ClientMenu.hh"
+#include "FbMenu.hh"
 #include "WorkspaceMenu.hh"
 #include "LayerMenu.hh"
 #include "SendToMenu.hh"
@@ -96,6 +97,12 @@ enum {
 
     L_MENU_EXIT,
     L_MENU_ICONS,
+
+    L_ICONBAR,
+    L_ICONBAR_LEFT,
+    L_ICONBAR_RIGHT,
+    L_ICONBAR_START,
+    L_ICONBAR_END,
 };
 
 // returns 'label' if not empty, otherwise a (translated) default
@@ -122,6 +129,12 @@ const FbTk::FbString& _l(const FbTk::FbString& label, size_t type) {
 
         _FB_XTEXT(Menu, Exit, "Exit", "Exit Command"),
         _FB_XTEXT(Menu, Icons, "Icons", "Iconic windows menu title"),
+
+        _FB_XTEXT(Windowmenu, Iconbar, "Iconbar", "Menu to move the icon of the window in the iconbar"),
+        _FB_XTEXT(Windowmenu, IconbarLeft, "Move Left", "Move the icon of the window to the left"),
+        _FB_XTEXT(Windowmenu, IconbarRight, "Move Right", "Move the icon of the window to the right"),
+        _FB_XTEXT(Windowmenu, IconbarStart, "Move To Start", "Move the icon of the window to the start of the iconbar"),
+        _FB_XTEXT(Windowmenu, IconbarEnd, "Move To End", "Move the icon of the window to the end of the iconbar"),
     };
 
     if (label.empty()) {
@@ -647,6 +660,29 @@ bool MenuCreator::createWindowMenuItem(const string &type,
                                             false);
         submenu->disableTitle();
         menu.insertSubmenu(_l(label, L_LAYER), submenu);
+
+    } else if (type == "iconbar") {
+        BScreen* s = Fluxbox::instance()->findScreen(screen);
+        if (s == 0)
+            return false;
+
+        FbTk::Menu *submenu =
+            new FbMenu(s->menuTheme(),
+                       s->imageControl(),
+                       *(s->layerManager()).getLayer(ResourceLayer::MENU));
+        submenu->disableTitle();
+
+        RefCmd left_cmd(new MoveIconCmd(MoveIconCmd::MOVE_ICON_LEFT));
+        RefCmd right_cmd(new MoveIconCmd(MoveIconCmd::MOVE_ICON_RIGHT));
+        RefCmd start_cmd(new MoveIconCmd(MoveIconCmd::MOVE_ICON_START));
+        RefCmd end_cmd(new MoveIconCmd(MoveIconCmd::MOVE_ICON_END));
+
+        submenu->insertCommand(_l("", L_ICONBAR_LEFT), left_cmd);
+        submenu->insertCommand(_l("", L_ICONBAR_RIGHT), right_cmd);
+        submenu->insertCommand(_l("", L_ICONBAR_START), start_cmd);
+        submenu->insertCommand(_l("", L_ICONBAR_END), end_cmd);
+
+        menu.insertSubmenu(_l(label, L_ICONBAR), submenu);
 
     } else if (type == "separator") {
         menu.insertItem(new FbTk::MenuSeparator());

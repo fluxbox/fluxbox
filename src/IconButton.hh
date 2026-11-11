@@ -32,6 +32,7 @@
 #include "FbTk/Signal.hh"
 
 class IconbarTheme;
+class IconbarTool;
 
 namespace FbTk {
 template <class T> class ThemeProxy;
@@ -42,12 +43,15 @@ public:
     IconButton(const FbTk::FbWindow &parent,
                FbTk::ThemeProxy<IconbarTheme> &focused_theme,
                FbTk::ThemeProxy<IconbarTheme> &unfocused_theme,
-               Focusable &window);
+               Focusable &window, IconbarTool *iconbar);
     virtual ~IconButton();
 
     void exposeEvent(XExposeEvent &event);
     void enterNotifyEvent(XCrossingEvent &ce);
     void leaveNotifyEvent(XCrossingEvent &ce);
+    void buttonPressEvent(XButtonEvent &event);
+    void motionNotifyEvent(XMotionEvent &event);
+    void buttonReleaseEvent(XButtonEvent &event);
     void clear();
     void clearArea(int x, int y,
                    unsigned int width, unsigned int height,
@@ -74,6 +78,12 @@ public:
 
 protected:
     void drawText(int x, int y, FbTk::FbDrawable *drawable_override);
+
+    /**
+       A drag gesture must not also trigger the click.
+       @return false while a drag is in progress
+     */
+    bool acceptClick(XButtonEvent &event);
 private:
     void reconfigAndClear();
     void setupWindow();
@@ -89,6 +99,10 @@ private:
     FbTk::FbPixmap m_icon_pixmap;
     FbTk::FbPixmap m_icon_mask;
     bool m_use_pixmap;
+    IconbarTool *m_iconbar; ///< the iconbar this button belongs to
+    bool m_dragging; ///< true while a drag gesture is in progress
+    unsigned int m_press_button; ///< the button of the last press event
+    int m_press_x, m_press_y; ///< root coordinates of the button press
     /// whether or not this instance has the tooltip attention 
     /// i.e if it got enter notify
     bool m_has_tooltip;

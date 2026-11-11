@@ -3953,7 +3953,7 @@ void FluxboxWindow::ungrabPointer(Time time) {
 void FluxboxWindow::associateClient(WinClient &client) {
     IconButton *btn = new IconButton(frame().tabcontainer(),
             frame().theme().focusedTheme()->iconbarTheme(),
-            frame().theme().unfocusedTheme()->iconbarTheme(), client);
+            frame().theme().unfocusedTheme()->iconbarTheme(), client, 0);
     frame().createTab(*btn);
 
     btn->setTextPadding(Fluxbox::instance()->getTabsPadding());

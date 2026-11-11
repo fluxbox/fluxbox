@@ -32,6 +32,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <iterator>
 
 #ifdef HAVE_CSTRING
   #include <cstring>
@@ -74,7 +75,7 @@ const FocusableList *FocusableList::getListFromOptions(BScreen &scr, int opts) {
 }
 
 FocusableList::FocusableList(BScreen &scr, const string & pat):
-    m_parent(0), m_screen(scr) {
+    m_parent(0), m_screen(scr), m_manual_order(false) {
 
     int options = 0;
     string pattern;
@@ -87,7 +88,8 @@ FocusableList::FocusableList(BScreen &scr, const string & pat):
 
 FocusableList::FocusableList(BScreen &scr, const FocusableList &parent,
                              const string & pat):
-    m_pat(new ClientPattern(pat.c_str())), m_parent(&parent), m_screen(scr) {
+    m_pat(new ClientPattern(pat.c_str())), m_parent(&parent), m_screen(scr),
+    m_manual_order(false) {
 
     init();
 }
@@ -164,6 +166,18 @@ void FocusableList::checkUpdate(Focusable &win) {
 
 // returns whether or not the window was moved
 bool FocusableList::insertFromParent(Focusable &win) {
+    if (m_manual_order) {
+        // the order of this list is controlled by the user, so only the
+        // membership is kept in sync with the parent list. A window that
+        // comes back goes to the place the user gave it, a window that was
+        // never placed goes to the end.
+        if (!contains(win)) {
+            m_list.push_back(&win);
+            restoreOrder();
+        }
+        return false;
+    }
+
     const Focusables &list = m_parent->clientList();
     Focusables::const_iterator p_it = list.begin(), p_it_end = list.end();
     Focusables::iterator our_it = m_list.begin(), our_it_end = m_list.end();
@@ -219,6 +233,7 @@ void FocusableList::moveToFront(Focusable &win) {
 
     m_list.remove(&win);
     m_list.push_front(&win);
+    rememberOrder();
     m_ordersig.emit(&win);
 }
 
@@ -229,7 +244,74 @@ void FocusableList::moveToBack(Focusable &win) {
 
     m_list.remove(&win);
     m_list.push_back(&win);
+    rememberOrder();
     m_ordersig.emit(&win);
+}
+
+bool FocusableList::moveTo(Focusable &win, size_t index) {
+    Focusables::iterator it = std::find(m_list.begin(), m_list.end(), &win);
+    if (it == m_list.end())
+        return false; // the window is not in this list
+
+    // the index is the slot the window should end up in, so the last slot
+    // is the highest one that means anything. Clamp before comparing with
+    // the current position, otherwise a move beyond the end looks like a
+    // change when it leaves the window where it is.
+    if (index >= m_list.size())
+        index = m_list.size() - 1;
+
+    size_t current = static_cast<size_t>(std::distance(m_list.begin(), it));
+    if (current == index)
+        return false; // the window is already in the right place
+
+    m_list.erase(it);
+
+    Focusables::iterator pos = m_list.begin();
+    std::advance(pos, static_cast<Focusables::difference_type>(index));
+    m_list.insert(pos, &win);
+
+    rememberOrder();
+    m_ordersig.emit(&win);
+    return true;
+}
+
+void FocusableList::setManualOrder(bool manual) {
+    if (m_manual_order == manual)
+        return;
+
+    m_manual_order = manual;
+
+    if (manual) {
+        // the list was built from the parent, put the windows back where
+        // the user had them
+        restoreOrder();
+        return;
+    }
+
+    // when the user gives up control of the order, the order of the
+    // parent list is authoritative again, so the remembered one is dropped
+    if (m_order)
+        m_order->clear();
+    if (m_parent)
+        reset();
+}
+
+void FocusableList::setOrder(std::shared_ptr<Focusables> order) {
+    m_order = order;
+    if (!m_order || !m_parent)
+        return;
+
+    // drop the windows that are not in the parent list any more: they are
+    // gone, or this list holds another kind of object than the one that
+    // placed them. Only pointers are compared, they may no longer be valid.
+    const Focusables &parent = m_parent->clientList();
+    Focusables::iterator it = m_order->begin();
+    while (it != m_order->end()) {
+        if (std::find(parent.begin(), parent.end(), *it) == parent.end())
+            it = m_order->erase(it);
+        else
+            ++it;
+    }
 }
 
 void FocusableList::remove(Focusable &win) {
@@ -237,6 +319,10 @@ void FocusableList::remove(Focusable &win) {
     bool contained = contains(win);
 
     m_signal_map.erase(&win);
+    // the window is gone for good, so it must not keep its place in the
+    // remembered order: a new window could be given its address
+    if (m_order)
+        m_order->remove(&win);
     if (!contained) {
         return;
     }
@@ -277,7 +363,49 @@ void FocusableList::reset() {
     m_pat->resetMatches();
     if (m_parent)
         addMatching();
+    restoreOrder();
     m_resetsig.emit();
+}
+
+// put the windows back in the order that was remembered for them. The
+// windows the user placed come first, in the order he gave them, the ones
+// he never placed follow in the order they were found in.
+void FocusableList::restoreOrder() {
+    if (!m_manual_order || !m_order || m_order->empty())
+        return;
+
+    Focusables ordered;
+    Focusables::const_iterator o_it = m_order->begin(), o_it_end = m_order->end();
+    for (; o_it != o_it_end; ++o_it) {
+        // only the pointers are compared, they are known to be valid here
+        if (std::find(m_list.begin(), m_list.end(), *o_it) != m_list.end())
+            ordered.push_back(*o_it);
+    }
+
+    Focusables::iterator it = m_list.begin(), it_end = m_list.end();
+    for (; it != it_end; ++it) {
+        if (std::find(m_order->begin(), m_order->end(), *it) == m_order->end())
+            ordered.push_back(*it);
+    }
+
+    m_list.swap(ordered);
+}
+
+// record the current order as the one the user gave. The windows that are
+// shown keep the order they have now, the ones that are away keep the place
+// they had, so that they come back to it.
+void FocusableList::rememberOrder() {
+    if (!m_manual_order || !m_order)
+        return;
+
+    Focusables ordered(m_list);
+    Focusables::const_iterator it = m_order->begin(), it_end = m_order->end();
+    for (; it != it_end; ++it) {
+        if (std::find(m_list.begin(), m_list.end(), *it) == m_list.end())
+            ordered.push_back(*it);
+    }
+
+    m_order->swap(ordered);
 }
 
 bool FocusableList::contains(const Focusable &win) const {

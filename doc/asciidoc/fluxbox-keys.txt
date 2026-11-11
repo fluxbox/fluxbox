@@ -280,6 +280,32 @@ These commands ordinarily affect only the currently focused window. The
 	Reorder the tabs in the current tab group, swapping the current tab
 	with the one to the right / left.
 
+*MoveIcon* 'target'::
+	Move the icon of the current window in the iconbar. The 'target' is one of the following:;;
++
+--
+	*left*;;
+		Move the icon one slot towards the front of the iconbar.
+	*right*;;
+		Move the icon one slot towards the end of the iconbar.
+	*start*;;
+		Move the icon to the first slot of the iconbar.
+	*end*;;
+		Move the icon to the last slot of the iconbar.
+	*number*;;
+		Move the icon to that slot of the iconbar, counted from the front.
+		The first slot is 1, a negative number counts from the end, so -1 is
+		the last slot.
+--
++
+The commands *MoveIconLeft*, *MoveIconRight*, *MoveIconStart* and
+*MoveIconEnd* do the same as *MoveIcon* with the matching target.
++
+No key binding is set for this command by default, but it can be bound
+like any other command. For example, 'Mod1 Mod4 Left :MoveIcon left'
+moves the icon of the focused window one slot towards the front of the
+iconbar.
+
 *DetachClient*::
 	Remove the current tab from the tab group, placing it in its own window.
 

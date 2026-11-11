@@ -26,6 +26,7 @@
 
 #include "ToolbarItem.hh"
 #include "ToolbarTheme.hh"
+#include "IconbarTool.hh"
 
 #include "fluxbox.hh"
 #include "Keys.hh"
@@ -352,6 +353,17 @@ bool Toolbar::isVertical() const {
             placement() == LEFTCENTER ||
             placement() == LEFTTOP ||
             placement() == LEFTBOTTOM);
+}
+
+IconbarTool *Toolbar::iconbarTool() {
+    ItemList::iterator item_it = m_item_list.begin();
+    ItemList::iterator item_it_end = m_item_list.end();
+    for (; item_it != item_it_end; ++item_it) {
+        IconbarTool *iconbar = dynamic_cast<IconbarTool *>(*item_it);
+        if (iconbar)
+            return iconbar;
+    }
+    return 0;
 }
 
 

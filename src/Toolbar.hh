@@ -49,6 +49,7 @@ class BScreen;
 class Strut;
 class FbMenu;
 class ToolbarItem;
+class IconbarTool;
 
 namespace FbTk {
 class ImageControl;
@@ -132,6 +133,9 @@ public:
     const FbTk::ThemeProxy<ToolbarTheme> &theme() const { return m_theme; }
     FbTk::ThemeProxy<ToolbarTheme> &theme() { return m_theme; }
     bool isVertical() const;
+
+    /// @return the iconbar tool of this toolbar, or 0 if it has none
+    IconbarTool *iconbarTool();
 
     int getOnHead() const { return *m_rc_on_head; }
 

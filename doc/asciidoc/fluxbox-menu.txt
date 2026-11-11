@@ -240,6 +240,10 @@ The additonal available tags in this menu are:
 *[layer]*;;
     Adds a ``Layer...'' submenu which lets you change the layer of this window.
 
+*[iconbar]*;;
+    Adds an ``Iconbar...'' submenu which lets you move the icon of this
+    window in the iconbar.
+
 *[alpha]*;;
     Adds a ``Transparency...'' submenu which lets you change the focused and
     unfocused transparency of this window.

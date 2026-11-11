@@ -86,6 +86,12 @@ protected:
         if (button > 4) return m_onclick[4];
         return m_onclick[button - 1];
     }
+    /**
+       Called when the button is released, to decide whether the click
+       command should be run.
+       @return false to suppress the click command
+     */
+    virtual bool acceptClick(XButtonEvent &event) { return true; }
 private:
     Pixmap m_background_pm; ///< background pixmap
     Color m_background_color; ///< background color

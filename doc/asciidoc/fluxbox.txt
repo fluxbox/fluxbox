@@ -466,6 +466,11 @@ By default, this menu contains:
 *Lower*:::
     Lower the window below all others in the same layer.
 
+*Iconbar...*:::
+    Move the icon of the window in the iconbar. The submenu offers to move
+    the icon one slot to the left or to the right, or to the first or the
+    last slot of the iconbar.
+
 *Layer...*:::
     Change the layer of this window. See *LAYERS* for more details.
 
@@ -571,6 +576,10 @@ The possible tools are:
     This is the area that contains all windows (all running applications, all
     minimized windows or maybe no window, all depending on the Toolbar
     Settings).
++
+    The icons can be rearranged by dragging them, or with the *MoveIcon*
+    command. The order of the icons is not remembered when fluxbox is
+    restarted.
 
 *Systemtray*:::
     The Systemtray can hold applications that are made to use it.
@@ -993,6 +1002,17 @@ pattern is acceptable. See the section *CLIENT PATTERNS* in either
 *fluxbox-keys(5)* or *fluxbox-apps(5)* for details.
 +
 Default: *{static groups} (workspace)*
+
+*session.screen0.iconbar.manualOrder*: 'boolean'::
+This determines whether the order of the icons in the iconbar is controlled
+by the user. When it is enabled, the iconbar does not follow the order of
+the windows any more, so that the icons keep the position they were dragged
+to. Moving an icon enables this automatically, and the *User Order* entry
+of the iconbar menu turns it off again.
++
+Note that the order of the icons is not remembered when fluxbox is restarted.
++
+Default: *False*
 
 *session.screen0.iconbar.usePixmap*: 'boolean'::
 This is also set in the Iconbar Mode menu. When set to True, this will

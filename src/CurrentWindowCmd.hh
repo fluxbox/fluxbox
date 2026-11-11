@@ -300,4 +300,31 @@ protected:
     void real_execute();
 };
 
+/// Move the icon of the current window in the iconbar
+class MoveIconCmd: public WindowHelperCmd {
+public:
+    /// where the icon should be moved to
+    enum Target {
+        MOVE_ICON_LEFT,  ///< one slot towards the front of the iconbar
+        MOVE_ICON_RIGHT, ///< one slot towards the end of the iconbar
+        MOVE_ICON_START, ///< the first slot of the iconbar
+        MOVE_ICON_END,   ///< the last slot of the iconbar
+        MOVE_ICON_TO     ///< the slot given as an argument
+    };
+
+    /**
+       @param target where the icon should be moved to
+       @param index the slot to move to, for MOVE_ICON_TO. The first slot
+              is 1, a negative number counts from the end.
+     */
+    explicit MoveIconCmd(Target target, int index = 0);
+    static FbTk::Command<void> *parse(const std::string &command,
+                                      const std::string &args, bool trusted);
+protected:
+    void real_execute();
+private:
+    const Target m_target;
+    const int m_index;
+};
+
 #endif // CURRENTWINDOWCMD_HH
