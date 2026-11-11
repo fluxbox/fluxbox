@@ -704,6 +704,13 @@ long FbWindow::eventMask() const {
 void FbWindow::setOpaque(int alpha) {
 #ifdef HAVE_XRENDER
     static const Atom alphaatom = XInternAtom(display(), "_NET_WM_WINDOW_OPACITY", False);
+    // a present property overrides the compositor's own opacity rules
+    // (picom's inactive-opacity, opacity-rule), so only publish real
+    // translucency and leave opaque windows to the compositor.
+    if (alpha >= 255) {
+        deleteProperty(alphaatom);
+        return;
+    }
     unsigned long opacity = alpha * 0x1010101;
     changeProperty(alphaatom, XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &opacity, 1l);
 #endif // HAVE_XRENDER
