@@ -1,7 +1,7 @@
  (Format: YYYY-MM-DD)
 
 -----------------------------
-Changes for 1.5.0
+Changes for 1.next
 
 *2026-11-04:
     * Bugfix: fbsetroot did not find _XROOTPMAP_ID when freeing the old
