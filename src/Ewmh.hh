@@ -20,7 +20,6 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "AtomHandler.hh"
-#include "Focusable.hh"
 #include "FbTk/FbString.hh"
 #include "FbTk/Signal.hh"
 
@@ -69,7 +68,7 @@ private:
     void toggleState(FluxboxWindow &win, Atom state, WinClient &client);
     void updateStrut(WinClient &winclient);
     void updateActions(FluxboxWindow &win);
-    void updateVisibleName(const std::string &new_title, Focusable &win);
+    void updateVisibleName(WinClient &winclient);
 
     void setupState(FluxboxWindow &win);
 

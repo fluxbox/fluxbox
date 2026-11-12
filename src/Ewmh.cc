@@ -550,6 +550,7 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net->wm_strut,
         m_net->wm_state,
         m_net->wm_name,
+        m_net->wm_visible_name,
         m_net->wm_icon,
         m_net->wm_icon_name,
 
@@ -652,8 +653,11 @@ void Ewmh::setupClient(WinClient &winclient) {
     if (!newtitle.empty())
         winclient.setTitle(newtitle);
 
+    // the signal lives in winclient, the slot dies together with it
     join(winclient.titleSig(),
-        FbTk::MemFun(*this, &Ewmh::updateVisibleName));
+         [this, &winclient](const std::string &, Focusable &) {
+             updateVisibleName(winclient);
+         });
 
     Atom ret_type;
     int fmt;
@@ -729,25 +733,36 @@ void Ewmh::setupClient(WinClient &winclient) {
 
 }
 
-void Ewmh::updateVisibleName(const std::string &new_title, Focusable &win) {
-    std::string netname = win.getTextProperty(m_net->wm_name);
-    if (netname != new_title) {
-         XTextProperty tp;
-	 /* Make a copy of the new title for const-correctness purposes */
-	 std::vector<char> ntbuf(new_title.begin(), new_title.end());
-	 ntbuf.push_back(0);
-	 char* ntbuf_cstr = &ntbuf[0];
-#ifdef X_HAVE_UTF8_STRING
-	 Xutf8TextListToTextProperty(FbTk::App::instance()->display(),
-				     &ntbuf_cstr, 1, XUTF8StringStyle, &tp);
-#else
-	 XStringListToTextProperty(&ntbuf_cstr, 1, &tp);
-#endif
-         win.setWinTextProperty(m_net->wm_visible_name, &tp);
-	 XFree(tp.value);
-    } else {
-         win.deleteXProperty(m_net->wm_visible_name);
+/**
+ * _NET_WM_VISIBLE_NAME, UTF8_STRING
+ *
+ * If the Window Manager displays a window name other than _NET_WM_NAME
+ * the Window Manager MUST set this to the title displayed in UTF-8
+ * encoding.
+ *
+ * The title differs from what the client asked for when the user renamed
+ * the window (SetTitle, SetTitleDialog) or when fluxbox shortened it. Compare against _NET_WM_NAME and, for clients without it,
+ * WM_NAME, so that plain WM_NAME clients do not get a redundant copy.
+ */
+void Ewmh::updateVisibleName(WinClient &winclient) {
+    const std::string &title = winclient.title().logical();
+
+    bool exists = false;
+    FbTk::FbString client_name = winclient.textProperty(m_net->wm_name, &exists);
+    if (!exists) {
+        client_name = winclient.textProperty(XA_WM_NAME);
     }
+
+    if (title.empty() || title == client_name) {
+        winclient.deleteProperty(m_net->wm_visible_name);
+        return;
+    }
+
+    // fluxbox keeps titles in UTF-8 internally
+    winclient.changeProperty(m_net->wm_visible_name, m_net->utf8_string, 8,
+                             PropModeReplace,
+                             reinterpret_cast<unsigned char*>(const_cast<char*>(title.data())),
+                             title.size());
 }
 
 void Ewmh::setupFrame(FluxboxWindow &win) {
