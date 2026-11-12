@@ -120,6 +120,7 @@ libFbTk_a_SOURCES = \
 	src/FbTk/PixmapWithMask.hh \
 	src/FbTk/RadioMenuItem.hh \
 	src/FbTk/RefCount.hh \
+	src/FbTk/RefCount.cc \
 	src/FbTk/RegExp.cc \
 	src/FbTk/RegExp.hh \
 	src/FbTk/RelCalcHelper.cc \
