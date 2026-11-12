@@ -573,22 +573,6 @@ void SystemTray::rearrangeClients() {
     }
 }
 
-// Picks the edge length of a tray icon for a slot of 'slot' pixels:
-// roughly 3/4 of the slot, snapped down to the nearest common icon
-// theme size so clients can use a pixel-exact image instead of a
-// blurry rescale. Slots too small for that get the full slot.
-unsigned int SystemTray::iconSize(unsigned int slot) {
-    static const unsigned int sizes[] = { 64, 48, 32, 24, 22, 16 };
-
-    const unsigned int target = slot * 3 / 4;
-    for (unsigned int size : sizes) {
-        if (size <= target) {
-            return size;
-        }
-    }
-    return std::min(slot, 16u);
-}
-
 void SystemTray::removeAllClients() {
     BScreen *screen = Fluxbox::instance()->findScreen(window().screenNumber());
     while (!m_clients.empty()) {

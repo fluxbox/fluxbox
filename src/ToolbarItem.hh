@@ -71,6 +71,34 @@ public:
     FbTk::Orientation orientation() const { return m_orientation; }
     virtual void setOrientation(FbTk::Orientation orient) { m_orientation = orient; }
 
+    /// Edge length of an icon in a toolbar slot 'slot' pixels high,
+    /// shared by the systray and the iconbar so their icons match:
+    /// the common icon theme size nearest to 3/4 of the slot, so clients
+    /// can use a pixel-exact image instead of a blurry rescale. Snapping
+    /// down instead left 16 pixel icons in 28 pixel slots. The icon
+    /// keeps at least 1 pixel above and below; slots too small for a
+    /// theme size get that maximum. A tie picks the smaller size.
+    /// Inline, as IconButton is built even without the toolbar sources.
+    static unsigned int iconSize(unsigned int slot) {
+        static const unsigned int sizes[] = { 16, 22, 24, 32, 48, 64 };
+
+        const unsigned int target = slot * 3 / 4;
+        const unsigned int limit = (slot > 2) ? slot - 2 : 1;
+        unsigned int best = 0;
+        unsigned int best_diff = 0;
+        for (unsigned int size : sizes) {
+            if (size > limit) {
+                break;
+            }
+            const unsigned int diff = (size > target) ? size - target : target - size;
+            if (best == 0 || diff < best_diff) {
+                best = size;
+                best_diff = diff;
+            }
+        }
+        return (best != 0) ? best : limit;
+    }
+
 private:
     Type m_type;
 

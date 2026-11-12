@@ -26,6 +26,7 @@
 
 #include "Screen.hh"
 #include "Window.hh"
+#include "ToolbarItem.hh"
 
 #include "FbTk/App.hh"
 #include "FbTk/Command.hh"
@@ -38,6 +39,17 @@
 #include <X11/extensions/shape.h>
 #endif // SHAPE
 
+#include <algorithm>
+
+namespace {
+
+// gap between the button edge and an icon of 'size' pixels, centering
+// the icon in a button 'height' pixels high (unrotated)
+int iconInset(unsigned int height, unsigned int size) {
+    return (height > size) ? static_cast<int>((height - size) / 2) : 0;
+}
+
+} // end anonymous namespace
 
 IconButton::IconButton(const FbTk::FbWindow &parent,
         FbTk::ThemeProxy<IconbarTheme> &focused_theme,
@@ -187,15 +199,11 @@ void IconButton::refreshEverything(bool setup) {
         unsigned int w = width();
         unsigned int h = height();
         FbTk::translateSize(orientation(), w, h);
-        int iconx = 1;
-        int icony = 1;
-        unsigned int neww;
-        unsigned int newh = h;
-        if (newh > 2*static_cast<unsigned>(icony))
-            newh -= 2*icony;
-        else
-            newh = 1;
-        neww = newh;
+        // same size as the systray icons, centered vertically
+        unsigned int newh = std::max(ToolbarItem::iconSize(h), 1u);
+        unsigned int neww = newh;
+        int iconx = iconInset(h, newh);
+        int icony = iconx;
 
         FbTk::translateCoords(orientation(), iconx, icony, w, h);
         FbTk::translatePosition(orientation(), iconx, icony, neww, newh, 0);
@@ -277,9 +285,10 @@ bool IconButton::setOrientation(FbTk::Orientation orient) {
         return true;
 
     if (FbTk::TextButton::setOrientation(orient)) {
-        int iconx = 1, icony = 1;
         unsigned int tmpw = width(), tmph = height();
         FbTk::translateSize(orient, tmpw, tmph);
+        int iconx = iconInset(tmph, m_icon_window.height());
+        int icony = iconx;
         FbTk::translateCoords(orient, iconx, icony, tmpw, tmph);
         FbTk::translatePosition(orient, iconx, icony, m_icon_window.width(), m_icon_window.height(), 0);
         m_icon_window.move(iconx, icony);
@@ -296,8 +305,13 @@ unsigned int IconButton::preferredWidth() const {
     unsigned int r2 = TextButton::preferredWidth();
     that->setFont(that->m_theme->text().font());
     r = std::max(r, r2);
-    if (m_icon_pixmap.drawable())
-        r += m_icon_window.width() + 1;
+    if (m_icon_pixmap.drawable()) {
+        // drawText() starts the text right of the icon, which sits
+        // iconInset() away from the button edge
+        unsigned int w = width(), h = height();
+        FbTk::translateSize(orientation(), w, h);
+        r += iconInset(h, m_icon_window.height()) + m_icon_window.width() + 1;
+    }
     return r;
 }
 
