@@ -48,7 +48,7 @@ private:
 class Resource_base:private FbTk::NotCopyable
 {
 public:
-    virtual ~Resource_base() { };
+    virtual ~Resource_base();
 
     /// set from string value
     virtual void setFromString(char const *strval) = 0;
@@ -62,9 +62,10 @@ public:
     const std::string& name() const { return m_name; }
 
 protected:
-    Resource_base(const std::string &name, const std::string &altname):
-    m_name(name), m_altname(altname)
-    { }
+    // out of line, so the std::string handling is compiled once in
+    // Resource.cc instead of in every file that declares a resource
+    Resource_base(const std::string &name, const std::string &altname);
+    Resource_base(const char *name, const char *altname);
 
 private:
     std::string m_name; ///< name of this resource
@@ -94,15 +95,11 @@ public:
 
 
 
-    /// Add resource to list, only used in Resource<T>
-    template <class T>
-    void addResource(Resource<T> &r);
+    /// Add resource to list and load its value, only used in Resource<T>
+    void addResource(Resource_base &r);
 
     /// Remove a specific resource, only used in Resource<T>
-    template <class T>
-    void removeResource(Resource<T> &r) {
-        m_resourcelist.remove(&r);
-    }
+    void removeResource(Resource_base &r);
 
     /// searches for the resource with the resourcename
     /// @return pointer to resource base on success, else 0.
@@ -169,6 +166,11 @@ public:
         Resource_base(name, altname), m_value(val), m_defaultval(val), m_rm(rm) {
         m_rm.addResource(*this); // add this to resource handler
     }
+    /// for string literals: avoids building temporary std::strings at every call site
+    Resource(ResourceManager &rm, T val, const char *name, const char *altname):
+        Resource_base(name, altname), m_value(val), m_defaultval(val), m_rm(rm) {
+        m_rm.addResource(*this); // add this to resource handler
+    }
     virtual ~Resource() {
         m_rm.removeResource(*this); // remove this from resource handler
     }
@@ -191,37 +193,6 @@ private:
     T m_value, m_defaultval;
     ResourceManager &m_rm;
 };
-
-
-// add the resource and load its value
-template <class T>
-void ResourceManager::addResource(Resource<T> &r) {
-    m_resourcelist.push_back(&r);
-    m_resourcelist.unique();
-
-    // lock ensures that the database is loaded.
-    lock();
-
-    if (m_database == 0) {
-        unlock();
-        return;
-    }
-
-    XrmValue value;
-    char *value_type;
-
-    // now, load the value for this resource
-    if (XrmGetResource(**m_database, r.name().c_str(),
-                       r.altName().c_str(), &value_type, &value)) {
-        r.setFromString(value.addr);
-    } else {
-        std::cerr<<"Failed to read: "<<r.name()<<std::endl;
-        std::cerr<<"Setting default value"<<std::endl;
-        r.setDefaultValue();
-    }
-
-    unlock();
-}
 
 
 template <typename ResourceType>

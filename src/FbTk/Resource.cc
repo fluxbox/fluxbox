@@ -197,6 +197,50 @@ void ResourceManager::setResourceValue(const string &resname, const string &valu
 
 }
 
+Resource_base::Resource_base(const string &name, const string &altname):
+    m_name(name), m_altname(altname) {
+}
+
+Resource_base::Resource_base(const char *name, const char *altname):
+    m_name(name), m_altname(altname) {
+}
+
+Resource_base::~Resource_base() {
+}
+
+// add the resource and load its value
+void ResourceManager::addResource(Resource_base &r) {
+    m_resourcelist.push_back(&r);
+    m_resourcelist.unique();
+
+    // lock ensures that the database is loaded.
+    lock();
+
+    if (m_database == 0) {
+        unlock();
+        return;
+    }
+
+    XrmValue value;
+    char *value_type;
+
+    // now, load the value for this resource
+    if (XrmGetResource(**m_database, r.name().c_str(),
+                       r.altName().c_str(), &value_type, &value)) {
+        r.setFromString(value.addr);
+    } else {
+        cerr<<"Failed to read: "<<r.name()<<endl;
+        cerr<<"Setting default value"<<endl;
+        r.setDefaultValue();
+    }
+
+    unlock();
+}
+
+void ResourceManager::removeResource(Resource_base &r) {
+    m_resourcelist.remove(&r);
+}
+
 ResourceManager &ResourceManager::lock() {
     ++m_db_lock;
     // if the lock was zero, then load the database

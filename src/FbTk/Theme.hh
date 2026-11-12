@@ -48,9 +48,11 @@ const int THEME_MAX_SIZE = 1024;
 */
 class ThemeItem_base {
 public:
-    ThemeItem_base(const std::string &name, const std::string &altname):
-        m_name(name), m_altname(altname) { }
-    virtual ~ThemeItem_base() { }
+    // out of line, so the std::string handling is compiled once in
+    // Theme.cc instead of in every theme constructor
+    ThemeItem_base(const std::string &name, const std::string &altname);
+    ThemeItem_base(const char *name, const char *altname);
+    virtual ~ThemeItem_base();
     virtual void setFromString(const char *str) = 0;
     virtual void setDefaultValue() = 0;
     virtual void load(const std::string *name = 0, const std::string *altname = 0) = 0; // if it needs to load additional stuff
@@ -67,6 +69,8 @@ template <typename T>
 class ThemeItem:public ThemeItem_base {
 public:
     ThemeItem(FbTk::Theme &tm, const std::string &name, const std::string &altname);
+    /// for string literals: avoids building temporary std::strings at every call site
+    ThemeItem(FbTk::Theme &tm, const char *name, const char *altname);
     virtual ~ThemeItem();
     /// specialized
     void setDefaultValue();
@@ -106,11 +110,9 @@ public:
     std::list<ThemeItem_base *> &itemList() { return m_themeitems; }
     const std::list<ThemeItem_base *> &itemList() const { return m_themeitems; }
     /// add ThemeItem
-    template <typename T>
-    void add(ThemeItem<T> &item);
+    void add(ThemeItem_base &item);
     /// remove ThemeItem
-    template <typename T>
-    void remove(ThemeItem<T> &item);
+    void remove(ThemeItem_base &item);
     virtual bool fallback(ThemeItem_base &) { return false; }
     Signal<> &reconfigSig() { return m_reconfig_sig; }
 
@@ -195,19 +197,17 @@ ThemeItem<T>::ThemeItem(FbTk::Theme &tm,
 }
 
 template <typename T>
+ThemeItem<T>::ThemeItem(FbTk::Theme &tm,
+                        const char *name, const char *altname):
+    ThemeItem_base(name, altname),
+    m_tm(tm) {
+    tm.add(*this);
+    setDefaultValue();
+}
+
+template <typename T>
 ThemeItem<T>::~ThemeItem() {
     m_tm.remove(*this);
-}
-
-template <typename T>
-void Theme::add(ThemeItem<T> &item) {
-    m_themeitems.push_back(&item);
-    m_themeitems.unique();
-}
-
-template <typename T>
-void Theme::remove(ThemeItem<T> &item)  {
-    m_themeitems.remove(&item);
 }
 
 } // end namespace FbTk

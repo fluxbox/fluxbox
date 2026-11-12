@@ -44,6 +44,26 @@ using std::string;
 
 namespace FbTk {
 
+ThemeItem_base::ThemeItem_base(const string &name, const string &altname):
+    m_name(name), m_altname(altname) {
+}
+
+ThemeItem_base::ThemeItem_base(const char *name, const char *altname):
+    m_name(name), m_altname(altname) {
+}
+
+ThemeItem_base::~ThemeItem_base() {
+}
+
+void Theme::add(ThemeItem_base &item) {
+    m_themeitems.push_back(&item);
+    m_themeitems.unique();
+}
+
+void Theme::remove(ThemeItem_base &item) {
+    m_themeitems.remove(&item);
+}
+
 struct LoadThemeHelper {
     LoadThemeHelper():m_tm(ThemeManager::instance()) {}
     void operator ()(Theme *tm) {
