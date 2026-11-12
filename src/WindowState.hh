@@ -103,7 +103,10 @@ public:
         TYPE_SPLASH,
         TYPE_DIALOG,
         TYPE_MENU,
-        TYPE_TOOLBAR
+        TYPE_TOOLBAR,
+        TYPE_POPUP_MENU,
+        TYPE_TOOLTIP,
+        TYPE_NOTIFICATION
     };
 
     WindowState():

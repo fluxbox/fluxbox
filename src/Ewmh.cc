@@ -357,6 +357,9 @@ public:
         wm_window_type_dialog = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DIALOG", False);
         wm_window_type_menu = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_MENU", False);
         wm_window_type_toolbar = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_TOOLBAR", False);
+        wm_window_type_popup_menu = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_POPUP_MENU", False);
+        wm_window_type_tooltip = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_TOOLTIP", False);
+        wm_window_type_notification = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_NOTIFICATION", False);
         wm_window_type_normal = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_NORMAL", False);
 
         // state atom and the supported state atoms
@@ -433,6 +436,9 @@ public:
          wm_window_type_dialog,
          wm_window_type_menu,
          wm_window_type_toolbar,
+         wm_window_type_popup_menu,
+         wm_window_type_tooltip,
+         wm_window_type_notification,
          wm_window_type_normal,
 
          // states
@@ -566,6 +572,9 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net->wm_window_type_dialog,
         m_net->wm_window_type_menu,
         m_net->wm_window_type_toolbar,
+        m_net->wm_window_type_popup_menu,
+        m_net->wm_window_type_tooltip,
+        m_net->wm_window_type_notification,
         m_net->wm_window_type_normal,
 
         // window actions
@@ -685,6 +694,12 @@ void Ewmh::setupClient(WinClient &winclient) {
                 type = WindowState::TYPE_MENU;
             else if (atoms[l] == m_net->wm_window_type_toolbar)
                 type = WindowState::TYPE_TOOLBAR;
+            else if (atoms[l] == m_net->wm_window_type_popup_menu)
+                type = WindowState::TYPE_POPUP_MENU;
+            else if (atoms[l] == m_net->wm_window_type_tooltip)
+                type = WindowState::TYPE_TOOLTIP;
+            else if (atoms[l] == m_net->wm_window_type_notification)
+                type = WindowState::TYPE_NOTIFICATION;
             else if (atoms[l] != m_net->wm_window_type_normal)
                 continue;
             /*

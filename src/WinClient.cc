@@ -213,7 +213,8 @@ bool WinClient::acceptsFocus() const {
     return ((accepts_input || send_focus_message) &&
             // focusing fbpanel messes up quite a few things
             m_window_type != WindowState::TYPE_DOCK &&
-            m_window_type != WindowState::TYPE_SPLASH);
+            m_window_type != WindowState::TYPE_SPLASH &&
+            m_window_type != WindowState::TYPE_TOOLTIP);
 }
 
 bool WinClient::sendFocus() {

@@ -4135,6 +4135,29 @@ void FluxboxWindow::setWindowType(WindowState::WindowType type) {
         setIconHidden(true);
         moveToLayer(::ResourceLayer::ABOVE_DOCK);
         break;
+    case WindowState::TYPE_POPUP_MENU:
+    case WindowState::TYPE_TOOLTIP:
+    case WindowState::TYPE_NOTIFICATION:
+        /*
+         * _NET_WM_WINDOW_TYPE_POPUP_MENU, _NET_WM_WINDOW_TYPE_TOOLTIP and
+         * _NET_WM_WINDOW_TYPE_NOTIFICATION are typically used on
+         * override-redirect windows, which we never manage. A client
+         * that maps one as a managed window still wants it transient and
+         * on top: no decoration, not in the iconbar or focus cycling,
+         * never focused on map or by hovering over it.
+         */
+        setDecorationMask(WindowState::DECOR_NONE);
+        setFocusHidden(true);
+        setIconHidden(true);
+        setFocusNew(false);
+        setMouseFocus(false);
+        setTabable(false);
+        if (type != WindowState::TYPE_POPUP_MENU) {
+            // a popup menu may still want the keyboard once clicked
+            setClickFocus(false);
+        }
+        moveToLayer(::ResourceLayer::ABOVE_DOCK);
+        break;
     case WindowState::TYPE_NORMAL:
     default:
         break;
