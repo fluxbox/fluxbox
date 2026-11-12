@@ -24,7 +24,10 @@
 #include "FbTk/App.hh"
 
 //!! TODO: still missing *.pressed.picColor
-ButtonTheme::ButtonTheme(int screen_num, 
+ButtonTheme::~ButtonTheme() {
+}
+
+ButtonTheme::ButtonTheme(int screen_num,
                          const std::string &name, 
                          const std::string &alt_name,
                          const std::string &extra_fallback,

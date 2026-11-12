@@ -44,7 +44,7 @@ public:
 
     FbMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm, FbTk::ImageControl &imgctrl,
            FbTk::Layer &layer);
-    virtual ~FbMenu() { }
+    virtual ~FbMenu();
     void raise() { m_layeritem.raise(); }
     void lower() { m_layeritem.lower(); }
     void buttonPressEvent(XButtonEvent &be);

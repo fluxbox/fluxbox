@@ -63,7 +63,7 @@ public:
 
     explicit ScreenPlacement(BScreen &screen);
 
-    virtual ~ScreenPlacement() {}
+    virtual ~ScreenPlacement();
     /// placeWindow is guaranteed to succeed, ignore return value
     /// @return true
     bool placeWindow(const FluxboxWindow &window, int head,

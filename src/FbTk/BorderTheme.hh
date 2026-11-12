@@ -33,7 +33,7 @@ namespace FbTk {
 class BorderTheme {
 public:
     BorderTheme(Theme &theme, const std::string &name, const std::string &altname);
-    virtual ~BorderTheme() { }
+    virtual ~BorderTheme();
 
     // BorderTheme has no reconfigTheme() of its own, so clamp on read
     int width() const { return Util::clamp(*m_width, 0, THEME_MAX_SIZE); }

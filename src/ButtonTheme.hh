@@ -33,7 +33,7 @@ public:
                 const std::string &name, const std::string &alt_name, 
                 const std::string &extra_fallback,
                 const std::string &extra_fallback_alt);
-    virtual ~ButtonTheme() { }
+    virtual ~ButtonTheme();
 
     bool fallback(FbTk::ThemeItem_base &item);
     void reconfigTheme();

@@ -34,7 +34,7 @@ namespace FbTk {
 class TextTheme {
 public:
     TextTheme(Theme &theme, const std::string &name, const std::string &altname);
-    virtual ~TextTheme() { }
+    virtual ~TextTheme();
 
     void updateTextColor();
 

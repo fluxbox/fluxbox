@@ -36,6 +36,9 @@ void FbMenu::setWindow(FluxboxWindow* win) { s_window = win; }
 FluxboxWindow* FbMenu::window() { return s_window; }
 
 
+FbMenu::~FbMenu() {
+}
+
 FbMenu::FbMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
                FbTk::ImageControl &imgctrl, FbTk::Layer &layer):
     FbTk::Menu(tm, imgctrl), 
