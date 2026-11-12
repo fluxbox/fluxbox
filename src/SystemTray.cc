@@ -546,23 +546,47 @@ void SystemTray::rearrangeClients() {
     resize(trayw, trayh);
     update();
 
+    // every client gets a square slot as high as the tray, but the icon
+    // itself is inset and centered in it: clients which scale their
+    // picture to whatever size they are given would otherwise fill the
+    // whole toolbar height and dwarf the ones drawing at a fixed size.
+    const unsigned int icon_size = iconSize(h_rot0);
+    const int inset = (h_rot0 - icon_size) / 2;
+
     // move and resize clients
     ClientList::iterator client_it = m_clients.begin();
     ClientList::iterator client_it_end = m_clients.end();
     int next_x = bw;
     for (; client_it != client_it_end; ++client_it) {
-        if (!(*client_it)->isVisible())
+        if (!(*client_it)->isVisible()) {
             continue;
-        int x = next_x, y = bw;
+        }
+        int x = next_x + inset, y = inset;
         next_x += h_rot0+bw;
         translateCoords(orientation(), x, y, w_rot0, h_rot0);
-        translatePosition(orientation(), x, y, h_rot0, h_rot0, 0);
+        translatePosition(orientation(), x, y, icon_size, icon_size, 0);
         int screen_x = 0, screen_y = 0;
         getScreenCoordinates((*client_it)->window(), (*client_it)->x(), (*client_it)->y(), screen_x, screen_y);
 
-        (*client_it)->moveResize(x, y, h_rot0, h_rot0);
-        (*client_it)->sendConfigureNotify(screen_x, screen_y, h_rot0, h_rot0);
+        (*client_it)->moveResize(x, y, icon_size, icon_size);
+        (*client_it)->sendConfigureNotify(screen_x, screen_y, icon_size, icon_size);
     }
+}
+
+// Picks the edge length of a tray icon for a slot of 'slot' pixels:
+// roughly 3/4 of the slot, snapped down to the nearest common icon
+// theme size so clients can use a pixel-exact image instead of a
+// blurry rescale. Slots too small for that get the full slot.
+unsigned int SystemTray::iconSize(unsigned int slot) {
+    static const unsigned int sizes[] = { 64, 48, 32, 24, 22, 16 };
+
+    const unsigned int target = slot * 3 / 4;
+    for (unsigned int size : sizes) {
+        if (size <= target) {
+            return size;
+        }
+    }
+    return std::min(slot, 16u);
 }
 
 void SystemTray::removeAllClients() {

@@ -100,6 +100,7 @@ private:
     ClientList::iterator findClient(Window win);
 
     void rearrangeClients();
+    static unsigned int iconSize(unsigned int slot);
     void removeAllClients();
     void hideClient(TrayWindow *traywin, bool destroyed = false);
     void showClient(TrayWindow *traywin);
