@@ -195,6 +195,21 @@ private:
 };
 
 
+// The common value types are compiled once, in src/Resources.cc (next to their
+// setFromString/getString specializations), instead of in every file that
+// declares such a resource. Anything linking these must compile Resources.cc,
+// which fluxbox and fluxbox-update_configs do. Enum resources stay implicit.
+// Resources.cc itself defines FBTK_RESOURCE_INSTANTIATE: it specializes
+// members of these types before instantiating them.
+#ifndef FBTK_RESOURCE_INSTANTIATE
+extern template class Resource<std::string>;
+extern template class Resource<int>;
+extern template class Resource<bool>;
+extern template class Resource<unsigned int>;
+extern template class Resource<long>;
+extern template class Resource<long long>;
+#endif
+
 template <typename ResourceType>
 Resource<ResourceType> &ResourceManager::getResource(const std::string &resname) {
     Resource_base *res = findResource(resname);
