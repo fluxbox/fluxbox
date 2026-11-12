@@ -40,78 +40,36 @@ template <class T> class ThemeProxy;
 ///   An interface for a menu item in Menu
 class MenuItem : public FbTk::ITypeAheadable {
 public:
-    MenuItem()
-        : m_label(BiDiString("")),
-          m_menu(0),
-          m_submenu(0),
-          m_enabled(true),
-          m_selected(false),
-          m_close_on_click(true),
-          m_toggle_item(false)
-    { }
-
-    explicit MenuItem(const BiDiString &label)
-        : m_label(label),
-          m_menu(0),
-          m_submenu(0),
-          m_enabled(true),
-          m_selected(false),
-          m_close_on_click(true),
-          m_toggle_item(false)
-    { }
-
-    MenuItem(const BiDiString &label, Menu &host_menu)
-        : m_label(label),
-          m_menu(&host_menu),
-          m_submenu(0),
-          m_enabled(true),
-          m_selected(false),
-          m_close_on_click(true),
-          m_toggle_item(false)
-    { }
+    // The constructors and the virtual accessors are defined in MenuItem.cc:
+    // menu items are created in many files, and every MenuItem subclass's
+    // vtable references the virtuals, so inline versions were compiled again
+    // in each of those files.
+    MenuItem();
+    explicit MenuItem(const BiDiString &label);
+    MenuItem(const BiDiString &label, Menu &host_menu);
     /// create a menu item with a specific command to be executed on click
-    MenuItem(const BiDiString &label, RefCount<Command<void> > &cmd, Menu *menu = 0)
-        : m_label(label),
-          m_menu(menu),
-          m_submenu(0),
-          m_command(cmd),
-          m_enabled(true),
-          m_selected(false),
-          m_close_on_click(true),
-          m_toggle_item(false)
-    { }
-
-    MenuItem(const BiDiString &label, Menu *submenu, Menu *host_menu = 0)
-        : m_label(label),
-          m_menu(host_menu),
-          m_submenu(submenu),
-          m_enabled(true),
-          m_selected(false),
-          m_close_on_click(true),
-          m_toggle_item(false)
-    { }
+    MenuItem(const BiDiString &label, RefCount<Command<void> > &cmd, Menu *menu = 0);
+    MenuItem(const BiDiString &label, Menu *submenu, Menu *host_menu = 0);
     virtual ~MenuItem();
 
     void setCommand(RefCount<Command<void> > &cmd) { m_command = cmd; }
-    virtual void setSelected(bool selected) { m_selected = selected; }
-    virtual void setEnabled(bool enabled) { m_enabled = enabled; }
+    virtual void setSelected(bool selected);
+    virtual void setEnabled(bool enabled);
     virtual void setLabel(const BiDiString &label);
-    virtual void setToggleItem(bool val) { m_toggle_item = val; }
+    virtual void setToggleItem(bool val);
     void setCloseOnClick(bool val) { m_close_on_click = val; }
     void setIcon(const std::string &filename, int screen_num);
-    virtual Menu *submenu() { return m_submenu; }
+    virtual Menu *submenu();
     /**
         @name accessors
     */
     //@{
-    virtual const FbTk::BiDiString& label() const { return m_label; }
-    virtual const PixmapWithMask *icon() const {
-        return m_icon.get() ? m_icon->pixmap.get() : 0;
-    }
-    virtual const Menu *submenu() const { return m_submenu; }
-    virtual bool isEnabled() const { return m_enabled; }
-    virtual bool isSelected() const { return m_selected; }
-    virtual bool isToggleItem() const { return m_toggle_item; }
+    virtual const FbTk::BiDiString& label() const;
+    virtual const PixmapWithMask *icon() const;
+    virtual const Menu *submenu() const;
+    virtual bool isEnabled() const;
+    virtual bool isSelected() const;
+    virtual bool isToggleItem() const;
 
     // iType functions
     const FbString &iTypeString() const { return m_label.visual(); }
