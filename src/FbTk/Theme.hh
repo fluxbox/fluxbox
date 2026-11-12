@@ -210,6 +210,30 @@ ThemeItem<T>::~ThemeItem() {
     m_tm.remove(*this);
 }
 
+// The common ThemeItem<T> types are compiled once, in ThemeItems.cc (next to
+// their specializations), instead of in every theme. An extern template needs
+// the complete type: for the FbTk types, whichever of Theme.hh and the type's
+// header is included second declares it (see the end of Color.hh, Font.hh,
+// Texture.hh and PixmapWithMask.hh). ThemeItems.cc itself defines
+// FBTK_THEMEITEM_INSTANTIATE: it specializes members before instantiating.
+#ifndef FBTK_THEMEITEM_INSTANTIATE
+extern template class ThemeItem<int>;
+extern template class ThemeItem<bool>;
+extern template class ThemeItem<std::string>;
+#ifdef FBTK_COLOR_HH
+extern template class ThemeItem<Color>;
+#endif
+#ifdef FBTK_FONT_HH
+extern template class ThemeItem<Font>;
+#endif
+#ifdef FBTK_TEXTURE_HH
+extern template class ThemeItem<Texture>;
+#endif
+#ifdef FBTK_PIXMAPWITHMASK_HH
+extern template class ThemeItem<PixmapWithMask>;
+#endif
+#endif // FBTK_THEMEITEM_INSTANTIATE
+
 } // end namespace FbTk
 
 #endif // FBTK_THEME_HH
