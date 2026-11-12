@@ -21,6 +21,9 @@
 
 // holds main resource functions
 
+// see FbTk/Resource.hh: this file provides the explicit instantiations
+#define FBTK_RESOURCE_INSTANTIATE
+
 #include "FbTk/StringUtil.hh"
 #include "FbTk/Resource.hh"
 #include "WinButton.hh"
@@ -221,5 +224,14 @@ setFromString(const char *strval) {
     if (!FbTk::StringUtil::extractNumber(strval, m_value))
         setDefaultValue();
 }
+
+// the explicit instantiations promised by the extern templates in
+// FbTk/Resource.hh; they must follow the specializations above
+template class Resource<std::string>;
+template class Resource<int>;
+template class Resource<bool>;
+template class Resource<unsigned int>;
+template class Resource<long>;
+template class Resource<long long>;
 
 } // end namespace FbTk
