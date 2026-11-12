@@ -24,6 +24,9 @@
 #ifndef THEMEITEMS_HH
 #define THEMEITEMS_HH
 
+// see Theme.hh: this file provides the explicit instantiations
+#define FBTK_THEMEITEM_INSTANTIATE
+
 #include "Theme.hh"
 #include "Color.hh"
 #include "Texture.hh"
@@ -369,6 +372,16 @@ void ThemeItem<Shape::ShapePlace>::setFromString(const char *str) {
 
     *(*this) = static_cast<Shape::ShapePlace>(places);
 }
+
+// the explicit instantiations promised by the extern templates in Theme.hh
+// (and the type headers); they must follow the specializations above
+template class ThemeItem<int>;
+template class ThemeItem<bool>;
+template class ThemeItem<std::string>;
+template class ThemeItem<Color>;
+template class ThemeItem<Font>;
+template class ThemeItem<Texture>;
+template class ThemeItem<PixmapWithMask>;
 
 } // end namespace FbTk
 

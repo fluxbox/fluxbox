@@ -48,4 +48,9 @@ private:
 
 } // end namespace FbTk
 
+// ThemeItem<PixmapWithMask> is compiled once, in ThemeItems.cc; see Theme.hh
+#if defined(FBTK_THEME_HH) && !defined(FBTK_THEMEITEM_INSTANTIATE)
+namespace FbTk { extern template class ThemeItem<PixmapWithMask>; }
+#endif
+
 #endif // FBTK_PIXMAPWITHMASK_HH
