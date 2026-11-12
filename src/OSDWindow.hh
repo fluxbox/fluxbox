@@ -36,7 +36,9 @@ class OSDWindow: public FbTk::FbWindow {
 public:
     OSDWindow(const FbTk::FbWindow &parent, BScreen &screen,
               FbTk::ThemeProxy<FbWinFrameTheme> &theme):
-        FbTk::FbWindow(parent, 0, 0, 10, 10, 0, false, true),
+        FbTk::FbWindow(parent, 0, 0, 10, 10, 0,
+                       true,  // override redirect
+                       true), // save_under
         m_screen(screen), m_theme(theme),
         m_pixmap(None), m_visible(false) { }
 
