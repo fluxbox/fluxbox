@@ -49,6 +49,8 @@ public:
     };
 
     FocusableList(BScreen &scr): m_parent(0), m_screen(scr) { }
+    /// out of line: anchors the vtable in FocusableList.cc
+    virtual ~FocusableList();
     FocusableList(BScreen &scr, const std::string & pat);
     FocusableList(BScreen &scr, const FocusableList &parent,
                   const std::string & pat);

@@ -31,6 +31,8 @@ template <typename> class Accessor;
 /// a bool menu item
 class BoolMenuItem: public FbTk::MenuItem {
 public:
+    /// out of line (MenuItem.cc): anchors the vtable, see MenuItem.cc
+    virtual ~BoolMenuItem();
     BoolMenuItem(const FbTk::FbString &label, Accessor<bool> &item, 
                  FbTk::RefCount<FbTk::Command<void> > &cmd):
         FbTk::MenuItem(label, cmd), m_item(item) { 

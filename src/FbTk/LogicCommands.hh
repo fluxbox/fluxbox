@@ -36,6 +36,8 @@ public:
     IfCommand(RefCount<Command<bool> > &cond,
               RefCount<Command<void> > &t, RefCount<Command<void> > &f):
         m_cond(cond), m_t(t), m_f(f) { }
+    /// out of line: anchors the vtable in LogicCommands.cc
+    virtual ~IfCommand();
     void execute() {
         if (m_cond->execute()) {
             if (m_t) m_t->execute();
@@ -86,6 +88,8 @@ private:
 class NotCommand: public Command<bool> {
 public:
     NotCommand(RefCount<Command<bool> > &com): m_command(com) { }
+    /// out of line: anchors the vtable in LogicCommands.cc
+    virtual ~NotCommand();
     bool execute() { return !m_command->execute(); }
 
 private:

@@ -91,6 +91,9 @@ private:
 
 } // end anonymous namespace
 
+ClientMenu::~ClientMenu() {
+}
+
 ClientMenu::ClientMenu(BScreen &screen, Focusables &clients,
                        bool listen_for_iconlist_changes):
     FbMenu(screen.menuTheme(), screen.imageControl(),

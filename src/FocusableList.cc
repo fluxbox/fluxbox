@@ -73,6 +73,9 @@ const FocusableList *FocusableList::getListFromOptions(BScreen &scr, int opts) {
             &scr.focusControl().focusedOrderList();
 }
 
+FocusableList::~FocusableList() {
+}
+
 FocusableList::FocusableList(BScreen &scr, const string & pat):
     m_parent(0), m_screen(scr) {
 

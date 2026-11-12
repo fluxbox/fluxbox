@@ -36,6 +36,8 @@ public:
     SlitClient(BScreen *screen, Window win);
     /// For adding a placeholder
     explicit SlitClient(const char *name);
+    /// out of line: anchors the vtable in SlitClient.cc
+    virtual ~SlitClient();
 
     const FbTk::BiDiString &matchName() const { return m_match_name; }
     Window window() const { return m_window; }

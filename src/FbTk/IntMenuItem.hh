@@ -32,6 +32,8 @@ template <typename T> class Accessor;
 /// Changes an resource integer value between min and max
 class IntMenuItem: public FbTk::MenuItem {
 public:
+    /// out of line (MenuItem.cc): anchors the vtable, see MenuItem.cc
+    virtual ~IntMenuItem();
     IntMenuItem(const FbTk::FbString &label, Accessor<int> &res,
                    int min_val, int max_val, FbTk::Menu &host_menu) :
         FbTk::MenuItem(label, host_menu), m_org_label(FbTk::MenuItem::label()),

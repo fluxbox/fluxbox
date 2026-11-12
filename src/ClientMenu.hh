@@ -44,8 +44,10 @@ public:
      * @param client a list of clients to show in this menu
      * @param listen_for_iconlist_changes Listen for list changes from the \c screen.
      */
-    ClientMenu(BScreen &screen, 
+    ClientMenu(BScreen &screen,
                Focusables &clients, bool listen_for_iconlist_changes);
+    /// out of line: anchors the vtable in ClientMenu.cc
+    virtual ~ClientMenu();
 
     /// refresh the entire menu
     void refreshMenu();

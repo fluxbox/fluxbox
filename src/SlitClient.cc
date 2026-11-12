@@ -29,6 +29,9 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 
+SlitClient::~SlitClient() {
+}
+
 SlitClient::SlitClient(BScreen *screen, Window win) {
     initialize(screen, win);
 }

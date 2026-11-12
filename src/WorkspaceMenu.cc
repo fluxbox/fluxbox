@@ -66,6 +66,9 @@ void add_workspaces(WorkspaceMenu& menu, BScreen& screen) {
 
 } // end of anonymous namespace
 
+WorkspaceMenu::~WorkspaceMenu() {
+}
+
 WorkspaceMenu::WorkspaceMenu(BScreen &screen):
    FbMenu(screen.menuTheme(), 
            screen.imageControl(), 

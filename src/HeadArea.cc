@@ -25,6 +25,9 @@
 #include <algorithm>
 #include <iostream>
 
+HeadArea::~HeadArea() {
+}
+
 HeadArea::HeadArea() : m_available_workspace_area(new Strut(0,0,0,0,0)) {
 }
 
