@@ -22,6 +22,7 @@
 #ifndef CommandParser_HH
 #define CommandParser_HH
 
+#include "Command.hh"
 #include "StringUtil.hh"
 
 #include <string>
@@ -74,58 +75,40 @@ Command<Type> *UntrustedCommandCreatorWithArgs(const string &name,
 #define REGISTER_UNTRUSTED_COMMAND_WITH_ARGS(name, classname, type) \
     static const bool p_register_##type_##name = FbTk::CommandParser<type>::instance().registerCommand(#name, &FbTk::UntrustedCommandCreatorWithArgs<classname, type>)
 
+/// The member functions are defined in CommandParser.cc and compiled there
+/// once for each Type below (see the extern templates), instead of in every
+/// file that registers or parses a command.
 template <typename Type>
 class CommandParser {
 public:
     typedef Command<Type> *(*Creator)(const string &, const string &, bool);
     typedef std::map<std::string, Creator> CreatorMap;
 
-    static CommandParser<Type> &instance() {
-        static CommandParser<Type> s_instance;
-        return s_instance;
-    }
+    static CommandParser<Type> &instance();
 
     Command<Type> *parse(const string &name, const string &args,
-                                bool trusted = true) const {
-        string lc = StringUtil::toLower(name);
-        Creator creator = lookup(lc);
-        if (creator)
-            return creator(lc, args, trusted);
-        return 0;
-    }
+                         bool trusted = true) const;
 
-    Command<Type> *parse(const string &line, bool trusted = true) const {
-        // separate args and command
-        string command, args;
-        StringUtil::getFirstWord(line, command, args);
-        StringUtil::removeFirstWhitespace(args);
-        StringUtil::removeTrailingWhitespace(args);
+    Command<Type> *parse(const string &line, bool trusted = true) const;
 
-        // now we parse
-        return parse(command, args, trusted);
-    }
+    /// for the REGISTER_* macros: takes the literal, no std::string temporary
+    bool registerCommand(const char *name, Creator creator);
+    bool registerCommand(const std::string &name, Creator creator);
 
-    bool registerCommand(string name, Creator creator) {
-        name = StringUtil::toLower(name);
-        m_creators[name] = creator;
-        return true;
-    }
-
-    Creator lookup(const std::string &name) const {
-        typename CreatorMap::const_iterator it = m_creators.find(name);
-        if (it == m_creators.end())
-            return 0;
-        return it->second;
-    }
+    Creator lookup(const std::string &name) const;
 
     const CreatorMap &creatorMap() const { return m_creators; }
 
 private:
-    CommandParser() {}
-    ~CommandParser() {}
+    CommandParser();
+    ~CommandParser();
 
     CreatorMap m_creators;
 };
+
+// the only instantiations; add a line here and in CommandParser.cc for a new Type
+extern template class CommandParser<void>;
+extern template class CommandParser<bool>;
 
 } // end namespace FbTk
 
