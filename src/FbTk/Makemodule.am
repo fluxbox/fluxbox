@@ -54,6 +54,7 @@ libFbTk_a_SOURCES = \
 	src/FbTk/ColorLUT.hh \
 	src/FbTk/Command.hh \
 	src/FbTk/CommandParser.hh \
+	src/FbTk/CommandParser.cc \
 	src/FbTk/CompareEqual.hh \
 	src/FbTk/Compose.hh \
 	src/FbTk/Container.cc \
