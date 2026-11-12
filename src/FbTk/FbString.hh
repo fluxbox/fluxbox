@@ -41,7 +41,16 @@ class BiDiString {
 
 public:
 
-    BiDiString(const FbString& logical = FbString());
+    // All special members are defined out of line in FbString.cc: BiDiString
+    // is copied and destroyed all over fluxbox, and the inline versions made
+    // every file compile the std::string handling for both members again.
+    BiDiString();
+    BiDiString(const FbString& logical);
+    BiDiString(const BiDiString& other);
+    BiDiString(BiDiString&& other) noexcept;
+    BiDiString& operator=(const BiDiString& other);
+    BiDiString& operator=(BiDiString&& other) noexcept;
+    ~BiDiString();
 
     const FbString& logical() const { return m_logical; }
     const FbString& visual() const;

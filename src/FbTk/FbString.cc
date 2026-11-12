@@ -109,7 +109,14 @@ FbTk::FbString makeVisualFromLogical(const FbTk::FbString& src) {
 
 namespace FbTk {
 
-BiDiString::BiDiString(const FbString& logical) 
+BiDiString::BiDiString()
+#ifdef HAVE_FRIBIDI
+    : m_visual_dirty(false)
+#endif
+{
+}
+
+BiDiString::BiDiString(const FbString& logical)
 #ifdef HAVE_FRIBIDI
     : m_visual_dirty(false)
 #endif
@@ -117,6 +124,12 @@ BiDiString::BiDiString(const FbString& logical)
     if (!logical.empty())
         setLogical(logical);
 }
+
+BiDiString::BiDiString(const BiDiString& other) = default;
+BiDiString::BiDiString(BiDiString&& other) noexcept = default;
+BiDiString& BiDiString::operator=(const BiDiString& other) = default;
+BiDiString& BiDiString::operator=(BiDiString&& other) noexcept = default;
+BiDiString::~BiDiString() = default;
 
 const FbString& BiDiString::setLogical(const FbString& logical) {
     m_logical = logical;
