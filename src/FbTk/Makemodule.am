@@ -132,6 +132,7 @@ libFbTk_a_SOURCES = \
 	src/FbTk/Shape.cc \
 	src/FbTk/Shape.hh \
 	src/FbTk/Signal.hh \
+	src/FbTk/Signal.cc \
 	src/FbTk/SimpleCommand.hh \
 	src/FbTk/Slot.hh \
 	src/FbTk/StringUtil.cc \
