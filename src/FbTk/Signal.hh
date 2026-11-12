@@ -38,6 +38,9 @@ namespace SigImpl {
  * Parent class for all \c Signal template classes.
  * It handles the disconnect and holds all the slots. The connect must be
  * handled by the child class so it can do the type checking.
+ *
+ * Nothing here depends on the signal's argument types, so all of it is
+ * compiled once, in Signal.cc, instead of in every file using signals.
  */
 class SignalHolder {
 protected:
@@ -48,7 +51,7 @@ public:
     /// Special tracker interface used by SignalTracker.
     class Tracker {
     public:
-        virtual ~Tracker() { }
+        virtual ~Tracker();
         /// Disconnect this holder.
         virtual void disconnect(SignalHolder& signal) = 0;
     };
@@ -57,43 +60,17 @@ public:
     typedef Iterator SlotID;
     typedef SlotList::const_iterator ConstIterator;
 
-    SignalHolder() : m_emitting(0) {}
-
-    ~SignalHolder() {
-        // Disconnect this holder from all trackers.
-        for (Trackers::iterator it = m_trackers.begin(),
-                 it_end = m_trackers.end();
-             it != it_end; ++it ) {
-            (*it)->disconnect(*this);
-        }
-    }
+    SignalHolder();
+    ~SignalHolder();
 
     /// Remove a specific slot \c id from this signal
-    void disconnect(SlotID slotIt) const {
-        if(m_emitting) {
-            // if we are emitting, we must not erase the actual element, as that would
-            // invalidate iterators in the emit() function
-            *slotIt = SlotPtr();
-        } else
-            m_slots.erase( slotIt );
-    }
-
+    void disconnect(SlotID slotIt) const;
 
     /// Removes all slots connected to this
-    void clear() {
-        if(m_emitting)
-            std::fill(m_slots.begin(), m_slots.end(), SlotPtr());
-        else
-            m_slots.clear();
-    }
+    void clear();
 
-    void connectTracker(SignalHolder::Tracker& tracker) const {
-        m_trackers.insert(&tracker);
-    }
-
-    void disconnectTracker(SignalHolder::Tracker& tracker) const {
-        m_trackers.erase(&tracker);
-    }
+    void connectTracker(SignalHolder::Tracker& tracker) const;
+    void disconnectTracker(SignalHolder::Tracker& tracker) const;
 
 protected:
     ConstIterator begin() const { return m_slots.begin(); }
@@ -103,17 +80,10 @@ protected:
     Iterator end() { return m_slots.end(); }
 
     /// Connect a slot to this signal. Must only be called by child classes.
-    SlotID connect(const SlotPtr& slot) const {
-        return m_slots.insert(m_slots.end(), slot);
-    }
+    SlotID connect(const SlotPtr& slot) const;
 
     void begin_emitting() { ++m_emitting; }
-    void end_emitting() {
-        if(--m_emitting == 0) {
-            // remove elements which belonged slots that detached themselves
-            m_slots.erase(std::remove(m_slots.begin(), m_slots.end(), SlotPtr()), m_slots.end());
-        }
-    }
+    void end_emitting();
 private:
     typedef std::set<Tracker*> Trackers;
     mutable SlotList m_slots; ///< all slots connected to a signal
@@ -227,6 +197,9 @@ public:
 /**
  * Tracks a signal during it's life time. All signals connected using \c
  * SignalTracker::join will be erased when this instance dies.
+ *
+ * Only join/joinSlot are templates (for the type check); the bookkeeping is
+ * compiled once, in Signal.cc.
  */
 class SignalTracker: public SigImpl::SignalHolder::Tracker {
 public:
@@ -235,9 +208,8 @@ public:
                      SigImpl::SignalHolder::SlotID> Connections;
     typedef Connections::iterator TrackID; ///< \c ID type for join/leave.
 
-    ~SignalTracker() {
-        leaveAll();
-    }
+    SignalTracker();
+    ~SignalTracker();
 
     /// Starts tracking a signal.
     /// @return A tracking ID
@@ -252,57 +224,32 @@ public:
     TrackID
     joinSlot(const Signal<Arg1, Arg2, Arg3> &sig,
             const RefCount<Slot<void, Arg1, Arg2, Arg3> > &slot) {
-
-        ValueType value = ValueType(&sig, sig.connectSlot(slot));
-        std::pair<TrackID, bool> ret = m_connections.insert(value);
-        if ( !ret.second ) {
-            // failed to insert this functor
-            sig.disconnect(value.second);
-        }
-
-        sig.connectTracker(*this);
-
-        return ret.first;
+        return track(sig, sig.connectSlot(slot));
     }
 
     /// Leave tracking for a signal
-    /// @param id the \c id from the previous \c join 
-   void leave(TrackID id) {
-       // keep temporary, while disconnecting we can
-       // in some strange cases get a call to this again
-        ValueType tmp = *id;
-        m_connections.erase(id);
-        tmp.first->disconnect(tmp.second);
-        tmp.first->disconnectTracker(*this);
-    }
+    /// @param id the \c id from the previous \c join
+    void leave(TrackID id);
 
     /// Leave tracking for a signal
     /// @param sig the signal to leave
-    template <typename Signal>
-    void leave(Signal &sig) {
-        Iterator it = m_connections.find(&sig);
-        if (it != m_connections.end()) {
-            leave(it);
-        }
-    }
+    void leave(const SigImpl::SignalHolder &sig);
 
-
-    void leaveAll() {
-        // disconnect all connections
-        for ( ; !m_connections.empty(); ) {
-            leave(m_connections.begin());
-        }
-    }
+    void leaveAll();
 
 protected:
 
-    virtual void disconnect(SigImpl::SignalHolder& signal) {
-        m_connections.erase(&signal);
-    }
+    virtual void disconnect(SigImpl::SignalHolder& signal);
 
 private:
     typedef Connections::value_type ValueType;
     typedef Connections::iterator Iterator;
+
+    /// Remember the connection \c slot to \c sig; a second connection to the
+    /// same signal is refused (the slot is disconnected again) and the first
+    /// one's id is returned.
+    TrackID track(const SigImpl::SignalHolder &sig, SigImpl::SignalHolder::SlotID slot);
+
     /// holds all connections to different signals and slots.
     Connections m_connections;
 };
