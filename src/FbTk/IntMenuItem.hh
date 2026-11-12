@@ -77,9 +77,8 @@ public:
         }
     }
 
-    void updateLabel() {
-        setLabel(m_org_label.logical() + ":  " + FbTk::StringUtil::number2String(m_res));
-    }
+    /// defined in MenuItem.cc
+    void updateLabel();
 
 private:
     FbTk::BiDiString m_org_label; ///< original label

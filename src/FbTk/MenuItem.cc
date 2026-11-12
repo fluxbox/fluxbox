@@ -28,6 +28,9 @@
 #include "GContext.hh"
 #include "PixmapWithMask.hh"
 #include "StringUtil.hh"
+// IntMenuItem.hh's inline code needs Menu and Accessor complete: keep last
+#include "Accessor.hh"
+#include "IntMenuItem.hh"
 
 #include <X11/keysym.h>
 
@@ -35,6 +38,16 @@
 namespace FbTk {
 
 MenuItem::~MenuItem() { }
+
+void MenuItem::setLabel(const BiDiString &label) {
+    m_label = label;
+}
+
+// IntMenuItem is header-only otherwise; its label building lives here so
+// the string concatenation is compiled once, not in every user's file
+void IntMenuItem::updateLabel() {
+    setLabel(m_org_label.logical() + ":  " + StringUtil::number2String(m_res));
+}
 
 void MenuItem::click(int button, int time, unsigned int mods) {
     if (m_command.get() != 0) {

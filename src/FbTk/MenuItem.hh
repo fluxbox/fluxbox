@@ -95,7 +95,7 @@ public:
     void setCommand(RefCount<Command<void> > &cmd) { m_command = cmd; }
     virtual void setSelected(bool selected) { m_selected = selected; }
     virtual void setEnabled(bool enabled) { m_enabled = enabled; }
-    virtual void setLabel(const BiDiString &label) { m_label = label; }
+    virtual void setLabel(const BiDiString &label);
     virtual void setToggleItem(bool val) { m_toggle_item = val; }
     void setCloseOnClick(bool val) { m_close_on_click = val; }
     void setIcon(const std::string &filename, int screen_num);

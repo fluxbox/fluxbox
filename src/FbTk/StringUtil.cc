@@ -418,6 +418,34 @@ string::size_type removeTrailingWhitespace(string &str) {
     return first_pos;
 }
 
+void splitTokens(const std::string &in, const char *delimiters,
+                 void (*add)(void *ctx, const char *start, std::string::size_type length),
+                 void *ctx) {
+
+    const std::string::size_type len = in.length();
+    std::string::size_type i = 0;
+
+    while ( i < len ) {
+        // eat leading whitespace
+        i = in.find_first_not_of(delimiters, i);
+        if (i == std::string::npos)
+            return;   // nothing left but white space
+
+        // find the end of the token
+        std::string::size_type j = in.find_first_of(delimiters, i);
+
+        // push token
+        if (j == std::string::npos) {
+            add(ctx, in.data() + i, len - i);
+            return;
+        } else
+            add(ctx, in.data() + i, j - i);
+
+        // set up for next loop
+        i = j + 1;
+    }
+}
+
 void getFirstWord(const std::string &in, std::string &word, std::string &rest) {
     word = in;
     string::size_type first_pos = StringUtil::removeFirstWhitespace(word);

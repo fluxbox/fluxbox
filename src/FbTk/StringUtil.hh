@@ -122,34 +122,25 @@ static void stringTokensBetween(Container &container, const std::string &in,
 
 }
 
-/// Breaks a string into tokens
+/// Splits in at delimiters and calls add(ctx, start, length) for every
+/// token, in order; out of line in StringUtil.cc
+void splitTokens(const std::string &in, const char *delimiters,
+                 void (*add)(void *ctx, const char *start, std::string::size_type length),
+                 void *ctx);
+
+/// Breaks a string into tokens, appended to container with push_back.
+/// The tokenizing is compiled once in StringUtil.cc; only the small
+/// push_back adapter is generated per container type.
 template <typename Container>
-static void
+void
 stringtok (Container &container, std::string const &in,
            const char * const delimiters = " \t\n") {
-
-    const std::string::size_type len = in.length();
-    std::string::size_type i = 0;
-
-    while ( i < len ) {
-        // eat leading whitespace
-        i = in.find_first_not_of(delimiters, i);
-        if (i == std::string::npos)
-            return;   // nothing left but white space
-
-        // find the end of the token
-        std::string::size_type j = in.find_first_of(delimiters, i);
-
-        // push token
-        if (j == std::string::npos) {
-            container.push_back(in.substr(i));
-            return;
-        } else
-            container.push_back(in.substr(i, j-i));
-
-        // set up for next loop
-        i = j + 1;
-    }
+    struct Adder {
+        static void add(void *ctx, const char *start, std::string::size_type length) {
+            static_cast<Container *>(ctx)->push_back(std::string(start, length));
+        }
+    };
+    splitTokens(in, delimiters, &Adder::add, &container);
 }
 
 /// Joins the elements of a container, with the separator between them
