@@ -39,7 +39,72 @@
 
 namespace FbTk {
 
+MenuItem::MenuItem()
+    : m_label(BiDiString("")),
+      m_menu(0),
+      m_submenu(0),
+      m_enabled(true),
+      m_selected(false),
+      m_close_on_click(true),
+      m_toggle_item(false)
+{ }
+
+MenuItem::MenuItem(const BiDiString &label)
+    : m_label(label),
+      m_menu(0),
+      m_submenu(0),
+      m_enabled(true),
+      m_selected(false),
+      m_close_on_click(true),
+      m_toggle_item(false)
+{ }
+
+MenuItem::MenuItem(const BiDiString &label, Menu &host_menu)
+    : m_label(label),
+      m_menu(&host_menu),
+      m_submenu(0),
+      m_enabled(true),
+      m_selected(false),
+      m_close_on_click(true),
+      m_toggle_item(false)
+{ }
+
+MenuItem::MenuItem(const BiDiString &label, RefCount<Command<void> > &cmd, Menu *menu)
+    : m_label(label),
+      m_menu(menu),
+      m_submenu(0),
+      m_command(cmd),
+      m_enabled(true),
+      m_selected(false),
+      m_close_on_click(true),
+      m_toggle_item(false)
+{ }
+
+MenuItem::MenuItem(const BiDiString &label, Menu *submenu, Menu *host_menu)
+    : m_label(label),
+      m_menu(host_menu),
+      m_submenu(submenu),
+      m_enabled(true),
+      m_selected(false),
+      m_close_on_click(true),
+      m_toggle_item(false)
+{ }
+
 MenuItem::~MenuItem() { }
+
+void MenuItem::setSelected(bool selected) { m_selected = selected; }
+void MenuItem::setEnabled(bool enabled) { m_enabled = enabled; }
+void MenuItem::setToggleItem(bool val) { m_toggle_item = val; }
+
+Menu *MenuItem::submenu() { return m_submenu; }
+const Menu *MenuItem::submenu() const { return m_submenu; }
+const BiDiString &MenuItem::label() const { return m_label; }
+const PixmapWithMask *MenuItem::icon() const {
+    return m_icon.get() ? m_icon->pixmap.get() : 0;
+}
+bool MenuItem::isEnabled() const { return m_enabled; }
+bool MenuItem::isSelected() const { return m_selected; }
+bool MenuItem::isToggleItem() const { return m_toggle_item; }
 
 void MenuItem::setLabel(const BiDiString &label) {
     m_label = label;
