@@ -27,6 +27,8 @@
 class FbRootWindow: public FbTk::FbWindow {
 public:
     explicit FbRootWindow(int screen_num);
+    /// out of line: anchors the vtable in FbRootWindow.cc
+    virtual ~FbRootWindow();
     // disable functions that we can't do on root window
     void move(int x, int y) { }
     void resize(unsigned int width, unsigned int height) { }

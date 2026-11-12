@@ -137,6 +137,9 @@ REGISTER_UNTRUSTED_COMMAND_WITH_ARGS(exec, FbCommands::ExecuteCmd, void);
 REGISTER_UNTRUSTED_COMMAND_WITH_ARGS(execute, FbCommands::ExecuteCmd, void);
 REGISTER_UNTRUSTED_COMMAND_WITH_ARGS(execcommand, FbCommands::ExecuteCmd, void);
 
+SpawnCmd::~SpawnCmd() {
+}
+
 ExecuteCmd::ExecuteCmd(const string &cmd, int screen_num):m_cmd(cmd), m_screen_num(screen_num) {
 
 }

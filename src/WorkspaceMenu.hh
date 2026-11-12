@@ -37,7 +37,8 @@ class BScreen;
 class WorkspaceMenu: public FbMenu, private FbTk::SignalTracker {
 public:
     explicit WorkspaceMenu(BScreen &screen);
-    virtual ~WorkspaceMenu() { }
+    /// out of line: anchors the vtable in WorkspaceMenu.cc
+    virtual ~WorkspaceMenu();
 
 private:
     /// initialize menu for the screen

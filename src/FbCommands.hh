@@ -57,6 +57,8 @@ class SpawnCmd: public FbTk::Command<void> {
 public:
     explicit SpawnCmd(const std::vector<std::string> &args, int screen_num = -1):
         m_args(args), m_screen_num(screen_num) { }
+    /// out of line: anchors the vtable in FbCommands.cc
+    virtual ~SpawnCmd();
     void execute() { spawn(m_args, m_screen_num); }
 private:
     std::vector<std::string> m_args;

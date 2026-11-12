@@ -28,9 +28,11 @@
 #include "GContext.hh"
 #include "PixmapWithMask.hh"
 #include "StringUtil.hh"
-// IntMenuItem.hh's inline code needs Menu and Accessor complete: keep last
+// the menu item headers' inline code needs Menu and Accessor complete: keep last
 #include "Accessor.hh"
 #include "IntMenuItem.hh"
+#include "BoolMenuItem.hh"
+#include "RadioMenuItem.hh"
 
 #include <X11/keysym.h>
 
@@ -48,6 +50,13 @@ void MenuItem::setLabel(const BiDiString &label) {
 void IntMenuItem::updateLabel() {
     setLabel(m_org_label.logical() + ":  " + StringUtil::number2String(m_res));
 }
+
+// Key functions: a polymorphic class whose virtual functions are all inline
+// gets its vtable, and every inline virtual (MenuItem's included), emitted in
+// each file using it. One out-of-line virtual destructor emits them here once.
+IntMenuItem::~IntMenuItem() { }
+BoolMenuItem::~BoolMenuItem() { }
+RadioMenuItem::~RadioMenuItem() { }
 
 void MenuItem::click(int button, int time, unsigned int mods) {
     if (m_command.get() != 0) {

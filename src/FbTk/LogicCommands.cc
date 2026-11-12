@@ -79,6 +79,12 @@ REGISTER_COMMAND_PARSER(xor, parseLogicCommand, bool);
 
 } // end anonymous namespace
 
+IfCommand::~IfCommand() {
+}
+
+NotCommand::~NotCommand() {
+}
+
 Command<void> *IfCommand::parse(const std::string &command, const std::string &args,
                           bool trusted) {
     std::string blah;

@@ -28,6 +28,9 @@
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/I18n.hh"
 
+LayerMenuItem::~LayerMenuItem() {
+}
+
 LayerMenu::LayerMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
                      FbTk::ImageControl &imgctrl,
                      FbTk::Layer &layer, LayerObject *object, bool save_rc):

@@ -47,6 +47,9 @@ public:
                   int layernum):
         FbTk::RadioMenuItem(label), m_object(object), m_layernum(layernum) {}
 
+    /// out of line: anchors the vtable in LayerMenu.cc
+    virtual ~LayerMenuItem();
+
     bool isSelected() const { return m_object->layerNumber() == m_layernum; }
     void click(int button, int time, unsigned int mods) {
         m_object->moveToLayer(m_layernum);

@@ -24,6 +24,9 @@
 #include "FbTk/App.hh"
 #include <X11/Xutil.h>
 
+FbRootWindow::~FbRootWindow() {
+}
+
 FbRootWindow::FbRootWindow(int screen_num):
     FbTk::FbWindow(RootWindow(FbTk::App::instance()->display(), screen_num)),
     m_visual(0),

@@ -34,7 +34,8 @@ public:
                FbTk::ImageControl &imgctrl, FbTk::Layer &layer):
         FbMenu(tm, imgctrl, layer) { }
 
-    virtual ~ToggleMenu() {}
+    /// out of line (FbMenu.cc): anchors the vtable in one object file
+    virtual ~ToggleMenu();
     void buttonReleaseEvent(XButtonEvent &ev) {
 
 

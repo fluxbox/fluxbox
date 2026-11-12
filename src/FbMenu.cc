@@ -20,6 +20,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "FbMenu.hh"
+#include "ToggleMenu.hh"
 
 #include "fluxbox.hh"
 #include "Screen.hh"
@@ -37,6 +38,11 @@ FluxboxWindow* FbMenu::window() { return s_window; }
 
 
 FbMenu::~FbMenu() {
+}
+
+// ToggleMenu is header-only otherwise: its out-of-line destructor is the key
+// function that emits its vtable here once, not in every file using it
+ToggleMenu::~ToggleMenu() {
 }
 
 FbMenu::FbMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,

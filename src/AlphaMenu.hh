@@ -53,6 +53,8 @@ public:
         setToggleItem(true);
         setCloseOnClick(false);
     }
+    /// out of line: anchors the vtable in AlphaMenu.cc
+    virtual ~AlphaMenuSelectItem();
 
     bool isSelected() const {
         static ConstWindowMenuAccessor<bool> s_is_default(&FluxboxWindow::getUseDefaultAlpha, true);

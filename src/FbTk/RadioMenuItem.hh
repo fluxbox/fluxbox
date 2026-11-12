@@ -52,7 +52,8 @@ public:
         setToggleItem(true);
     }
 
-    virtual ~RadioMenuItem() { }
+    /// out of line (MenuItem.cc): anchors the vtable, see MenuItem.cc
+    virtual ~RadioMenuItem();
 
     virtual bool isSelected() const = 0;
     bool isEnabled() const { return !isSelected(); }

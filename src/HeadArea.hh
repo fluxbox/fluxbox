@@ -31,6 +31,8 @@ class Strut;
 class HeadArea: private FbTk::NotCopyable {
 public:
     HeadArea();
+    /// out of line: anchors the vtable in HeadArea.cc
+    virtual ~HeadArea();
 
     Strut *requestStrut(int head, int left, int right, int top, int bottom, Strut* next = 0);
     void clearStrut(Strut *str);
