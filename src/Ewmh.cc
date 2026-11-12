@@ -198,10 +198,27 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
     Drawable parent = winclient.screen().rootWindow().drawable();
     unsigned int depth = DefaultDepth(dpy, scrn);
 
-    // pick the smallest icon size atm
-    // TODO: find a better criteria
-    width = icon_data.begin()->first.first;
-    height = icon_data.begin()->first.second;
+    // The one icon serves the iconbar, the titlebar and the menus,
+    // mostly at 14 to 24 pixels. FbPixmap::scale() averages pixels when
+    // shrinking but can only repeat them when growing, so pick the
+    // smallest icon of at least 32 pixels; if there is none, the
+    // biggest one. 32 rather than 48: 32 -> 16 is an exact 2:1 that
+    // keeps 1 pixel outlines, while 48 -> 16 (3:1) can drop an outline
+    // that sits off the 3 pixel grid (seen with ghostty's bezel), and
+    // 32 pixel icons tend to have less empty margin. icon_data is
+    // sorted by width, then height.
+    const unsigned long wanted_size = 32;
+    IconContainer::const_iterator best = icon_data.begin();
+    for (IconContainer::const_iterator it = icon_data.begin();
+         it != icon_data.end(); ++it) {
+        best = it;
+        if (static_cast<unsigned long>(it->first.first) >= wanted_size &&
+            static_cast<unsigned long>(it->first.second) >= wanted_size) {
+            break;
+        }
+    }
+    width = best->first.first;
+    height = best->first.second;
 
     // tmp image for the pixmap
     XImage* img_pm = XCreateImage(dpy, DefaultVisual(dpy, scrn), depth,
@@ -228,7 +245,7 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
     img_mask->data = static_cast<char*>(malloc(img_mask->bytes_per_line * height));
 
 
-    const unsigned long* src = icon_data.begin()->second;
+    const unsigned long* src = best->second;
     unsigned int rgba;
     unsigned long pixel;
     unsigned long x;
