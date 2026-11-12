@@ -311,16 +311,18 @@ void WinButton::updateAll() {
         Drawable d = m_listen_to.icon().pixmap().drawable();
         if (d != None) {
              m_icon_pixmap.copy(d, DefaultDepth(display, screen), screen);
-             m_icon_pixmap.scale(w, h);
-        } else
+        } else {
             m_icon_pixmap.release();
+        }
 
         d = m_listen_to.icon().mask().drawable();
         if (d != None) {
             m_icon_mask.copy(d, 0, 0);
-            m_icon_mask.scale(w, h);
-        } else
+        } else {
             m_icon_mask.release();
+        }
+
+        m_icon_pixmap.scaleWithMask(m_icon_mask, w, h);
 
     }
 

@@ -48,8 +48,12 @@ public:
     void copy(Pixmap pixmap, unsigned int depth_convert, int screen_num);
     /// rotates the pixmap to specified orientation (assumes ROT0 now)
     void rotate(FbTk::Orientation orient);
-    /// scales the pixmap to specified size
+    /// scales the pixmap to specified size. Shrinking averages the
+    /// covered source pixels, growing repeats the nearest one.
     void scale(unsigned int width, unsigned int height);
+    /// scales the pixmap and its 1 bit shape mask in one go, so both
+    /// stay aligned and only opaque pixels give the shrunk colors
+    void scaleWithMask(FbPixmap &mask, unsigned int width, unsigned int height);
     void resize(unsigned int width, unsigned int height);
     /// tiles the pixmap to specified size
     void tile(unsigned int width, unsigned int height);
@@ -78,6 +82,8 @@ public:
 
 private:
     void free();
+    /// replaces the pixmap with one holding 'image'
+    void replaceWith(XImage *image);
 
     Pixmap m_pm;
     unsigned int m_width, m_height;

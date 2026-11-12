@@ -204,11 +204,18 @@ void IconButton::refreshEverything(bool setup) {
 
         m_icon_pixmap.copy(m_win.icon().pixmap().drawable(),
                            DefaultDepth(display, screen), screen);
-        m_icon_pixmap.scale(m_icon_window.width(), m_icon_window.height());
+        if (m_win.icon().mask().drawable() != None) {
+            m_icon_mask.copy(m_win.icon().mask().drawable(), 0, 0);
+        } else {
+            m_icon_mask = 0;
+        }
+        m_icon_pixmap.scaleWithMask(m_icon_mask,
+                                    m_icon_window.width(), m_icon_window.height());
 
-        // rotate the icon or not?? lets go not for now, and see what they say...
-        // need to rotate mask too if we do do this
         m_icon_pixmap.rotate(orientation());
+        if (m_icon_mask.drawable() != None) {
+            m_icon_mask.rotate(orientation());
+        }
 
         m_icon_window.setBackgroundPixmap(m_icon_pixmap.drawable());
     } else {
@@ -216,14 +223,8 @@ void IconButton::refreshEverything(bool setup) {
         m_icon_window.move(0, 0);
         m_icon_window.hide();
         m_icon_pixmap = 0;
-    }
-
-    if(m_icon_pixmap.drawable() && m_win.icon().mask().drawable() != None) {
-        m_icon_mask.copy(m_win.icon().mask().drawable(), 0, 0);
-        m_icon_mask.scale(m_icon_pixmap.width(), m_icon_pixmap.height());
-        m_icon_mask.rotate(orientation());
-    } else
         m_icon_mask = 0;
+    }
 
 #ifdef SHAPE
 

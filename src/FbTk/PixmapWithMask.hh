@@ -31,8 +31,7 @@ public:
     PixmapWithMask(Pixmap pm, Pixmap mask):m_pixmap(pm), m_mask(mask) { }
 
     void scale(unsigned int width, unsigned int height) {
-        pixmap().scale(width, height);
-        mask().scale(width, height);
+        pixmap().scaleWithMask(mask(), width, height);
     }
     unsigned int width() const { return m_pixmap.width(); }
     unsigned int height() const { return m_pixmap.height(); }

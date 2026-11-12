@@ -121,8 +121,7 @@ void MenuItem::draw(FbDrawable &draw,
             if ((h - (2*bevel)) != static_cast<int>(tmp_pixmap.height())) {
                 int scale_size = h - 2*bevel;
                 if (scale_size > 0) {
-                    tmp_pixmap.scale(scale_size, scale_size);
-                    tmp_mask.scale(scale_size, scale_size);
+                    tmp_pixmap.scaleWithMask(tmp_mask, scale_size, scale_size);
                 }
             }
 

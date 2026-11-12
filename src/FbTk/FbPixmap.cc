@@ -29,6 +29,7 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <iostream>
+#include <algorithm>
 #include <vector>
 #ifdef HAVE_CSTRING
   #include <cstring>
@@ -89,6 +90,216 @@ XImage *createImageLike(Display *display, const XImage *src,
     }
 
     return image;
+}
+
+// X pixmap sizes are 16 bit; bigger values would also overflow
+// the line size XCreateImage() computes in older libX11
+const unsigned int MAX_SCALE_SIZE = 65535;
+
+bool validScaleSize(unsigned int width, unsigned int height) {
+    return width > 0 && height > 0 &&
+        width <= MAX_SCALE_SIZE && height <= MAX_SCALE_SIZE;
+}
+
+// one color component of a pixel value
+struct Channel {
+    unsigned long mask;
+    unsigned int shift;
+};
+
+const size_t MAX_CHANNELS = 4;
+
+void addChannel(Channel *channels, size_t &nr, unsigned long mask) {
+    if (mask == 0 || nr == MAX_CHANNELS) {
+        return;
+    }
+    unsigned int shift = 0;
+    while (((mask >> shift) & 1) == 0) {
+        ++shift;
+    }
+    channels[nr].mask = mask;
+    channels[nr].shift = shift;
+    ++nr;
+}
+
+// Splits the pixel values of 'depth' bit pixmaps on the screen of
+// 'drawable' into red, green, blue and whatever is left (the alpha of
+// a 32 bit ARGB visual). Returns 0 if there is no TrueColor or
+// DirectColor visual of that depth: then the bits are no intensities
+// and must not be averaged.
+size_t colorChannels(Display *display, Drawable drawable,
+                     unsigned int depth, Channel *channels) {
+
+    if (depth < 2 || depth > 32) {
+        return 0;
+    }
+
+    Window root;
+    int x, y;
+    unsigned int w, h, border, d;
+    if (!XGetGeometry(display, drawable, &root, &x, &y, &w, &h, &border, &d)) {
+        return 0;
+    }
+
+    int screen = 0;
+    for (int i = 0; i < ScreenCount(display); ++i) {
+        if (RootWindow(display, i) == root) {
+            screen = i;
+            break;
+        }
+    }
+
+    XVisualInfo info;
+    Visual *visual = DefaultVisual(display, screen);
+    if (static_cast<unsigned int>(DefaultDepth(display, screen)) == depth &&
+        (visual->c_class == TrueColor || visual->c_class == DirectColor)) {
+        info.red_mask = visual->red_mask;
+        info.green_mask = visual->green_mask;
+        info.blue_mask = visual->blue_mask;
+    } else if (!XMatchVisualInfo(display, screen, depth, TrueColor, &info)) {
+        return 0;
+    }
+
+    unsigned long all = (depth == 32) ? 0xffffffffUL : ((1UL << depth) - 1);
+    size_t nr = 0;
+    addChannel(channels, nr, info.red_mask & all);
+    addChannel(channels, nr, info.green_mask & all);
+    addChannel(channels, nr, info.blue_mask & all);
+    addChannel(channels, nr,
+               all & ~(info.red_mask | info.green_mask | info.blue_mask));
+    return nr;
+}
+
+// a source pixel and how much of it a destination pixel covers
+struct Tap {
+    unsigned int index;
+    unsigned long long weight;
+};
+
+// Lists the source pixels behind each of the 'dst' destination pixels
+// along one axis; the taps of pixel i are taps[first[i]..first[i+1]).
+// Shrinking ('smooth' and src > dst) uses every source pixel the
+// destination pixel overlaps, weighted by the overlap. Otherwise the
+// source pixel under the center of the destination pixel is used.
+void makeTaps(unsigned int src, unsigned int dst, bool smooth,
+              std::vector<Tap> &taps, std::vector<size_t> &first) {
+
+    const unsigned long long s = src, d = dst;
+
+    taps.clear();
+    first.clear();
+    for (unsigned long long i = 0; i < d; ++i) {
+        first.push_back(taps.size());
+
+        if (!smooth || s <= d) {
+            Tap tap = { static_cast<unsigned int>((2 * i + 1) * s / (2 * d)), 1 };
+            taps.push_back(tap);
+            continue;
+        }
+
+        // in units of 1/(s*d): destination pixel i covers
+        // [i*s, (i+1)*s), source pixel j covers [j*d, (j+1)*d)
+        const unsigned long long begin = i * s, end = (i + 1) * s;
+        for (unsigned long long j = begin / d; j * d < end; ++j) {
+            unsigned long long from = std::max(begin, j * d);
+            unsigned long long to = std::min(end, (j + 1) * d);
+            Tap tap = { static_cast<unsigned int>(j), to - from };
+            taps.push_back(tap);
+        }
+    }
+    first.push_back(taps.size());
+}
+
+// Scales 'src' and / or the 1 bit 'src_mask' (same size) into 'dest'
+// and 'dest_mask'. A set mask bit is an opaque pixel. The colors of a
+// shrunk pixel are the average of its opaque source pixels (of all, if
+// none is opaque), so the transparent background does not bleed into
+// the edges. A destination mask bit is set if at least half of the
+// covered area is opaque. Lower thresholds keep thin outlines at odd
+// ratios, but turn the rim of round shapes into single stray pixels
+// whose color comes from one or two source pixels; shrinking by 2:1
+// (see the icon choice in Ewmh.cc) keeps outlines with this rule.
+// Without channels the colors cannot be averaged, so both images use
+// the nearest pixel.
+void scaleImages(const XImage *src, const XImage *src_mask,
+                 XImage *dest, XImage *dest_mask,
+                 const Channel *channels, size_t nr_channels) {
+
+    const XImage *ref = src ? src : src_mask;
+    const XImage *out = dest ? dest : dest_mask;
+    const unsigned int src_w = ref->width, src_h = ref->height;
+    const unsigned int dest_w = out->width, dest_h = out->height;
+    const bool smooth = (src == 0 || nr_channels > 0);
+
+    std::vector<Tap> taps_x, taps_y;
+    std::vector<size_t> first_x, first_y;
+    makeTaps(src_w, dest_w, smooth, taps_x, first_x);
+    makeTaps(src_h, dest_h, smooth, taps_y, first_y);
+
+    // XGetPixel() takes a non-const XImage
+    XImage *in = const_cast<XImage *>(src);
+    XImage *in_mask = const_cast<XImage *>(src_mask);
+
+    for (unsigned int ty = 0; ty < dest_h; ++ty) {
+        for (unsigned int tx = 0; tx < dest_w; ++tx) {
+
+            unsigned long long total = 0, opaque = 0;
+            unsigned long long sum_all[MAX_CHANNELS] = { 0 };
+            unsigned long long sum_opaque[MAX_CHANNELS] = { 0 };
+            unsigned long pixel = 0;
+
+            for (size_t ny = first_y[ty]; ny < first_y[ty + 1]; ++ny) {
+                const Tap &tap_y = taps_y[ny];
+                for (size_t nx = first_x[tx]; nx < first_x[tx + 1]; ++nx) {
+                    const Tap &tap_x = taps_x[nx];
+                    const unsigned long long w = tap_x.weight * tap_y.weight;
+                    const bool on = in_mask == 0 ||
+                        XGetPixel(in_mask, tap_x.index, tap_y.index) != 0;
+
+                    total += w;
+                    if (on) {
+                        opaque += w;
+                    }
+
+                    if (in == 0) {
+                        continue;
+                    }
+
+                    pixel = XGetPixel(in, tap_x.index, tap_y.index);
+                    for (size_t c = 0; c < nr_channels; ++c) {
+                        unsigned long long v =
+                            (pixel & channels[c].mask) >> channels[c].shift;
+                        sum_all[c] += v * w;
+                        if (on) {
+                            sum_opaque[c] += v * w;
+                        }
+                    }
+                }
+            }
+
+            if (dest_mask) {
+                XPutPixel(dest_mask, tx, ty, (2 * opaque >= total) ? 1 : 0);
+            }
+
+            if (dest == 0) {
+                continue;
+            }
+
+            if (nr_channels > 0) {
+                const unsigned long long *sum = opaque ? sum_opaque : sum_all;
+                const unsigned long long div = opaque ? opaque : total;
+                pixel = 0;
+                for (size_t c = 0; c < nr_channels; ++c) {
+                    unsigned long long v = (sum[c] + div / 2) / div;
+                    pixel |= (static_cast<unsigned long>(v) << channels[c].shift)
+                        & channels[c].mask;
+                }
+            }
+            // else: a single tap, 'pixel' is the nearest source pixel
+
+            XPutPixel(dest, tx, ty, pixel);
+        }
+    }
 }
 
 } // end of anonymous namespace
@@ -332,33 +543,27 @@ void FbPixmap::rotate(FbTk::Orientation orient) {
 
 void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
 
-    // X pixmap sizes are 16 bit; bigger values would also overflow
-    // the line size XCreateImage() computes in older libX11
-    const unsigned int max_size = 65535;
-
     if (drawable() == 0 ||
-        (dest_width == width() && dest_height == height()))
+        (dest_width == width() && dest_height == height()) ||
+        !validScaleSize(dest_width, dest_height)) {
         return;
-
-    if (dest_width == 0 || dest_height == 0 ||
-        dest_width > max_size || dest_height > max_size)
-        return;
+    }
 
     XImage *src_image = XGetImage(display(), drawable(),
                                   0, 0, // pos
                                   width(), height(), // size
                                   ~0, // plane mask
                                   ZPixmap); // format
-    if (src_image == 0)
+    if (src_image == 0) {
         return;
+    }
 
     // TODO: with XRender the server could scale: wrap source and
-    // destination in Pictures, set a scaling transform and a filter
-    // ("nearest" gives the same result as this code), then call
-    // XRenderComposite() once. Issues: XRender is optional at build and
-    // run time, so this code stays as the fallback; not every depth has
-    // a Picture format; a pixmap and its mask have to take the same
-    // path and filter, or they can end up a pixel apart.
+    // destination in Pictures, set a scaling transform and a filter,
+    // then call XRenderComposite() once. Issues: XRender is optional at
+    // build and run time, so this code stays as the fallback; not every
+    // depth has a Picture format; a pixmap and its mask have to take
+    // the same path and filter, or they can end up a pixel apart.
     XImage *dest_image = createImageLike(display(), src_image,
                                          dest_width, dest_height);
     if (dest_image == 0) {
@@ -366,32 +571,71 @@ void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
         return;
     }
 
-    // calc zoom
-    float zoom_x = static_cast<float>(width())/static_cast<float>(dest_width);
-    float zoom_y = static_cast<float>(height())/static_cast<float>(dest_height);
-
-    // start scaling
-    float src_x = 0, src_y = 0;
-    for (unsigned int tx=0; tx < dest_width; ++tx, src_x += zoom_x) {
-        src_y = 0;
-        for (unsigned int ty=0; ty < dest_height; ++ty, src_y += zoom_y) {
-            XPutPixel(dest_image, tx, ty,
-                      XGetPixel(src_image,
-                                static_cast<int>(src_x),
-                                static_cast<int>(src_y)));
-        }
+    if (depth() == 1) {
+        // a mask: keep the pixels which are at least half covered
+        scaleImages(0, src_image, 0, dest_image, 0, 0);
+    } else {
+        Channel channels[MAX_CHANNELS];
+        size_t nr = colorChannels(display(), drawable(), depth(), channels);
+        scaleImages(src_image, 0, dest_image, 0, channels, nr);
     }
 
     XDestroyImage(src_image);
+    replaceWith(dest_image);
+    XDestroyImage(dest_image);
+}
 
-    // create new pixmap with dest size
-    FbPixmap new_pm(drawable(), dest_width, dest_height, depth());
+void FbPixmap::scaleWithMask(FbPixmap &mask,
+                             unsigned int dest_width, unsigned int dest_height) {
+
+    if (drawable() == 0 || mask.drawable() == 0 || mask.depth() != 1 ||
+        mask.width() != width() || mask.height() != height()) {
+        scale(dest_width, dest_height);
+        mask.scale(dest_width, dest_height);
+        return;
+    }
+
+    if ((dest_width == width() && dest_height == height()) ||
+        !validScaleSize(dest_width, dest_height)) {
+        return;
+    }
+
+    XImage *src_image = XGetImage(display(), drawable(), 0, 0,
+                                  width(), height(), ~0, ZPixmap);
+    XImage *src_mask = XGetImage(display(), mask.drawable(), 0, 0,
+                                 width(), height(), ~0, ZPixmap);
+    XImage *dest_image = 0;
+    XImage *dest_mask = 0;
+    if (src_image && src_mask) {
+        dest_image = createImageLike(display(), src_image,
+                                     dest_width, dest_height);
+        dest_mask = createImageLike(display(), src_mask,
+                                    dest_width, dest_height);
+    }
+
+    if (dest_image && dest_mask) {
+        Channel channels[MAX_CHANNELS];
+        size_t nr = colorChannels(display(), drawable(), depth(), channels);
+        scaleImages(src_image, src_mask, dest_image, dest_mask, channels, nr);
+        replaceWith(dest_image);
+        mask.replaceWith(dest_mask);
+    }
+
+    XImage *images[] = { src_image, src_mask, dest_image, dest_mask };
+    for (size_t i = 0; i < sizeof(images) / sizeof(images[0]); ++i) {
+        if (images[i]) {
+            XDestroyImage(images[i]);
+        }
+    }
+}
+
+void FbPixmap::replaceWith(XImage *image) {
+
+    FbPixmap new_pm(drawable(), image->width, image->height, depth());
 
     GContext gc(drawable());
-    XPutImage(display(), new_pm.drawable(), gc.gc(), dest_image,
-              0, 0, 0, 0, dest_width, dest_height);
-
-    XDestroyImage(dest_image);
+    XPutImage(display(), new_pm.drawable(), gc.gc(), image,
+              0, 0, 0, 0, image->width, image->height);
 
     // free old pixmap and set new from new_pm
     free();
