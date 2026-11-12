@@ -61,6 +61,9 @@ private:
 
 }
 
+ToolFactory::~ToolFactory() {
+}
+
 ToolFactory::ToolFactory(BScreen &screen):m_screen(screen),
     m_clock_theme(screen.screenNumber(), "toolbar.clock", "Toolbar.Clock"),
     m_button_theme(new ButtonTheme(screen.screenNumber(), "toolbar.button", "Toolbar.Button", 

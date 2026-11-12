@@ -27,6 +27,9 @@
 
 namespace FbTk {
 
+TextTheme::~TextTheme() {
+}
+
 TextTheme::TextTheme(Theme &theme,
                      const std::string &name, const std::string &altname):
     m_font(theme, name + ".font", altname + ".Font"),

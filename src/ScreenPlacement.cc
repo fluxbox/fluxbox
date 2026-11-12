@@ -42,6 +42,9 @@
 using std::cerr;
 using std::endl;
 
+ScreenPlacement::~ScreenPlacement() {
+}
+
 ScreenPlacement::ScreenPlacement(BScreen &screen):
     m_row_direction(screen.resourceManager(), LEFTRIGHT, 
                     screen.name()+".rowPlacementDirection", 

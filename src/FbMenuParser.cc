@@ -24,6 +24,19 @@
 
 #include "FbTk/StringUtil.hh"
 
+FbMenuParser::FbMenuParser():
+    m_in(&m_file), m_row(0), m_curr_pos(0), m_curr_token(TYPE) {
+}
+
+FbMenuParser::FbMenuParser(const std::string &filename):
+    m_in(&m_file), m_row(0), m_curr_pos(0), m_curr_token(TYPE) {
+    open(filename);
+}
+
+FbMenuParser::~FbMenuParser() {
+    close();
+}
+
 bool FbMenuParser::open(const std::string &filename) {
     m_file.open(filename.c_str());
     m_in = &m_file;

@@ -24,6 +24,9 @@
 
 namespace FbTk {
 
+BorderTheme::~BorderTheme() {
+}
+
 BorderTheme::BorderTheme(Theme &theme, const std::string &name,
                          const std::string &altname):
     m_width(theme, name + ".borderWidth", altname + ".BorderWidth"),

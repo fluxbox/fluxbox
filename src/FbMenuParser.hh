@@ -30,10 +30,10 @@
 
 class FbMenuParser: public FbTk::Parser {
 public:
-    FbMenuParser():m_in(&m_file), m_row(0), m_curr_pos(0), m_curr_token(TYPE) {}
-    FbMenuParser(const std::string &filename):m_in(&m_file), m_row(0), m_curr_pos(0),
-                                              m_curr_token(TYPE) { open(filename); }
-    ~FbMenuParser() { close(); }
+    // out of line: constructing/destroying the streams is a lot of code
+    FbMenuParser();
+    FbMenuParser(const std::string &filename);
+    ~FbMenuParser();
 
     bool open(const std::string &filename);
     /// read the menu from text instead of a file

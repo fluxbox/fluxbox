@@ -41,7 +41,7 @@ class FbWindow;
 class ToolFactory:private FbTk::NotCopyable {
 public:
     explicit ToolFactory(BScreen &screen);
-    virtual ~ToolFactory() { }
+    virtual ~ToolFactory();
 
     ToolbarItem *create(const std::string &name, const FbTk::FbWindow &parent, Toolbar &tbar);
     void updateThemes();
