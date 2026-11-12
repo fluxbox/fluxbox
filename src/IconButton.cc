@@ -111,22 +111,33 @@ void IconButton::leaveNotifyEvent(XCrossingEvent &ev) {
     m_win.screen().hideTooltip();
 }
 
+// The background texture and the icon depend on the size only. The
+// iconbar moves and resizes every button whenever a window comes or
+// goes, so skip the rerender and the icon rescale on a plain move.
+// (This compared the icon window with the button before, which never
+// matched, so every move redid both.)
 void IconButton::moveResize(int x, int y,
                             unsigned int width, unsigned int height) {
 
+    const bool resized = (width != FbTk::Button::width() ||
+                          height != FbTk::Button::height());
+
     FbTk::TextButton::moveResize(x, y, width, height);
 
-    if (m_icon_window.width() != FbTk::Button::width() ||
-        m_icon_window.height() != FbTk::Button::height()) {
+    if (resized) {
         reconfigTheme();
         refreshEverything(false); // update icon window
     }
 }
 
 void IconButton::resize(unsigned int width, unsigned int height) {
+
+    const bool resized = (width != FbTk::Button::width() ||
+                          height != FbTk::Button::height());
+
     FbTk::TextButton::resize(width, height);
-    if (m_icon_window.width() != FbTk::Button::width() ||
-        m_icon_window.height() != FbTk::Button::height()) {
+
+    if (resized) {
         reconfigTheme();
         refreshEverything(false); // update icon window
     }
