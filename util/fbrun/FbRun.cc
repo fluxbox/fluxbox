@@ -526,7 +526,7 @@ void FbRun::tabCompleteApps() {
                 }
             }
             sort(m_apps.begin(), m_apps.end());
-            unique(m_apps.begin(), m_apps.end());
+            m_apps.erase(unique(m_apps.begin(), m_apps.end()), m_apps.end());
         }
         tabComplete(m_apps, m_current_apps_item);
     }
