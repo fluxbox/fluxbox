@@ -24,6 +24,21 @@
 
 namespace FbTk {
 
+/// The reference counting itself does not depend on the pointer type; it is
+/// compiled once, in RefCount.cc. Only deleting the object stays in the
+/// template. Do not use directly.
+namespace RefCountImpl {
+/// a new counter, already counting its first holder
+unsigned int *newCounter();
+/// one more holder (counter may be 0)
+void retain(unsigned int *counter);
+/// one holder less. @return true if the caller must delete the object and
+/// then call freeCounter(); a counter that was already 0 is freed here.
+bool release(unsigned int *&counter);
+/// deletes and clears the counter
+void freeCounter(unsigned int *&counter);
+}
+
 /// holds a pointer with reference counting, similar to std:auto_ptr
 template <typename Pointer>
 class RefCount {
@@ -60,8 +75,8 @@ private:
 // implementation
 
 template <typename Pointer>
-RefCount<Pointer>::RefCount():m_data(0), m_refcount(new unsigned int(0)) {
-    incRefCount(); // it really counts how many things are storing m_refcount
+RefCount<Pointer>::RefCount():m_data(0), m_refcount(RefCountImpl::newCounter()) {
+    // the counter really counts how many things are storing m_refcount
 }
 
 template <typename Pointer>
@@ -73,8 +88,7 @@ RefCount<Pointer>::RefCount(const RefCount<Pointer2> &copy):
 }
 
 template <typename Pointer>
-RefCount<Pointer>::RefCount(Pointer *p):m_data(p), m_refcount(new unsigned int(0)) {
-    incRefCount();
+RefCount<Pointer>::RefCount(Pointer *p):m_data(p), m_refcount(RefCountImpl::newCounter()) {
 }
 
 template <typename Pointer>
@@ -102,34 +116,22 @@ template <typename Pointer>
 void RefCount<Pointer>::reset(Pointer *p) {
     decRefCount();
     m_data = p; // set data pointer
-    m_refcount = new unsigned int(0); // create new counter
-    incRefCount();
+    m_refcount = RefCountImpl::newCounter(); // create new counter
 }
 
 template <typename Pointer>
 void RefCount<Pointer>::decRefCount() {
-    if (m_refcount == 0)
-        return;
-    if (*m_refcount == 0) { // already zero, then delete refcount
-        delete m_refcount;
-        m_refcount = 0;
-        return;
-    }
-    (*m_refcount)--;
-    if (*m_refcount == 0) { // destroy m_data and m_refcount if nobody else is using this
-        if (m_data != 0)
-            delete m_data;
+    // destroy m_data if nobody else is using it
+    if (RefCountImpl::release(m_refcount)) {
+        delete m_data;
         m_data = 0;
-        delete m_refcount;
-        m_refcount = 0;
+        RefCountImpl::freeCounter(m_refcount);
     }
 }
 
 template <typename Pointer>
 void RefCount<Pointer>::incRefCount() {
-    if (m_refcount == 0)
-        return;
-    (*m_refcount)++;
+    RefCountImpl::retain(m_refcount);
 }
 
 template <typename Pointer>
