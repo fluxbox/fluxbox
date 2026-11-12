@@ -361,6 +361,29 @@ AC_ARG_ENABLE([test],
 AC_MSG_RESULT([$enable_test])
 AM_CONDITIONAL([TEST], [test "x$enable_test" = "xyes"])
 
+dnl Check whether to precompile the common system headers (src/fbpch.hh).
+dnl Opt-in: it saves about a third of a full build's CPU time with GCC, but
+dnl needs ~110 MB in the build dir, and ccache only caches such compiles with
+dnl sloppiness=pch_defines,time_macros. Written for GCC, which picks the
+dnl matching variant from the directory fbpch.hh.gch/ (see Makefile.am).
+AC_MSG_CHECKING([whether to use a precompiled header])
+AC_ARG_ENABLE([pch],
+	AS_HELP_STRING([--enable-pch],
+		[precompile the common system headers for a faster build (GCC; default=no)]),
+	[], [enable_pch=no]
+)
+AC_MSG_RESULT([$enable_pch])
+AS_IF([test "x$enable_pch" = "xyes"], [
+	AC_LANG_PUSH([C++])
+	pch_save_CXXFLAGS=$CXXFLAGS
+	CXXFLAGS="$CXXFLAGS -fpch-preprocess"
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [])], [],
+		[AC_MSG_ERROR([--enable-pch: $CXX does not support -fpch-preprocess])])
+	CXXFLAGS=$pch_save_CXXFLAGS
+	AC_LANG_POP([C++])
+])
+AM_CONDITIONAL([ENABLE_PCH], [test "x$enable_pch" = "xyes"])
+
 dnl Check whether to include native language support (i18n)
 AC_MSG_CHECKING([whether to include NLS support])
 AC_ARG_ENABLE([nls],
