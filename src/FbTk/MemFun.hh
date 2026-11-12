@@ -22,7 +22,6 @@
 #ifndef FBTK_MEM_FUN_HH
 #define FBTK_MEM_FUN_HH
 
-#include <functional>
 #include "SelectArg.hh"
 
 namespace FbTk {
