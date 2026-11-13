@@ -1,21 +1,26 @@
+Translations
+------------
+
+All translations live in nls/fluxbox-nls.yaml (UTF-8). Everything else
+in nls/ is created from it: nls/*/generated*.m and nls/catalogs.am. Do not edit those files, edit the yaml file and run in nls/ ::
+
+     uv run fluxbox-nls.py create-translation-files --in-yaml fluxbox-nls.yaml --out-folder .
+
+A message not translated yet reads "‼ FIXME ‼" (or "!! FIXME !!" in
+codesets without "‼"). The C text is the reference for all languages.
+
 Adding a new translation
 ------------------------
 
-1. Take the directory C, copy to a directory named by your locale.
-2. Edit Makefile.am add your directory to the SUBDIRS.
-3. Copy a Makefile.am from some other translation, the newest or 
-   the one closest to your directory.
-4. Edit the Makefile.am in your directory. Change ::
+1. Add your locale with its codesets under "codesets:", e.g. ::
 
-     THE_LANG = sv_SE
-     CODESET = ISO-8859-1
+     sv_SE:
+     - ISO-8859-1
+     - UTF-8
 
-5. Add your directory at the end of configure.ac.
-6. run ./autogen.sh (in upper directory)
-7. run ./configure
-
-    Details regarding the meaning of all of the positions & default values
-    would be listed in Translation.m.desc, if you're kind enough to write it.
+2. Add a text for your locale to every message under "sets:".
+3. Run the command above, then ./autogen.sh and ./configure
+   (in the upper directory).
 
 List of translators contributors
 --------------------------------
