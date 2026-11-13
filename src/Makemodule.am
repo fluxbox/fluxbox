@@ -163,7 +163,7 @@ endif
 
 fluxbox_CPPFLAGS = \
 	$(FRIBIDI_CFLAGS) \
-	$(XRANDR_CFLAGS) \
+	$(RANDR_CFLAGS) \
 	$(XFIXES_CFLAGS) \
 	$(AM_CPPFLAGS) \
 	-I$(src_incdir) \
