@@ -119,6 +119,8 @@ libFbTk_a_SOURCES = \
 	src/FbTk/Parser.hh \
 	src/FbTk/PixmapWithMask.hh \
 	src/FbTk/RadioMenuItem.hh \
+	src/FbTk/RectangleUtil.cc \
+	src/FbTk/RectangleUtil.hh \
 	src/FbTk/RefCount.hh \
 	src/FbTk/RefCount.cc \
 	src/FbTk/RegExp.cc \

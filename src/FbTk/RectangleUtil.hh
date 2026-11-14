@@ -1,16 +1,12 @@
-#ifndef RECTANGLEUTIL_HH
-#define RECTANGLEUTIL_HH
+#ifndef FBTK_RECTANGLEUTIL_HH
+#define FBTK_RECTANGLEUTIL_HH
 
+#include <vector>
+
+namespace FbTk {
 namespace RectangleUtil {
 
-inline bool insideRectangle(int x, int y, int width, int height, int px, int py) {
-
-    return
-        px >= x &&
-        px < (x + width) &&
-        py >= y &&
-        py < (y + height);
-}
+bool insideRectangle(int x, int y, int width, int height, int px, int py);
 
 /*
  * Determines if a point is inside a rectangle-like objects border.
@@ -47,20 +43,9 @@ bool insideBorder(const RectangleLike& rect,
  *
  */
 
-inline bool overlapRectangles(
+bool overlapRectangles(
         int ax, int ay, int awidth, int aheight,
-        int bx, int by, int bwidth, int bheight) {
-
-    // x + width is one past the last column, so rectangles that only
-    // share an edge don't overlap
-    bool do_not_overlap =
-         ax >= (bx + bwidth)
-      || bx >= (ax + awidth)
-      || ay >= (by + bheight)
-      || by >= (ay + aheight);
-
-    return !do_not_overlap;
-}
+        int bx, int by, int bwidth, int bheight);
 
 
 /*
@@ -77,7 +62,25 @@ bool overlapRectangles(const RectangleLikeA& a, const RectangleLikeB& b) {
             b.x(), b.y(), b.width(), b.height());
 }
 
+/// A plain rectangle, for callers without a rectangle-like type of their own.
+struct Rect {
+    int x, y, width, height;
+};
+
+/*
+ * The largest rectangle (by area) that is free in a set of regions, e.g.
+ * the heads of a screen: it lies inside the free part of some region and
+ * in no region's non-free part.
+ * @param regions - the regions, e.g. head rectangles
+ * @param free_parts - free_parts[i] is the free part of regions[i], e.g.
+ *        the head minus its struts; clamped to regions[i]
+ * @returns the rectangle, or one with width == height == 0 if nothing is free
+ */
+Rect largestFreeRectangle(const std::vector<Rect> &regions,
+                          const std::vector<Rect> &free_parts);
+
 } // namespace RectangleUtil
+} // namespace FbTk
 
 
-#endif // RECTANGLEUTIL_HH
+#endif // FBTK_RECTANGLEUTIL_HH

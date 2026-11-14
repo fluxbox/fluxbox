@@ -56,7 +56,6 @@ testKeys_SOURCES = \
 	src/tests/testKeys.cc
 
 testRectangleUtil_SOURCES = \
-	src/RectangleUtil.hh \
 	src/tests/testRectangleUtil.cc
 testRectangleUtil_CPPFLAGS = \
 	$(AM_CPPFLAGS) \

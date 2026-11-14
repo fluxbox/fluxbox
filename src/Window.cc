@@ -44,7 +44,7 @@
 #include "FocusControl.hh"
 #include "IconButton.hh"
 #include "ScreenPlacement.hh"
-#include "RectangleUtil.hh"
+#include "FbTk/RectangleUtil.hh"
 #include "Debug.hh"
 
 #include "FbTk/StringUtil.hh"
@@ -229,7 +229,7 @@ bool isWindowVisibleOnSomeHeadOrScreen(FluxboxWindow const& w) {
     if (w.screen().hasXinerama()) { // xinerama available => use head info
         return (0 != w.screen().getHead(real_x, real_y)); // if visible on some head
     }
-    return RectangleUtil::insideRectangle(0, 0, w.screen().width(), w.screen().height(), real_x, real_y);
+    return FbTk::RectangleUtil::insideRectangle(0, 0, w.screen().width(), w.screen().height(), real_x, real_y);
 }
 
 class SetClientCmd:public FbTk::Command<void> {

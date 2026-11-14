@@ -48,7 +48,7 @@
 #include "FbTk/CommandParser.hh"
 #include "AtomHandler.hh"
 #include "HeadArea.hh"
-#include "RectangleUtil.hh"
+#include "FbTk/RectangleUtil.hh"
 #include "FbCommands.hh"
 #ifdef USE_SYSTRAY
 #include "SystemTray.hh"
@@ -1779,7 +1779,7 @@ void BScreen::placeInvisibleWindows(bool include_docks) {
             int j;
             for (j = 0; j < numHeads(); ++j) {
                 XineramaHeadInfo& hi = m_xinerama.heads[j];
-                if (RectangleUtil::overlapRectangles(hi, w)) {
+                if (FbTk::RectangleUtil::overlapRectangles(hi, w)) {
                     invisible = false;
                     break;
                 }
@@ -1800,7 +1800,7 @@ int BScreen::getHead(int x, int y) const {
 #ifdef XINERAMA
     if (hasXinerama()) {
         for (int i = 0; i < numHeads(); i++) {
-            if (RectangleUtil::insideBorder(m_xinerama.heads[i], x, y, 0)) {
+            if (FbTk::RectangleUtil::insideBorder(m_xinerama.heads[i], x, y, 0)) {
                 return i+1;
             }
         }

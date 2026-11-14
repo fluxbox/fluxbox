@@ -26,7 +26,7 @@
 #include "Screen.hh"
 #include "FocusableTheme.hh"
 #include "IconButton.hh"
-#include "RectangleUtil.hh"
+#include "FbTk/RectangleUtil.hh"
 
 #include "FbTk/ImageControl.hh"
 #include "FbTk/EventManager.hh"
@@ -1568,7 +1568,7 @@ int FbWinFrame::getContext(Window win, int x, int y, int last_x, int last_y, boo
     if (gripLeft().window()  == win) return Keys::ON_LEFTGRIP;
     if (gripRight().window() == win) return Keys::ON_RIGHTGRIP;
     if (doBorders) {
-        using RectangleUtil::insideBorder;
+        using FbTk::RectangleUtil::insideBorder;
         int borderw = window().borderWidth();
         if ( // if mouse is currently on the window border, ignore it
                 (

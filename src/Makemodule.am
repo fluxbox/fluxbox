@@ -254,7 +254,6 @@ fluxbox_SOURCES = \
 	src/OSDWindow.cc \
 	src/OSDWindow.hh \
 	src/PlacementStrategy.hh \
-	src/RectangleUtil.hh \
 	src/Resources.cc \
 	src/RootCmdMenuItem.cc\
 	src/RootCmdMenuItem.hh \

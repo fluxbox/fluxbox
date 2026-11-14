@@ -1,4 +1,4 @@
-#include "RectangleUtil.hh"
+#include "FbTk/RectangleUtil.hh"
 
 #include <cstdio>
 
@@ -17,7 +17,7 @@ struct Rect {
 
 int test_insideBorder() {
 
-    printf("testing RectangleUtil::insideBorder()\n");
+    printf("testing FbTk::RectangleUtil::insideBorder()\n");
 
     struct _t {
         struct Rect rect;
@@ -37,7 +37,7 @@ int test_insideBorder() {
 
     for (unsigned int i = 0; i < sizeof(tests)/sizeof(_t); ++i) {
         const _t& t = tests[i];
-        int result = RectangleUtil::insideBorder<Rect>(t.rect, t.x, t.y, t.bw);
+        int result = FbTk::RectangleUtil::insideBorder<Rect>(t.rect, t.x, t.y, t.bw);
 
         printf("  %u: is (%02d|%02d) inside [%d %d]-[%d %d] with border %d: %s, %s\n",
                 i,
@@ -56,7 +56,7 @@ int test_insideBorder() {
 
 int test_overlapRectangles() {
 
-    printf("testing RectangleUtil::overlapRectangles()\n");
+    printf("testing FbTk::RectangleUtil::overlapRectangles()\n");
 
     struct _t {
         struct Rect a;
@@ -67,7 +67,7 @@ int test_overlapRectangles() {
     struct _test {
         bool operator()(const Rect& a, const Rect& b, int truth, unsigned int i) {
 
-            int result = RectangleUtil::overlapRectangles(a, b);
+            int result = FbTk::RectangleUtil::overlapRectangles(a, b);
 
             printf("  %u: [%2d %2d]-[%2d %2d] %s [%2d %2d]-[%2d %2d]: %s\n",
                     i,
@@ -112,10 +112,84 @@ int test_overlapRectangles() {
 }
 
 
+int test_largestFreeRectangle() {
+
+    printf("testing FbTk::RectangleUtil::largestFreeRectangle()\n");
+
+    typedef FbTk::RectangleUtil::Rect R;
+    typedef std::vector<R> V;
+
+    struct _t {
+        const char *what;
+        V regions;
+        V free_parts;
+        R truth;
+    };
+
+    const _t tests[] = {
+        { "no regions", V(), V(), { 0, 0, 0, 0 } },
+        { "one head, no struts",
+          V{ { 0, 0, 1920, 1080 } },
+          V{ { 0, 0, 1920, 1080 } },
+          { 0, 0, 1920, 1080 } },
+        { "one head, left strut",
+          V{ { 0, 0, 1920, 1080 } },
+          V{ { 48, 0, 1872, 1080 } },
+          { 48, 0, 1872, 1080 } },
+        { "one head, all reserved",
+          V{ { 0, 0, 1920, 1080 } },
+          V{ { 0, 0, 0, 1080 } },
+          { 0, 0, 0, 0 } },
+        { "free part beyond its region is clamped",
+          V{ { 0, 0, 100, 100 } },
+          V{ { 0, 0, 200, 100 } },
+          { 0, 0, 100, 100 } },
+        { "two heads, no struts: spans both",
+          V{ { 0, 0, 2560, 1440 }, { 2560, 0, 2560, 1440 } },
+          V{ { 0, 0, 2560, 1440 }, { 2560, 0, 2560, 1440 } },
+          { 0, 0, 5120, 1440 } },
+        { "two heads, panel on the inner edge: the wider free head wins",
+          V{ { 0, 0, 2560, 1440 }, { 2560, 0, 2560, 1440 } },
+          V{ { 0, 0, 2560, 1440 }, { 2608, 0, 2512, 1440 } },
+          { 0, 0, 2560, 1440 } },
+        { "two heads, bottom panel on both: still spans both",
+          V{ { 0, 0, 2560, 1440 }, { 2560, 0, 2560, 1440 } },
+          V{ { 0, 0, 2560, 1410 }, { 2560, 0, 2560, 1410 } },
+          { 0, 0, 5120, 1410 } },
+        { "two heads, different heights: the wide strip wins",
+          V{ { 0, 0, 1920, 1080 }, { 1920, 0, 2560, 1440 } },
+          V{ { 0, 0, 1920, 1080 }, { 1920, 0, 2560, 1440 } },
+          { 0, 0, 4480, 1080 } },
+        { "cloned heads: one head's strut reserves for both",
+          V{ { 0, 0, 1920, 1080 }, { 0, 0, 1920, 1080 } },
+          V{ { 0, 0, 1920, 1080 }, { 0, 30, 1920, 1050 } },
+          { 0, 30, 1920, 1050 } },
+    };
+
+    int failed = 0;
+    for (unsigned int i = 0; i < sizeof(tests)/sizeof(_t); ++i) {
+        const _t &t = tests[i];
+        const R r = FbTk::RectangleUtil::largestFreeRectangle(t.regions, t.free_parts);
+        const bool ok = r.x == t.truth.x && r.y == t.truth.y &&
+                        r.width == t.truth.width && r.height == t.truth.height;
+        printf("  %u: %s: %d,%d %dx%d: %s\n", i, t.what,
+                r.x, r.y, r.width, r.height, ok ? "ok" : "failed");
+        if (!ok) {
+            ++failed;
+        }
+    }
+
+    printf("done.\n");
+
+    return failed;
+}
+
+
 int main(int argc, char **argv) {
 
     test_insideBorder();
     test_overlapRectangles();
 
-    return 0;
+    // the older tests only print; this one also fails the run
+    return test_largestFreeRectangle() ? 1 : 0;
 }
