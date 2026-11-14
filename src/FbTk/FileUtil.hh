@@ -65,6 +65,18 @@ namespace FileUtil {
     /// @return the found directory (expanded), or ~/.<name> if none matches
     std::string findConfigDir(const std::string& name);
 
+    /// resolves the config file 'name' for the config folder 'dir':
+    ///  - a bare file name (no '/', not starting with '~') becomes 'dir'/'name'
+    ///  - a path into 'legacy_dir' becomes the same path into 'dir', if
+    ///    'legacy_dir' does not exist (anymore) and differs from 'dir'. This
+    ///    keeps configs working which were moved from ~/.fluxbox to
+    ///    ~/.config/fluxbox but still refer to ~/.fluxbox/...
+    ///  - everything else is returned unchanged
+    /// 'dir' and 'legacy_dir' are expected to be expanded (no '~').
+    std::string resolveConfigName(const std::string& dir,
+                                  const std::string& legacy_dir,
+                                  const std::string& name);
+
 } // end of File namespace
 
 ///  Wrapper class for DIR * routines

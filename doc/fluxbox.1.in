@@ -2078,7 +2078,7 @@ utility)\&.
 Consider a system tray "A C B D E F"\&. With pinRight set to "A, B" and pinLeft set to "E, F" it will look like "E F [C D] A B" while the icons in [] are unordered as usual\&.
 .RE
 .sp
-All of the \fIlocation\fR resources following require a pathname to their specific files\&. This is where you can specify different files\&. Most of the defaults will be located in the user\(cqs \fB~/\&.fluxbox\fR directory\&.
+All of the \fIlocation\fR resources following require a pathname to their specific files\&. This is where you can specify different files\&. A bare file name without any \(oq/\(cq and not starting with \(oq~\(cq, e\&.g\&. \(oqkeys\(cq, is taken relative to the folder of the init file in use\&. This applies to \fBsession\&.appsFile\fR, \fBsession\&.keyFile\fR, \fBsession\&.menuFile\fR, \fBsession\&.slitlistFile\fR and \fBsession\&.styleOverlay\fR, whose defaults are the bare names \(oqapps\(cq, \(oqkeys\(cq, \(oqmenu\(cq, \(oqslitlist\(cq and \(oqoverlay\(cq\&.
 .PP
 \fBsession\&.appsFile\fR: \fIlocation\fR
 .RS 4
@@ -2214,7 +2214,13 @@ is the standard config folder\&. Another folder is used as an opt\-in; the first
 .sp
 If none matches,
 \fB~/\&.fluxbox\fR
-is created\&.
+is created\&. A config moved from
+\fB~/\&.fluxbox\fR
+to another folder keeps working: as long as
+\fB~/\&.fluxbox\fR
+does not exist,
+\fIlocation\fR
+resources pointing into it are taken from the folder of the init file\&.
 .RE
 .sp
 fluxbox can also take advantage of other environment variables if they are set before fluxbox is started\&. For example, if $TERM is set, then it will be available whenever fluxbox uses the shell, such as the \(oqkeys\(cq file \fBExecCommand\fR or the root menu\(cqs \fB[exec]\fR tag\&. See \fBfluxbox\-keys(5)\fR and \fBfluxbox\-menu(5)\fR for details\&.

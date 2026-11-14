@@ -1301,8 +1301,11 @@ set to "E, F" it will look like "E F [C D] A B" while the icons in [] are
 unordered as usual.
 
 All of the 'location' resources following require a pathname to their specific
-files. This is where you can specify different files. Most of the defaults will
-be located in the user's *~/.fluxbox* directory.
+files. This is where you can specify different files. A bare file name without
+any '/' and not starting with '~', e.g. `keys', is taken relative to the folder
+of the init file in use. This applies to *session.appsFile*, *session.keyFile*,
+*session.menuFile*, *session.slitlistFile* and *session.styleOverlay*, whose
+defaults are the bare names `apps', `keys', `menu', `slitlist' and `overlay'.
 
 *session.appsFile*: 'location'::
     Location of persistent application settings, or the `apps' file. See the
@@ -1373,7 +1376,10 @@ ENVIRONMENT
 4. *~/.config/fluxbox*, if it exists.
 --
 +
-If none matches, *~/.fluxbox* is created.
+If none matches, *~/.fluxbox* is created. A config moved from *~/.fluxbox* to
+another folder keeps working: as long as *~/.fluxbox* does not exist,
+'location' resources pointing into it are taken from the folder of the init
+file.
 
 fluxbox can also take advantage of other environment variables if they are set
 before fluxbox is started. For example, if $TERM is set, then it will be

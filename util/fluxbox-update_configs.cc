@@ -55,6 +55,10 @@ string read_file(const string& filename);
 void write_file(const string& filename, const string &contents);
 void save_all_files();
 
+// config folder in use, deduced from the rc file, and the legacy folder
+string config_dir;
+string legacy_dir;
+
 
 /*------------------------------------------------------------------*\
 \*------------------------------------------------------------------*/
@@ -99,9 +103,10 @@ void update_add_mouse_evens_to_keys(FbTk::ResourceManager& rm,
 void update_move_groups_entries_to_apps_file(FbTk::ResourceManager& rm,
         const FbTk::FbString& keyfilename, const FbTk::FbString& appsfilename) {
 
-    FbTk::Resource<string> rc_groupfile(rm, "~/.fluxbox/groups",
+    FbTk::Resource<string> rc_groupfile(rm, "groups",
             "session.groupFile", "Session.GroupFile");
-    string groupfilename = FbTk::StringUtil::expandFilename(*rc_groupfile);
+    string groupfilename = FbTk::StringUtil::expandFilename(
+            FbTk::FileUtil::resolveConfigName(config_dir, legacy_dir, *rc_groupfile));
     string whole_groupfile = read_file(groupfilename);
     string whole_appsfile = read_file(appsfilename);
     string new_appsfile = "";
@@ -540,13 +545,15 @@ const Update UPDATES[] = {
 int run_updates(int old_version, FbTk::ResourceManager &rm) {
     int new_version = old_version;
 
-    FbTk::Resource<string> rc_keyfile(rm, "~/.fluxbox/keys",
+    FbTk::Resource<string> rc_keyfile(rm, "keys",
             "session.keyFile", "Session.KeyFile");
-    FbTk::Resource<string> rc_appsfile(rm, "~/.fluxbox/apps",
+    FbTk::Resource<string> rc_appsfile(rm, "apps",
             "session.appsFile", "Session.AppsFile");
 
-    string appsfilename = FbTk::StringUtil::expandFilename(*rc_appsfile);
-    string keyfilename = FbTk::StringUtil::expandFilename(*rc_keyfile);
+    string appsfilename = FbTk::StringUtil::expandFilename(
+            FbTk::FileUtil::resolveConfigName(config_dir, legacy_dir, *rc_appsfile));
+    string keyfilename = FbTk::StringUtil::expandFilename(
+            FbTk::FileUtil::resolveConfigName(config_dir, legacy_dir, *rc_keyfile));
 
     for (size_t i = 0; i < sizeof(UPDATES) / sizeof(Update); ++i) {
         if (old_version < UPDATES[i].version) {
@@ -599,8 +606,21 @@ int main(int argc, char **argv) {
         }
     }
 
-    if (rc_filename.empty())
-        rc_filename = FbTk::StringUtil::expandFilename("~/.fluxbox/init");
+    legacy_dir = FbTk::StringUtil::expandFilename("~/." + realProgramName("fluxbox"));
+
+    if (rc_filename.empty()) {
+        // inside a fluxbox session: use the folder fluxbox uses
+        const char* env = getenv("FLUXBOX_CONFIG_DIR");
+        if (env && *env) {
+            config_dir = env;
+        } else {
+            config_dir = FbTk::FileUtil::findConfigDir(realProgramName("fluxbox"));
+        }
+        rc_filename = config_dir + "/init";
+    } else {
+        rc_filename = FbTk::StringUtil::expandFilename(rc_filename);
+        config_dir = FbTk::StringUtil::dirname(rc_filename);
+    }
 
     FbTk::ResourceManager resource_manager(rc_filename.c_str(),false);
     if (!resource_manager.load(rc_filename.c_str())) {
