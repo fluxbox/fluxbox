@@ -172,6 +172,54 @@ int test_overlapRectangles() {
 }
 
 
+int test_overlapArea() {
+
+    printf("testing FbTk::RectangleUtil::overlapArea()\n");
+
+    struct _t {
+        struct Rect a;
+        struct Rect b;
+        int truth;
+    };
+
+    const _t tests[] = {
+        { { 0, 0, 8, 8 }, {  0, 0, 8, 8 }, 64 }, // b equals a
+        { { 0, 0, 8, 8 }, {  3, 3, 3, 3 },  9 }, // b completely inside a
+        { { 0, 0, 8, 8 }, {  4, 4, 8, 8 }, 16 }, // b overlaps a in one corner
+        { { 0, 0, 8, 8 }, {  4,-1, 2, 9 }, 16 }, // b overlaps a in the middle
+        { { 0, 0, 8, 8 }, { -8, 0, 5, 8 },  0 }, // b completely left from a
+        { { 0, 0, 8, 8 }, {  8, 0, 5, 8 },  0 }, // b touches a's right edge
+        { { 0, 0, 8, 8 }, {  0, 8, 5, 8 },  0 }, // b touches a's bottom edge
+        { { 0, 0, 8, 8 }, { 20,20, 5, 5 },  0 }, // b far off, both axes
+    };
+
+    int failed = 0;
+    for (unsigned int i = 0; i < sizeof(tests)/sizeof(_t); ++i) {
+        const _t& t = tests[i];
+        const int ab = FbTk::RectangleUtil::overlapArea(t.a, t.b);
+        const int ba = FbTk::RectangleUtil::overlapArea(t.b, t.a);
+        const bool ok = ab == t.truth && ba == t.truth;
+
+        printf("  %u: [%2d %2d]-[%2d %2d] and [%2d %2d]-[%2d %2d] overlap by %d|%d: %s\n",
+                i,
+                t.a.x(), t.a.y(),
+                t.a.x() + t.a.width(),
+                t.a.y() + t.a.height(),
+                t.b.x(), t.b.y(),
+                t.b.x() + t.b.width(),
+                t.b.y() + t.b.height(),
+                ab, ba, ok ? "ok" : "failed");
+        if (!ok) {
+            ++failed;
+        }
+    }
+
+    printf("done.\n");
+
+    return failed;
+}
+
+
 int test_largestFreeRectangle() {
 
     printf("testing FbTk::RectangleUtil::largestFreeRectangle()\n");
@@ -251,6 +299,7 @@ int main(int argc, char **argv) {
     failed += test_insideRectangle();
     failed += test_insideBorder();
     failed += test_overlapRectangles();
+    failed += test_overlapArea();
     failed += test_largestFreeRectangle();
 
     return failed ? 1 : 0;

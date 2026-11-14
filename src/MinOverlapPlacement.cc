@@ -25,6 +25,8 @@
 #include "Window.hh"
 #include "Screen.hh"
 
+#include "FbTk/RectangleUtil.hh"
+
 namespace {
 
 inline void getWindowDimensions(const FluxboxWindow& win, int& left, int& top, int& right, int& bottom) {
@@ -205,15 +207,9 @@ bool MinOverlapPlacement::placeWindow(const FluxboxWindow &win, int head,
 
             getWindowDimensions(*(*it), left, top, right, bottom);
 
-            // get the coordinates of the overlap region
-            int min_right = std::min(right, ar_it->x + win_w);
-            int min_bottom = std::min(bottom, ar_it->y + win_h);
-            int max_left = std::max(left, ar_it->x);
-            int max_top = std::max(top, ar_it->y);
-
-            // now compute the overlap and add to running total
-            if (min_right > max_left && min_bottom > max_top)
-                overlap += (min_right - max_left) * (min_bottom - max_top);
+            overlap += FbTk::RectangleUtil::overlapArea(
+                    left, top, right - left, bottom - top,
+                    ar_it->x, ar_it->y, win_w, win_h);
 
         }
 

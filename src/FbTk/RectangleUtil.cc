@@ -50,6 +50,20 @@ bool overlapRectangles(
     return !do_not_overlap;
 }
 
+int overlapArea(
+        int ax, int ay, int awidth, int aheight,
+        int bx, int by, int bwidth, int bheight) {
+
+    // the overlap region, if any, spans from the larger left/top edge to
+    // the smaller right/bottom edge
+    const int w = std::min(ax + awidth, bx + bwidth) - std::max(ax, bx);
+    const int h = std::min(ay + aheight, by + bheight) - std::max(ay, by);
+    if (w <= 0 || h <= 0) {
+        return 0;
+    }
+    return w * h;
+}
+
 namespace {
 
 // edges, right/bottom exclusive

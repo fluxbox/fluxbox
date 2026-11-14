@@ -79,6 +79,28 @@ bool overlapRectangles(const RectangleLikeA& a, const RectangleLikeB& b) {
             b.x(), b.y(), b.width(), b.height());
 }
 
+/*
+ * The area of the region where rectangle 'a' overlaps rectangle 'b'
+ * @returns the area, 0 if 'a' does not overlap 'b' (see overlapRectangles())
+ */
+int overlapArea(
+        int ax, int ay, int awidth, int aheight,
+        int bx, int by, int bwidth, int bheight);
+
+/*
+ * The area of the region where rectangle 'a' overlaps rectangle 'b'
+ * @param a - rectangle a
+ * @param b - rectangle b
+ * @returns the area, 0 if 'a' does not overlap 'b'
+ */
+template <typename RectangleLikeA, typename RectangleLikeB>
+int overlapArea(const RectangleLikeA& a, const RectangleLikeB& b) {
+
+    return overlapArea(
+            a.x(), a.y(), a.width(), a.height(),
+            b.x(), b.y(), b.width(), b.height());
+}
+
 /// A plain rectangle, for callers without a rectangle-like type of their own.
 struct Rect {
     int x, y, width, height;
