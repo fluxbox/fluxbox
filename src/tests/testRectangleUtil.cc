@@ -35,6 +35,7 @@ int test_insideBorder() {
         { { 0, 0, 10, 10 }, 20, 20, 2, false }  // outside for sure
     };
 
+    int failed = 0;
     for (unsigned int i = 0; i < sizeof(tests)/sizeof(_t); ++i) {
         const _t& t = tests[i];
         int result = FbTk::RectangleUtil::insideBorder<Rect>(t.rect, t.x, t.y, t.bw);
@@ -47,11 +48,14 @@ int test_insideBorder() {
                 t.rect.y() + (int)t.rect.height(),
                 t.bw,
                 result ? "yes" : "no", result == t.truth ? "ok" : "failed");
+        if (result != t.truth) {
+            ++failed;
+        }
     }
 
     printf("done.\n");
 
-    return 0;
+    return failed;
 }
 
 int test_overlapRectangles() {
@@ -101,14 +105,19 @@ int test_overlapRectangles() {
 
 
     _test test;
+    int failed = 0;
     for (unsigned int i = 0; i < sizeof(tests)/sizeof(_t); ++i) {
-        test(tests[i].a, tests[i].b, tests[i].truth, i);
-        test(tests[i].b, tests[i].a, tests[i].truth, i);
+        if (!test(tests[i].a, tests[i].b, tests[i].truth, i)) {
+            ++failed;
+        }
+        if (!test(tests[i].b, tests[i].a, tests[i].truth, i)) {
+            ++failed;
+        }
     }
 
     printf("done.\n");
 
-    return 0;
+    return failed;
 }
 
 
@@ -187,9 +196,10 @@ int test_largestFreeRectangle() {
 
 int main(int argc, char **argv) {
 
-    test_insideBorder();
-    test_overlapRectangles();
+    int failed = 0;
+    failed += test_insideBorder();
+    failed += test_overlapRectangles();
+    failed += test_largestFreeRectangle();
 
-    // the older tests only print; this one also fails the run
-    return test_largestFreeRectangle() ? 1 : 0;
+    return failed ? 1 : 0;
 }
