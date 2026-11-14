@@ -34,18 +34,24 @@ startfluxbox \- start a fluxbox session
 \fBstartfluxbox\fR
 .SH "DESCRIPTION"
 .sp
-\fBstartfluxbox\fR is a script which runs the file \fB~/\&.fluxbox/startup\fR If it doesn\(cqt exist it will be generated\&.
+\fBstartfluxbox\fR is a script which runs the file \fB<config folder>/startup\fR If it doesn\(cqt exist it will be generated\&.
 .sp
 \fBstartfluxbox\fR should be started from your \fB~/\&.xinitrc\fR if you use startx, or \fB~/\&.xsession\fR if you run a display manager, like xdm\&.
 .SH "FILES"
 .PP
-\fB~/\&.fluxbox/startup\fR
+\fB<config folder>/startup\fR
 .RS 4
 This file contains all commands that should be executed before fluxbox is started\&. The initial file contains helpful comments for beginners\&. It also starts fluxbox\&.
+The config folder is
+\fB$FLUXBOX_CONFIG_DIR\fR
+if set (by a running fluxbox), else it is located like fluxbox does, see
+\fBXDG_CONFIG_HOME\fR
+in
+\fBfluxbox\fR(1)\&.
 .RE
 .SH "EXAMPLES"
 .sp
-The default \fB~/\&.fluxbox/startup\fR is as follows:
+The default \fB<config folder>/startup\fR is as follows:
 .sp
 .if n \{\
 .RS 4

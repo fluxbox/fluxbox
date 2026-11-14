@@ -16,7 +16,7 @@ SYNOPSIS
 
 DESCRIPTION
 -----------
-*startfluxbox* is a script which runs the file *~/.fluxbox/startup* If it
+*startfluxbox* is a script which runs the file *<config folder>/startup* If it
 doesn't exist it will be generated.
 
 *startfluxbox* should be started from your *\~/.xinitrc* if you use startx, or
@@ -24,14 +24,16 @@ doesn't exist it will be generated.
 
 FILES
 -----
-*~/.fluxbox/startup*::
+*<config folder>/startup*::
     This file contains all commands that should be executed before fluxbox is
     started. The initial file contains helpful comments for beginners. It also
     starts fluxbox.
+    The config folder is *$FLUXBOX_CONFIG_DIR* if set (by a running fluxbox),
+    else it is located like fluxbox does, see *XDG_CONFIG_HOME* in *fluxbox(1)*.
 
 EXAMPLES
 --------
-The default *~/.fluxbox/startup* is as follows:
+The default *<config folder>/startup* is as follows:
 ....
 #!/bin/sh
 #

@@ -2222,6 +2222,16 @@ does not exist,
 \fIlocation\fR
 resources pointing into it are taken from the folder of the init file\&.
 .RE
+.PP
+\fBFLUXBOX_CONFIG_DIR\fR
+.RS 4
+Set by fluxbox to the folder of the init file in use\&.
+\fBfbsetbg\fR(1),
+\fBfbrun\fR(1)
+and
+\fBfluxbox\-update_configs\fR
+use it to find the config folder\&.
+.RE
 .sp
 fluxbox can also take advantage of other environment variables if they are set before fluxbox is started\&. For example, if $TERM is set, then it will be available whenever fluxbox uses the shell, such as the \(oqkeys\(cq file \fBExecCommand\fR or the root menu\(cqs \fB[exec]\fR tag\&. See \fBfluxbox\-keys(5)\fR and \fBfluxbox\-menu(5)\fR for details\&.
 .sp
