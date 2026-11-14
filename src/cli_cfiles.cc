@@ -50,9 +50,16 @@
 #endif
 
 
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
 using std::string;
 using std::endl;
 using std::cerr;
+using std::ifstream;
+using std::ofstream;
+using std::ostringstream;
 
 
 #ifdef _WIN32
@@ -63,6 +70,37 @@ static int mkdir(const char *dirname, int /*permissions*/) {
     return mkdir(dirname);
 }
 #endif
+
+namespace {
+
+/**
+ copies the default file 'from' to 'to'. the default files refer to
+ the legacy config folder "~/.fluxbox/"; these references are made
+ relative, so they point into the folder the copy lives in (relative paths
+ in menu files are relative to the menu file, see MenuCreator).
+*/
+bool copyDefaultFile(const string& from, const string& to) {
+
+    ifstream from_file(from.c_str());
+    if (!from_file.good()) {
+        cerr << "Can't copy from '" << from << "' to '" << to << "'." << endl;
+        return false;
+    }
+
+    ostringstream content;
+    content << from_file.rdbuf();
+
+    ofstream to_file(to.c_str());
+    if (!to_file.good()) {
+        cerr << "Can't write file '" << to << "'." << endl;
+        return false;
+    }
+
+    to_file << FbTk::StringUtil::replaceString(content.str(), "~/.fluxbox/", "");
+    return true;
+}
+
+} // end of anonymous namespace
 
 
 /**
@@ -113,7 +151,7 @@ void FluxboxCli::setupConfigFiles(const std::string& dirname, const std::string&
     // copy default files if needed
     for (size_t i = 0; i < nr_of_cfiles; ++i) {
         if (cfiles[i].create_file) {
-            FbTk::FileUtil::copyFile(FbTk::StringUtil::expandFilename(cfiles[i].default_name).c_str(), cfiles[i].filename.c_str());
+            copyDefaultFile(FbTk::StringUtil::expandFilename(cfiles[i].default_name), cfiles[i].filename);
             sync_fs = true;
         }
     }
