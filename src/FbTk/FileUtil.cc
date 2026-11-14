@@ -109,6 +109,36 @@ bool FileUtil::copyFile(const char* from, const char* to) {
     return true;
 }
 
+std::string FileUtil::findConfigDir(const std::string& name) {
+
+    // ~/.<name> is the standard folder. opt-ins for another folder:
+    //  - $XDG_CONFIG_HOME/<name> exists (an explicitly set $XDG_CONFIG_HOME)
+    //  - ~/.config/<name>/init exists (the init file marks the folder as
+    //    intended, without setting $XDG_CONFIG_HOME for all child processes)
+    // a ~/.config/<name> without init is only used if ~/.<name> does not
+    // exist, so a stray empty folder does not take over.
+    const std::string legacy = StringUtil::expandFilename("~/." + name);
+    const std::string dot_config = StringUtil::expandFilename("~/.config/" + name);
+
+    const char* xdg = getenv("XDG_CONFIG_HOME");
+    if (xdg && *xdg) {
+        const std::string xdg_dir = StringUtil::expandFilename(std::string(xdg) + "/" + name);
+        if (isDirectory(xdg_dir.c_str())) {
+            return xdg_dir;
+        }
+    }
+    if (isRegularFile((dot_config + "/init").c_str())) {
+        return dot_config;
+    }
+    if (isDirectory(legacy.c_str())) {
+        return legacy;
+    }
+    if (isDirectory(dot_config.c_str())) {
+        return dot_config;
+    }
+    return legacy;
+}
+
 Directory::Directory(const char *dir):m_dir(0),
 m_num_entries(0) {
     if (dir != 0)
