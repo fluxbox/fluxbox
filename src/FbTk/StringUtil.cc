@@ -402,6 +402,17 @@ string basename(const string &filename) {
     return filename;
 }
 
+string dirname(const string &filename) {
+    string::size_type pos = filename.find_last_of("/");
+    if (pos == string::npos) {
+        return ".";
+    }
+    if (pos == 0) {
+        return "/";
+    }
+    return filename.substr(0, pos);
+}
+
 string::size_type removeFirstWhitespace(string &str) {
     string::size_type first_pos = str.find_first_not_of(" \t");
     str.erase(0, first_pos);

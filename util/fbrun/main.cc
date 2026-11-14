@@ -21,6 +21,7 @@
 
 #include "FbRun.hh"
 #include "FbTk/App.hh"
+#include "FbTk/FileUtil.hh"
 #include "FbTk/StringUtil.hh"
 #include "FbTk/Color.hh"
 
@@ -65,7 +66,7 @@ void showUsage(const char *progname) {
         "   -center                     Window position on screen center"<<endl<<
         "   -fg [color name]            Foreground text color"<<endl<<
         "   -bg [color name]            Background color"<<endl<<
-        "   -hf [history file]          History file to load (default ~/.fluxbox/fbrun_history)"<<endl<<
+        "   -hf [history file]          History file to load (default <config dir>/fbrun_history)"<<endl<<
         "   -cf [completion file]       Complete contents of this file instead of $PATH binaries"<<endl<<
         "   -autocomplete               Complete on typing"<<endl<<
         "   -preselect                  Select preset text"<<endl<<
@@ -90,7 +91,10 @@ int main(int argc, char **argv) {
     string foreground("black");   // text color
     string background("white");   // text background color
     string display_name; // name of the display connection
-    string history_file("~/.fluxbox/fbrun_history"); // command history file
+    // command history file, in the config folder of the running fluxbox
+    const char* config_dir = getenv("FLUXBOX_CONFIG_DIR");
+    string history_file((config_dir && *config_dir) ? string(config_dir) : FbTk::FileUtil::findConfigDir("fluxbox"));
+    history_file += "/fbrun_history";
     string completion_file; // command history file
     // parse arguments
     for (int i=1; i<argc; i++) {

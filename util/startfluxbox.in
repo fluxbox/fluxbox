@@ -1,7 +1,24 @@
 #!/bin/sh
 
 command="`basename \"$0\"`"
-fluxdir="$HOME/.@pkgprefix@fluxbox@pkgsuffix@"
+# config folder, same lookup as fluxbox itself: $FLUXBOX_CONFIG_DIR (set by a
+# running fluxbox), else $XDG_CONFIG_HOME/fluxbox (opt-in), else
+# ~/.config/fluxbox if it has an init file (opt-in), else ~/.fluxbox
+# (standard), else an existing ~/.config/fluxbox, else ~/.fluxbox
+fbname="@pkgprefix@fluxbox@pkgsuffix@"
+if [ -n "$FLUXBOX_CONFIG_DIR" ] && [ -d "$FLUXBOX_CONFIG_DIR" ]; then
+    fluxdir="$FLUXBOX_CONFIG_DIR"
+elif [ -n "$XDG_CONFIG_HOME" ] && [ -d "$XDG_CONFIG_HOME/$fbname" ]; then
+    fluxdir="$XDG_CONFIG_HOME/$fbname"
+elif [ -f "$HOME/.config/$fbname/init" ]; then
+    fluxdir="$HOME/.config/$fbname"
+elif [ -d "$HOME/.$fbname" ]; then
+    fluxdir="$HOME/.$fbname"
+elif [ -d "$HOME/.config/$fbname" ]; then
+    fluxdir="$HOME/.config/$fbname"
+else
+    fluxdir="$HOME/.$fbname"
+fi
 startup="$fluxdir/startup"
 
 while [ $# -gt 0 ]; do
@@ -28,7 +45,7 @@ if [ -x "$startup" ]; then
 elif [ -r "$startup" ]; then
     exec sh "$startup"
 else
-    if [ ! -d $fluxdir ]; then
+    if [ ! -d "$fluxdir" ]; then
         mkdir -p "$fluxdir/backgrounds" "$fluxdir/styles" "$fluxdir/pixmaps"
     fi
     if [ ! -r "$startup" ]; then

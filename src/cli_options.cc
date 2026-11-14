@@ -48,9 +48,11 @@ FluxboxCli::Options::Options() : xsync(false) {
         session_display.assign(env);
     }
 
-    string fname = std::string("~/.") + realProgramName("fluxbox");
-    rc_path = FbTk::StringUtil::expandFilename(fname);
+    const string fname = FbTk::FileUtil::findConfigDir(realProgramName("fluxbox"));
 
+    cerr << "info: using \"" << fname << "\" as the config folder" << endl;
+
+    rc_path = fname;
     if (!rc_path.empty()) {
         rc_file = rc_path + "/init";
     }

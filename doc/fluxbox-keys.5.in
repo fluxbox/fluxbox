@@ -812,6 +812,9 @@ must be a valid menu file in the same format as detailed by the
 \fBROOT MENU\fR
 section of
 \fBfluxbox\-menu(5)\fR\&.
+A relative
+\fIpath\fR
+is relative to the config folder\&.
 .RE
 .PP
 \fBHideMenus\fR

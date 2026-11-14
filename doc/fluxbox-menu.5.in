@@ -68,6 +68,8 @@ The <\*(Aqicon\*(Aq> field is always optional when shown below\&. If specified, 
 Any line that starts with a \fI#\fR or \fI!\fR is considered a comment and ignored by fluxbox\&. Also, in the label/command/filename fields you can escape any character\&. Using \fI\e\e\fR inserts a literal back\-slash into the label/command/filename field\&.
 .sp
 You may enter labels, commands, and icons using characters from any \fBiconv(1)\fR language/locale by specifying the encoding used via the \fB[encoding]\fR tag, detailed below\&.
+.sp
+Paths given to \fB[include]\fR, \fB[style]\fR, \fB[stylesdir]\fR, \fB[stylesmenu]\fR, \fB[themesdir]\fR, \fB[themesmenu]\fR and \fB[wallpapers]\fR may be a full path, may begin with \fB~/\fR, which will be expanded into your home directory, or may be relative\&. A relative path is relative to the folder of the menu file that contains it, so \fB[include] (submenus/games)\fR in \fB~/\&.fluxbox/menu\fR reads \fB~/\&.fluxbox/submenus/games\fR\&. In a menu without a file (eg, the builtin root menu) and for the \fBCustomMenu\fR command it is relative to the config folder (see \fBXDG_CONFIG_HOME\fR in \fBfluxbox(1)\fR)\&. Paths into \fB~/\&.fluxbox/\fR are mapped into the config folder, if \fB~/\&.fluxbox\fR does not exist (eg, after it was moved to \fB~/\&.config/fluxbox\fR)\&.
 .SS "Structural Tags"
 .PP
 \fB[begin]\fR (\fItitle\fR)
@@ -124,10 +126,11 @@ section\&.
 .PP
 \fB[include]\fR (\fIpath\fR)
 .RS 4
-Parses the file specified by filename inline with the current menu\&. The
+Parses the file specified by
 \fIpath\fR
-can be the full path to a file or it can begin with
-\fB~/\fR, which will be expanded into your home directory\&. If
+inline with the current menu\&. A relative
+\fIpath\fR
+is relative to the folder of the including menu file, see above\&. If
 \fIpath\fR
 is a directory, then all files in that directory are included\&.
 .RE

@@ -102,7 +102,13 @@ Text font name
 \fB\-hf\fR \fIfilename\fR
 .RS 4
 History file to load\&. The default is
-\fB~/\&.fluxbox/fbrun_history\fR\&.
+\fBfbrun_history\fR
+in the config folder:
+\fB$FLUXBOX_CONFIG_DIR\fR
+if set (by a running fluxbox), else it is located like fluxbox does, see
+\fBXDG_CONFIG_HOME\fR
+in
+\fBfluxbox\fR(1)\&.
 .RE
 .PP
 \fB\-cf\fR \fIfilename\fR

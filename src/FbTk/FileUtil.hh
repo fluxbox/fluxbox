@@ -57,6 +57,26 @@ namespace FileUtil {
     /// copies file 'from' to 'to'
     bool copyFile(const char* from, const char* to);
 
+    /// locates the config directory of 'name'. the first match wins:
+    ///   1. $XDG_CONFIG_HOME/<name> exists (if $XDG_CONFIG_HOME is set: opt-in)
+    ///   2. ~/.config/<name>/init exists (opt-in)
+    ///   3. ~/.<name> exists (standard)
+    ///   4. ~/.config/<name> exists (e.g. created empty, to be populated)
+    /// @return the found directory (expanded), or ~/.<name> if none matches
+    std::string findConfigDir(const std::string& name);
+
+    /// resolves the config file 'name' for the config folder 'dir':
+    ///  - a bare file name (no '/', not starting with '~') becomes 'dir'/'name'
+    ///  - a path into 'legacy_dir' becomes the same path into 'dir', if
+    ///    'legacy_dir' does not exist (anymore) and differs from 'dir'. This
+    ///    keeps configs working which were moved from ~/.fluxbox to
+    ///    ~/.config/fluxbox but still refer to ~/.fluxbox/...
+    ///  - everything else is returned unchanged
+    /// 'dir' and 'legacy_dir' are expected to be expanded (no '~').
+    std::string resolveConfigName(const std::string& dir,
+                                  const std::string& legacy_dir,
+                                  const std::string& name);
+
 } // end of File namespace
 
 ///  Wrapper class for DIR * routines

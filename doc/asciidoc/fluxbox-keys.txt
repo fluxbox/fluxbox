@@ -535,6 +535,7 @@ what these menus contain or how to configure them, see 'fluxbox(1)'.
 *CustomMenu* 'path'::
 	Opens a custom menu file. This 'path' must be a valid menu file in the same
 	format as detailed by the *ROOT MENU* section of *fluxbox-menu(5)*.
+	A relative 'path' is relative to the config folder.
 
 *HideMenus*::
 	Hide all fluxbox popup menus.
