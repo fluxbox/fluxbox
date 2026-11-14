@@ -1367,9 +1367,14 @@ void BScreen::rereadMenu() {
         MenuCreator::createFromFile(fb->getMenuFilename(), *m_rootmenu,
                                     m_rootmenu->reloadHelper());
 
-    if (m_rootmenu->numberOfItems() == 0)
-        MenuCreator::createFromString(builtinRootMenu(), *m_rootmenu,
+    if (m_rootmenu->numberOfItems() == 0) {
+        // the builtin menu refers to the legacy config folder; made relative
+        // it points into the config folder in use
+        const std::string menu = FbTk::StringUtil::replaceString(builtinRootMenu(),
+                "~/.fluxbox/", "");
+        MenuCreator::createFromString(menu, *m_rootmenu,
                                       m_rootmenu->reloadHelper());
+    }
 
 }
 
