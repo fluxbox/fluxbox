@@ -26,6 +26,8 @@
 #include "Screen.hh"
 #include "ScreenPlacement.hh"
 
+#include "FbTk/RectangleUtil.hh"
+
 bool RowSmartPlacement::placeWindow(const FluxboxWindow &win, int head,
                                     int &place_x, int &place_y) {
 
@@ -122,10 +124,9 @@ bool RowSmartPlacement::placeWindow(const FluxboxWindow &win, int head,
                 int curr_w = window.width() + window.fbWindow().borderWidth()*2 + window.widthOffset();
                 int curr_h = window.height() + window.fbWindow().borderWidth()*2 + window.heightOffset();
 
-                if (curr_x < test_x + win_w &&
-                    curr_x + curr_w > test_x &&
-                    curr_y < test_y + win_h &&
-                    curr_y + curr_h > test_y) {
+                if (FbTk::RectangleUtil::overlapRectangles(
+                        curr_x, curr_y, curr_w, curr_h,
+                        test_x, test_y, win_w, win_h)) {
                     // this window is in the way
                     placed = false;
 

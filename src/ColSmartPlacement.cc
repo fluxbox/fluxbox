@@ -26,6 +26,8 @@
 #include "ScreenPlacement.hh"
 #include "Window.hh"
 
+#include "FbTk/RectangleUtil.hh"
+
 bool ColSmartPlacement::placeWindow(const FluxboxWindow &win, int head,
                                     int &place_x, int &place_y) {
 
@@ -107,10 +109,9 @@ bool ColSmartPlacement::placeWindow(const FluxboxWindow &win, int head,
                 int curr_w = (*it)->width()  + bw + (*it)->widthOffset();
                 int curr_h = (*it)->height() + bw + (*it)->heightOffset();
 
-                if (curr_x < test_x + win_w &&
-                    curr_x + curr_w > test_x &&
-                    curr_y < test_y + win_h &&
-                    curr_y + curr_h > test_y) {
+                if (FbTk::RectangleUtil::overlapRectangles(
+                        curr_x, curr_y, curr_w, curr_h,
+                        test_x, test_y, win_w, win_h)) {
                     // this window is in the way
                     placed = false;
 
