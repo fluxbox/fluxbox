@@ -93,6 +93,13 @@ std::string toUpper(const std::string &conv);
 #endif // basename
 std::string basename(const std::string &basename);
 
+#ifdef dirname
+#undef dirname
+#endif // dirname
+/// @return directory part of 'filename': "." if it has none, "/" for
+/// files in the root directory
+std::string dirname(const std::string &filename);
+
 
 /// removes the first whitespace characters of the string
 std::string::size_type removeFirstWhitespace(std::string &str);

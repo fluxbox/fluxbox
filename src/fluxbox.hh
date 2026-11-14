@@ -117,16 +117,22 @@ public:
 
 
     std::string getDefaultDataFilename(const char *name) const;
+    /// @return the folder of the init file in use
+    std::string getConfigDir() const;
+    /// bare file names (no "/", no "~") are relative to getConfigDir(),
+    /// paths into a moved-away ~/.fluxbox are mapped to getConfigDir(),
+    /// see FbTk::FileUtil::resolveConfigName()
+    std::string resolveConfigFilename(const std::string& name) const;
 
     bool &getPseudoTrans()                             { return *m_config.pseudotrans; }
     bool getIgnoreBorder() const                       { return *m_config.ignore_border; }
     Fluxbox::TabsAttachArea getTabsAttachArea() const  { return *m_config.tabs_attach_area; }
     const std::string &getStyleFilename() const        { return *m_config.style_file; }
-    const std::string &getStyleOverlayFilename() const { return *m_config.overlay_file; }
-    const std::string &getMenuFilename() const         { return *m_config.menu_file; }
-    const std::string &getSlitlistFilename() const     { return *m_config.slit_file; }
-    const std::string &getAppsFilename() const         { return *m_config.apps_file; }
-    const std::string &getKeysFilename() const         { return *m_config.key_file; }
+    std::string getStyleOverlayFilename() const        { return resolveConfigFilename(*m_config.overlay_file); }
+    std::string getMenuFilename() const                { return resolveConfigFilename(*m_config.menu_file); }
+    std::string getSlitlistFilename() const            { return resolveConfigFilename(*m_config.slit_file); }
+    std::string getAppsFilename() const                { return resolveConfigFilename(*m_config.apps_file); }
+    std::string getKeysFilename() const                { return resolveConfigFilename(*m_config.key_file); }
     int colorsPerChannel() const                       { return *m_config.colors_per_channel; }
     int getTabsPadding() const                         { return *m_config.tabs_padding; }
     unsigned int getDoubleClickInterval() const        { return *m_config.double_click_interval; }
@@ -243,7 +249,7 @@ private:
     FbTk::ResourceManager& m_screen_rm;
 
     struct Config {
-        Config(FbTk::ResourceManager& rm, const std::string& path);
+        explicit Config(FbTk::ResourceManager& rm);
 
         std::string path;
         std::string file;

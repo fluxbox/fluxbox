@@ -139,6 +139,28 @@ std::string FileUtil::findConfigDir(const std::string& name) {
     return legacy;
 }
 
+std::string FileUtil::resolveConfigName(const std::string& dir,
+                                        const std::string& legacy_dir,
+                                        const std::string& name) {
+    if (name.empty()) {
+        return name;
+    }
+    if (name[0] != '~' && name.find('/') == std::string::npos) {
+        return dir + "/" + name;
+    }
+
+    if (legacy_dir.empty() || legacy_dir == dir || isDirectory(legacy_dir.c_str())) {
+        return name;
+    }
+
+    const std::string expanded = StringUtil::expandFilename(name);
+    const std::string prefix = legacy_dir + "/";
+    if (expanded.compare(0, prefix.size(), prefix) == 0) {
+        return dir + "/" + expanded.substr(prefix.size());
+    }
+    return name;
+}
+
 Directory::Directory(const char *dir):m_dir(0),
 m_num_entries(0) {
     if (dir != 0)

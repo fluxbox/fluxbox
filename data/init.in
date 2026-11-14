@@ -1,7 +1,5 @@
 ! If you're looking for settings to configure, they won't be saved here until
 ! you change something in the fluxbox configuration menu.
 
-session.menuFile:	~/.@pkgprefix@fluxbox@pkgsuffix@/menu
-session.keyFile: ~/.@pkgprefix@fluxbox@pkgsuffix@/keys
 session.styleFile: @default_style@
 session.configVersion:	13

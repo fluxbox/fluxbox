@@ -290,18 +290,18 @@ bool Fluxbox::haveShape() const { return s_have_shape; }
 int Fluxbox::shapeEventbase() const { return s_shape_eventbase; }
 Fluxbox* Fluxbox::instance() { return s_singleton; }
 
-Fluxbox::Config::Config(FbTk::ResourceManager& rm, const std::string& path) :
+Fluxbox::Config::Config(FbTk::ResourceManager& rm) :
     ignore_border(rm, false, "session.ignoreBorder", "Session.IgnoreBorder"),
     pseudotrans(rm, false, "session.forcePseudoTransparency", "Session.forcePseudoTransparency"),
     colors_per_channel(rm, 4, "session.colorsPerChannel", "Session.ColorsPerChannel"),
     double_click_interval(rm, 250, "session.doubleClickInterval", "Session.DoubleClickInterval"),
     tabs_padding(rm, 0, "session.tabPadding", "Session.TabPadding"),
     style_file(rm, DEFAULTSTYLE, "session.styleFile", "Session.StyleFile"),
-    overlay_file(rm, path + "/overlay", "session.styleOverlay", "Session.StyleOverlay"),
-    menu_file(rm, path + "/menu", "session.menuFile", "Session.MenuFile"),
-    key_file(rm, path + "/keys", "session.keyFile", "Session.KeyFile"),
-    slit_file(rm, path + "/slitlist", "session.slitlistFile", "Session.SlitlistFile"),
-    apps_file(rm, path + "/apps", "session.appsFile", "Session.AppsFile"),
+    overlay_file(rm, "overlay", "session.styleOverlay", "Session.StyleOverlay"),
+    menu_file(rm, "menu", "session.menuFile", "Session.MenuFile"),
+    key_file(rm, "keys", "session.keyFile", "Session.KeyFile"),
+    slit_file(rm, "slitlist", "session.slitlistFile", "Session.SlitlistFile"),
+    apps_file(rm, "apps", "session.appsFile", "Session.AppsFile"),
     tabs_attach_area(rm, ATTACH_AREA_WINDOW, "session.tabsAttachArea", "Session.TabsAttachArea"),
     menusearch(rm, FbTk::MenuSearch::DEFAULT, "session.menuSearch", "Session.MenuSearch"),
     cache_life(rm, 5, "session.cacheLife", "Session.CacheLife"),
@@ -316,7 +316,7 @@ Fluxbox::Fluxbox(int argc, char **argv,
       m_fbatoms(FbAtoms::instance()),
       m_resourcemanager(rc_filename.c_str(), true),
       m_screen_rm(m_resourcemanager), // TODO: shouldn't need a separate one for screen
-      m_config(m_resourcemanager, rc_path),
+      m_config(m_resourcemanager),
       m_last_time(0),
       m_masked(0),
       m_masked_window(0),
@@ -1281,6 +1281,20 @@ string Fluxbox::getDefaultDataFilename(const char *name) const {
     return m_config.path + string("/") + name;
 }
 
+/// @return the folder of the init file in use
+string Fluxbox::getConfigDir() const {
+    if (m_config.file.empty()) {
+        return m_config.path;
+    }
+    return FbTk::StringUtil::dirname(FbTk::StringUtil::expandFilename(m_config.file));
+}
+
+string Fluxbox::resolveConfigFilename(const string& name) const {
+    static const string legacy_dir =
+        FbTk::StringUtil::expandFilename("~/." + realProgramName("fluxbox"));
+    return FbTk::FileUtil::resolveConfigName(getConfigDir(), legacy_dir, name);
+}
+
 /// loads resources
 void Fluxbox::load_rc() {
     _FB_USES_NLS;
@@ -1305,8 +1319,7 @@ void Fluxbox::load_rc() {
     FbTk::Transparent::usePseudoTransparent(*m_config.pseudotrans);
 
     if (m_config.slit_file->empty()) {
-        string filename = getDefaultDataFilename("slitlist");
-        m_config.slit_file.setFromString(filename.c_str());
+        m_config.slit_file.setDefaultValue();
     }
 
     *m_config.colors_per_channel = FbTk::Util::clamp(*m_config.colors_per_channel, 2, 6);
