@@ -27,6 +27,11 @@ CONFIG_CLEAN_FILES = src/defaults.hh src/defaults.cc
 
 LDADD = libFbTk.a src/defaults.$(OBJEXT)
 
+# BUILT_SOURCES only applies to "make", "make all/check/install": a single
+# target such as "make testRectangleUtil" compiles defaults.cc without the
+# generated header unless the object depends on it
+src/defaults.$(OBJEXT): src/defaults.hh
+
 bin_PROGRAMS += fluxbox
 
 src/defaults.hh: Makefile
