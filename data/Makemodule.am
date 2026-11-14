@@ -61,6 +61,15 @@ install-data-local: $(pkgdata_FILES)
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_WINDOWMENU))
 	$(INSTALL_DATA) $(srcdir)/data/windowmenu $(DESTDIR)$(DEFAULT_WINDOWMENU)
 
+# the automake *_DATA rules create the folders with "mkdir -p" (MKDIR_P),
+# which honours the umask: a strict one (eg, 077, which sudo keeps) leaves
+# the style folders readable by root only. the files are installed 644
+# anyway, so make the folders match.
+install-data-hook:
+	if test -d "$(DESTDIR)$(pkgdatadir)"; then \
+		find "$(DESTDIR)$(pkgdatadir)" -type d -exec chmod 755 {} +; \
+	fi
+
 data/menu: util/fluxbox-generate_menu
 	env MENUFILENAME=$@ \
 		PREFIX="${prefix}" \
