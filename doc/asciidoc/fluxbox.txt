@@ -1353,12 +1353,27 @@ Default: *itemstart*
 ENVIRONMENT
 -----------
 *HOME*::
-    fluxbox uses *$HOME* to find the .fluxbox/init file and to resolve style file
+    fluxbox uses *$HOME* to find the config folder and to resolve style file
     and -directory names.
 
 *DISPLAY*::
     When no other display was given on the command line, fluxbox will start on
     the display specified by this variable.
+
+*XDG_CONFIG_HOME*::
+    *~/.fluxbox* is the standard config folder. Another folder is used as an
+    opt-in; the first match wins:
++
+--
+1. *$XDG_CONFIG_HOME/fluxbox*, if $XDG_CONFIG_HOME is set and the folder exists.
+2. *~/.config/fluxbox*, if it contains an `init' file. This opts in without
+   setting $XDG_CONFIG_HOME, which would affect all programs started by
+   fluxbox.
+3. *~/.fluxbox*, if it exists.
+4. *~/.config/fluxbox*, if it exists.
+--
++
+If none matches, *~/.fluxbox* is created.
 
 fluxbox can also take advantage of other environment variables if they are set
 before fluxbox is started. For example, if $TERM is set, then it will be
