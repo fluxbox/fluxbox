@@ -27,10 +27,18 @@ int test_insideBorder() {
         int truth;
     };
 
+    // as with an X window, the border lies outside width and height:
+    // { 0, 0, 10, 10 } with border 2 covers [0, 14), its inside is [2, 12)
     _t tests[] = {
         { { 0, 0, 10, 10 },  0,  0, 2, false }, // on the (outer) edge
         { { 0, 0, 10, 10 },  1,  1, 2, false }, // on the (inner) edge
+        { { 0, 0, 10, 10 },  2,  2, 2, true },  // first pixel inside
         { { 0, 0, 10, 10 },  5,  5, 2, true },  // really inside
+        { { 0, 0, 10, 10 }, 11, 11, 2, true },  // last pixel inside
+        { { 0, 0, 10, 10 }, 12,  5, 2, false }, // on the right border
+        { { 0, 0, 10, 10 },  5, 12, 2, false }, // on the bottom border
+        { { 5, 5, 10, 10 },  6,  6, 1, true },  // moved, first pixel inside
+        { { 5, 5, 10, 10 }, 16,  6, 1, false }, // moved, on the right border
         { { 0, 0, 10, 10 }, -5,  0, 2, false }, // somewhere outside
         { { 0, 0, 10, 10 }, 20, 20, 2, false }  // outside for sure
     };
