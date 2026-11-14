@@ -1,7 +1,7 @@
 '\" t
 .\"     Title: fluxbox-menu
 .\"    Author: Jim Ramsay <i.am@jimramsay.com>
-.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
 .\"      Date: 08 February 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-menu.txt
@@ -477,7 +477,7 @@ Curt Micol <asenchi at asenchi com> (>fluxbox\-0\&.9\&.11)
 .sp -1
 .IP \(bu 2.3
 .\}
-Tobias Klausmann <klausman at users sourceforge net> (\(lafluxbox\-0\&.9\&.11)
+Tobias Klausmann <klausman at users sourceforge net> (⇐fluxbox\-0\&.9\&.11)
 .RE
 .sp
 .RS 4

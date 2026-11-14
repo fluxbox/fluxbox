@@ -1,7 +1,7 @@
 '\" t
 .\"     Title: fluxbox-style
 .\"    Author: Henrik Kinnunen <fluxgen@fluxbox.org>
-.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
 .\"      Date: 08 February 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-style.txt
@@ -534,7 +534,7 @@ Blackbox was written and maintained by Brad Hughes <blackbox at alug\&.org> and 
 .sp
 fluxbox(1) is written and maintained by Henrik Kinnunen <fluxgen at fluxbox\&.org> with contributions and patches merged from many individuals around the world\&.
 .sp
-The Official fluxbox(1) website: \m[blue]\fBhttp://www\&.fluxbox\&.org\fR\m[] You can find a lot of styles here: \m[blue]\fBhttp://tenr\&.de/\fR\m[]
+The Official fluxbox(1) website: \m[blue]\fBhttp://www\&.fluxbox\&.org\fR\m[]
 .sp
 This manpage was composed from various resources including the official documentation, fluxbox(1) man page and numerous other resources by Curt "Asenchi" Micol\&. If you notice any errors or problems with this page, please contact him here: <asenchi at asenchi\&.com> and using the great contributions of <grubert at users\&.sourceforge\&.net>\&. Numerous other languages could be available if someone jumps in\&.
 .SH "SEE ALSO"

@@ -1406,14 +1406,10 @@ ONLINE DOCUMENTATION
 --------------------
 The Official fluxbox website: http://www.fluxbox.org
 
-The Official fluxbox wiki: http://www.fluxbox-wiki.org
-
-Many compatible themes: http://tenr.de
-
 BUGS
 ----
 If you find any bugs, please visit the #fluxbox irc channel on
-irc.freenode.net or submit them to the bug tracker at
+irc.libera.chat or submit them to the bug tracker at
 http://sf.net/projects/fluxbox . Or you may subscribe to one of the
 mailinglists. More information can be found on the official website.
 
