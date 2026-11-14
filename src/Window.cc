@@ -2908,11 +2908,14 @@ void FluxboxWindow::leaveNotifyEvent(XCrossingEvent &ev) {
         screen().hideTooltip();
     }
 
-    // still inside?
-    if (ev.x_root > frame().x() && ev.y_root > frame().y() &&
-        ev.x_root <= (int)(frame().x() + frame().width()) &&
-        ev.y_root <= (int)(frame().y() + frame().height()))
+    // still inside? the frame's border lies outside its width and height
+    const int bw2 = 2 * frame().window().borderWidth();
+    if (FbTk::RectangleUtil::insideRectangle(frame().x(), frame().y(),
+            static_cast<int>(frame().width()) + bw2,
+            static_cast<int>(frame().height()) + bw2,
+            ev.x_root, ev.y_root)) {
         return;
+    }
 
     Fluxbox::instance()->keys()->doAction(ev.type, ev.state, 0,
                                           Keys::ON_WINDOW, m_client);
