@@ -1800,7 +1800,7 @@ int BScreen::getHead(int x, int y) const {
 #ifdef XINERAMA
     if (hasXinerama()) {
         for (int i = 0; i < numHeads(); i++) {
-            if (FbTk::RectangleUtil::insideBorder(m_xinerama.heads[i], x, y, 0)) {
+            if (FbTk::RectangleUtil::insideRectangle(m_xinerama.heads[i], x, y)) {
                 return i+1;
             }
         }

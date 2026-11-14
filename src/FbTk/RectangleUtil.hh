@@ -9,6 +9,20 @@ namespace RectangleUtil {
 bool insideRectangle(int x, int y, int width, int height, int px, int py);
 
 /*
+ * Determines if a point is inside a rectangle-like object.
+ * @param rect A rectangle-like object that has accessors for x, y, width, and
+ *        height.
+ * @returns true if (px, py) is inside [x, x + width) x [y, y + height)
+ */
+template <typename RectangleLike>
+bool insideRectangle(const RectangleLike& rect, int px, int py) {
+    return insideRectangle(rect.x(), rect.y(),
+                           static_cast<int>(rect.width()),
+                           static_cast<int>(rect.height()),
+                           px, py);
+}
+
+/*
  * Determines if a point is inside a rectangle-like object's border.
  * As with an X window, the border lies outside width and height: the
  * object covers [x, x + width + 2*border) and the area inside its

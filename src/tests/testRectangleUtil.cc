@@ -15,6 +15,49 @@ struct Rect {
 
 
 
+int test_insideRectangle() {
+
+    printf("testing FbTk::RectangleUtil::insideRectangle()\n");
+
+    struct _t {
+        struct Rect rect;
+        int x;
+        int y;
+        int truth;
+    };
+
+    const _t tests[] = {
+        { { 0, 0, 10, 10 },  0,  0, true },  // top left corner
+        { { 0, 0, 10, 10 },  9,  9, true },  // bottom right corner
+        { { 0, 0, 10, 10 }, 10,  5, false }, // one past the right edge
+        { { 0, 0, 10, 10 },  5, 10, false }, // one past the bottom edge
+        { { 5, 5, 10, 10 },  4,  5, false }, // moved, left of it
+        { { 5, 5, 10, 10 }, 14, 14, true },  // moved, bottom right corner
+        { { 0, 0,  0,  0 },  0,  0, false }  // empty
+    };
+
+    int failed = 0;
+    for (unsigned int i = 0; i < sizeof(tests)/sizeof(_t); ++i) {
+        const _t& t = tests[i];
+        int result = FbTk::RectangleUtil::insideRectangle(t.rect, t.x, t.y);
+
+        printf("  %u: is (%02d|%02d) inside [%d %d]-[%d %d]: %s, %s\n",
+                i,
+                t.x, t.y,
+                t.rect.x(), t.rect.y(),
+                t.rect.x() + t.rect.width(),
+                t.rect.y() + t.rect.height(),
+                result ? "yes" : "no", result == t.truth ? "ok" : "failed");
+        if (result != t.truth) {
+            ++failed;
+        }
+    }
+
+    printf("done.\n");
+
+    return failed;
+}
+
 int test_insideBorder() {
 
     printf("testing FbTk::RectangleUtil::insideBorder()\n");
@@ -205,6 +248,7 @@ int test_largestFreeRectangle() {
 int main(int argc, char **argv) {
 
     int failed = 0;
+    failed += test_insideRectangle();
     failed += test_insideBorder();
     failed += test_overlapRectangles();
     failed += test_largestFreeRectangle();
