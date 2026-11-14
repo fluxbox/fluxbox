@@ -45,7 +45,25 @@
 
 # The wallpapersetter is selected in this order
 wpsetters="${wpsetters:=Esetroot wmsetbg feh hsetroot chbg display qiv xv xsri xli xsetbg}" # broken icewmbg'
-lastwallpaper="${HOME}/.fluxbox/lastwallpaper"
+# config folder, same lookup as fluxbox itself: $FLUXBOX_CONFIG_DIR (set by a
+# running fluxbox), else $XDG_CONFIG_HOME/fluxbox (opt-in), else
+# ~/.config/fluxbox if it has an init file (opt-in), else ~/.fluxbox
+# (standard), else an existing ~/.config/fluxbox, else ~/.fluxbox
+fbname="fluxbox"
+if [ -n "$FLUXBOX_CONFIG_DIR" ] && [ -d "$FLUXBOX_CONFIG_DIR" ]; then
+    fluxdir="$FLUXBOX_CONFIG_DIR"
+elif [ -n "$XDG_CONFIG_HOME" ] && [ -d "$XDG_CONFIG_HOME/$fbname" ]; then
+    fluxdir="$XDG_CONFIG_HOME/$fbname"
+elif [ -f "$HOME/.config/$fbname/init" ]; then
+    fluxdir="$HOME/.config/$fbname"
+elif [ -d "$HOME/.$fbname" ]; then
+    fluxdir="$HOME/.$fbname"
+elif [ -d "$HOME/.config/$fbname" ]; then
+    fluxdir="$HOME/.config/$fbname"
+else
+    fluxdir="$HOME/.$fbname"
+fi
+lastwallpaper="${fluxdir}/lastwallpaper"
 
 DISPLAY=${DISPLAY%.0}
 
@@ -100,7 +118,8 @@ Options:
 
 Files:
 
-    ~/.fluxbox/lastwallpaper     In this file the wallpaper you set
+    ${lastwallpaper}
+                                 In this file the wallpaper you set
                                  will be stored, for the -l option:
 Environment variables:
     wpsetters   Wallpapersetters to use.
@@ -124,7 +143,7 @@ Common tips to use with $command:
    perl -pi -e 's,([^f]|^)bsetbg,$command,' filename
 
 2) If you want to set the wallpaper and you want $command to
-   remember the previous wallpaper put this in your ~/.fluxbox/overlay
+   remember the previous wallpaper put this in your ${fluxdir}/overlay
 
    background: none
 
@@ -220,8 +239,8 @@ if [ $# -eq 0 ]; then
 fi
 
 # create directory and last wallpaper file 
-if [ ! -d  "$HOME/.fluxbox" ]; then
-	mkdir "$HOME/.fluxbox"
+if [ ! -d "$fluxdir" ]; then
+	mkdir "$fluxdir"
     touch ${lastwallpaper}
 fi
 

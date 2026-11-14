@@ -1381,6 +1381,10 @@ another folder keeps working: as long as *~/.fluxbox* does not exist,
 'location' resources pointing into it are taken from the folder of the init
 file.
 
+*FLUXBOX_CONFIG_DIR*::
+    Set by fluxbox to the folder of the init file in use. *fbsetbg(1)*,
+    *fbrun(1)* and *fluxbox-update_configs* use it to find the config folder.
+
 fluxbox can also take advantage of other environment variables if they are set
 before fluxbox is started. For example, if $TERM is set, then it will be
 available whenever fluxbox uses the shell, such as the `keys' file

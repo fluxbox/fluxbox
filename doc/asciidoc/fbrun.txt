@@ -67,7 +67,9 @@ OPTIONS
 	Text font name
 
 *-hf* 'filename'::
-	History file to load. The default is *~/.fluxbox/fbrun_history*.
+	History file to load. The default is *fbrun_history* in the config
+	folder: *$FLUXBOX_CONFIG_DIR* if set (by a running fluxbox), else it is
+	located like fluxbox does, see *XDG_CONFIG_HOME* in *fluxbox(1)*.
 
 *-cf* 'filename'::
     Completion data to load. The default is empty. If no data can be loaded,

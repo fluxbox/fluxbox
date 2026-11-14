@@ -413,6 +413,8 @@ Fluxbox::Fluxbox(int argc, char **argv,
 
     setupRun(argv[0]);
     setupTerminal();
+    // tell child processes (fbsetbg, fbrun, ...) where the config lives
+    App::setenv("FLUXBOX_CONFIG_DIR", getConfigDir().c_str());
 
     // setup theme manager to have our style file ready to be scanned
     loadStyle();

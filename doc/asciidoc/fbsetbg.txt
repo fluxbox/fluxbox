@@ -75,8 +75,10 @@ Display a help message.
 
 FILES
 -----
-*~/.fluxbox/lastwallpaper*::
+*<config folder>/lastwallpaper*::
 In this file the wallpaper you set will be stored, for the *-l* option.
+The config folder is *$FLUXBOX_CONFIG_DIR* if set (by a running fluxbox),
+else it is located like fluxbox does, see *XDG_CONFIG_HOME* in *fluxbox(1)*.
 
 ENVIRONMENT
 -----------
