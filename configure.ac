@@ -678,9 +678,67 @@ AC_MSG_RESULT([	'$default_init' for location init file.])
 AC_MSG_RESULT([	'$locale_path' for nls files.])
 AC_MSG_RESULT([	'$CXX' for C++ compiler.])
 AC_MSG_RESULT([])
+
+dnl fb_option NAME VALUE WHAT [ENABLE LIBRARY]: one line of the overview
+dnl below, in the style of 'fluxbox -info': NAME, or -NAME when VALUE is not
+dnl yes, followed by WHAT the user gets from it. For something that needs a
+dnl library, pass the --enable/--disable argument as ENABLE and the name of
+dnl the LIBRARY, so a missing one is told from --disable-...
+fb_option() {
+	fb_name=$1
+	fb_what=$3
+	AS_IF([test "x$2" != xyes], [
+		fb_name="-$1"
+		AS_IF([test "x$4" != xno && test $# -ge 5], [
+			fb_what="$fb_what ($5 not found)"
+		])
+	])
+	dnl the line is built first: AC_MSG_RESULT escapes the double quotes
+	dnl in its argument, which would split it into words
+	fb_line=$(printf '%-12s %s' "$fb_name" "$fb_what")
+	AC_MSG_RESULT([$fb_line])
+}
+
+AS_IF([test "x$REGEXP_SRC" = xtrue], [have_regexp=yes], [have_regexp=no])
+AS_IF([test "x$fb_iconv" = xno], [have_iconv=no], [have_iconv=yes])
+AS_IF([test "x$have_xft" = xyes], [have_xft_utf8=$have_utf8], [have_xft_utf8=no])
+
+dnl same names and order as 'fluxbox -info' (src/cli_info.cc)
+AC_MSG_RESULT([Compiled options (- => disabled):])
+AC_MSG_RESULT([])
+fb_option BIDI "$have_fribidi" "bi-directional text support (right-to-left)" "$enable_fribidi" fribidi
+fb_option DEBUG "$enable_debug" "verbose debugging output"
+fb_option EWMH "$enable_ewmh" "interoperability with external panels, pagers and applications"
+fb_option IMLIB2 "$have_imlib2" "PNG and JPEG images in styles, menus and icons" "$enable_imlib2" imlib2
+fb_option NLS "$enable_nls" "native language support (non-english interface)"
+fb_option REMEMBER "$enable_remember" "remembers window settings (apps file)"
+fb_option RENDER "$have_xrender" "transparent menus, toolbar and windows" "$enable_xrender" xrender
+fb_option SHAPE "$have_xext" "shaped windows and rounded corners" "$enable_xext" xext
+fb_option SLIT "$enable_slit" "slit, a dock for dockapps"
+fb_option SYSTEMTRAY "$enable_systray" "system tray in the toolbar"
+fb_option TOOLBAR "$enable_toolbar" "toolbar with workspaces, window list and clock"
+fb_option RANDR "$have_xrandr" "follows monitors being added, removed or rearranged" "$enable_xrandr" xrandr
+fb_option XFT "$have_xft" "anti-aliased fonts (Xft with FreeType)" "$enable_xft" xft
+fb_option XINERAMA "$have_xinerama" "multi monitor support" "$enable_xinerama" xinerama
+fb_option XMB "$enable_xmb" "multibyte text, e.g. Chinese and Japanese, without xft"
+fb_option XPM "$have_xpm" "XPM images in styles, menus and icons" "$enable_xpm" xpm
+AC_MSG_RESULT([])
+AC_MSG_RESULT([Not shown by 'fluxbox -info':])
+fb_option ICONV "$have_iconv" "window titles in other encodings than UTF-8" "" iconv
+fb_option REGEXP "$have_regexp" "regular expressions in window patterns" "$enable_regexp" regex.h
+fb_option TIMEDCACHE "$enable_timedcache" "frees unused images from time to time"
+fb_option XFIXES "$have_xfixes" "notices a compositor starting or stopping" "$enable_xfixes" xfixes
+fb_option XFT_UTF8 "$have_xft_utf8" "UTF-8 text with anti-aliased fonts"
+AC_MSG_RESULT([])
 AC_MSG_RESULT([Building with:])
+AC_MSG_RESULT([])
 AC_MSG_RESULT([	'$MSG_RESULT_CXXFLAGS' for C++ compiler flags.])
 AC_MSG_RESULT([	'$MSG_RESULT_LIBS' for linker flags.])
+AC_MSG_RESULT([])
+dnl only matters to whoever works on fluxbox itself
+AC_MSG_RESULT([Development:])
+fb_option PCH "$enable_pch" "faster build, precompiled header"
+fb_option TEST "$enable_test" "test programs"
 AC_MSG_RESULT([])
 AC_MSG_RESULT([Now build $PACKAGE with 'make'])
 AC_MSG_RESULT([])
