@@ -176,7 +176,9 @@ int ExecuteCmd::run() {
         shell = "/bin/sh";
 
     execl(shell, shell, "-c", m_cmd.c_str(), static_cast<void*>(NULL));
-    exit(EXIT_SUCCESS);
+    // _exit(), not exit(): the destructors of fluxbox and of static objects
+    // would act on the X connection the child shares with its parent
+    _exit(EXIT_FAILURE);
 
     return pid; // compiler happy -> we are happy ;)
 #endif
