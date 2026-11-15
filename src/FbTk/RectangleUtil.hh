@@ -131,6 +131,14 @@ Rect largestFreeRectangle(const std::vector<Rect> &regions,
 Rect gridCell(const Rect &area, unsigned int rows, unsigned int cols,
               unsigned int row, unsigned int col);
 
+/*
+ * The smallest rectangle containing all of 'rects', e.g. the area spanned
+ * by several heads.
+ * @returns the rectangle, or one with width == height == 0 if 'rects' is
+ *          empty
+ */
+Rect boundingRectangle(const std::vector<Rect> &rects);
+
 } // namespace RectangleUtil
 } // namespace FbTk
 
