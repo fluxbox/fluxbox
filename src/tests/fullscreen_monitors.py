@@ -133,7 +133,7 @@ class Wm:
             return []
 
     def make_window(self, x, y, w, h, name, transient_for=None,
-                    dialog=False, props=None):
+                    dialog=False, props=None, before_map=None):
         win = self.root.create_window(
             x, y, w, h, 0, self.screen.root_depth, X.InputOutput,
             X.CopyFromParent, background_pixel=self.screen.white_pixel,
@@ -149,6 +149,8 @@ class Wm:
                                 32, [self.atom("_NET_WM_WINDOW_TYPE_DIALOG")])
         for pname, ptype, pvalue in props or []:
             win.change_property(self.atom(pname), ptype, 32, pvalue)
+        if before_map is not None:
+            before_map(win)
         win.map()
         self.d.flush()
         wait_for(self, lambda: win.get_attributes().map_state == X.IsViewable)
@@ -401,6 +403,18 @@ def run_checks(wm):
     r.check("FM1", "existing property is honored when a window is managed",
             wait_for(wm, lambda: wm.geometry(e) == SPAN), wm.geometry(e))
     e.destroy()
+    settle(wm)
+
+    # message sent before the window is mapped, as mpv --fs-screen=all does;
+    # fullscreen comes later (pressing 'f')
+    f = wm.make_window(100, 100, 300, 200, "fsmon-F",
+                       before_map=lambda w: wm.set_monitors(w, 0, 0, 0, 1))
+    r.check("FM9", "request sent before map is kept",
+            wait_for(wm, lambda: wm.monitors(f) == [0, 0, 0, 1]), wm.monitors(f))
+    wm.set_fullscreen(f, True)
+    r.check("FM9", "fullscreen after a request before map spans both heads",
+            wait_for(wm, lambda: wm.geometry(f) == SPAN), wm.geometry(f))
+    f.destroy()
     settle(wm)
 
     print("  ○ FM6   RandR (monitor unplugged): not covered, Xephyr "
