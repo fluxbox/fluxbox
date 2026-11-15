@@ -167,9 +167,14 @@ int handleXErrors(Display *d, XErrorEvent *e) {
 }
 
 
+// the connection is gone: exit() would run the destructors of fluxbox and of
+// static objects, which talk to the dead display (and block on the display
+// lock Xlib holds while it calls us) or use statics destroyed before them
 int handleXIOErrors(Display* d) {
-    cerr << "Fluxbox: XIOError: lost connection to display.\n";
-    exit(1);
+    cerr << "Fluxbox: XIOError: lost connection to display." << endl;
+    std::cout.flush();
+    fflush(0);
+    _exit(1);
 }
 
 /// sets FLUXBOX_RUN, the run dialog the default menu and keys start: the
