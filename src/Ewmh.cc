@@ -1524,17 +1524,37 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         }
         return true;
     } else if (ce.message_type == m_net->wm_fullscreen_monitors) {
-        if (winclient == 0 || winclient->fbwindow() == 0)
-            return true;
         // data.l[0] = monitor defining the top edge
         // data.l[1] = monitor defining the bottom edge
         // data.l[2] = monitor defining the left edge
         // data.l[3] = monitor defining the right edge
         // data.l[4] = source indication
         int mon[4];
-        if (!toMonitorIndices(ce.data.l, mon) ||
-            !winclient->fbwindow()->setFullscreenMonitors(mon[0], mon[1], mon[2], mon[3])) {
+        if (!toMonitorIndices(ce.data.l, mon)) {
             fbdbg << "Ewmh: ignoring invalid _NET_WM_FULLSCREEN_MONITORS "
+                  << ce.data.l[0] << " " << ce.data.l[1] << " "
+                  << ce.data.l[2] << " " << ce.data.l[3] << endl;
+            return true;
+        }
+
+        if (winclient == 0 || winclient->fbwindow() == 0) {
+            if (ce.window == None ||
+                (screen != 0 && ce.window == screen->rootWindow().window())) {
+                return true;
+            }
+            // not managed yet: e.g. mpv --fs-screen=all sends this once,
+            // right before it maps its window. Keep the request in the
+            // property, setupFullscreenMonitors() picks it up on manage.
+            long monitors[4] = { mon[0], mon[1], mon[2], mon[3] };
+            XChangeProperty(FbTk::App::instance()->display(), ce.window,
+                            m_net->wm_fullscreen_monitors, XA_CARDINAL, 32,
+                            PropModeReplace,
+                            reinterpret_cast<unsigned char*>(monitors), 4);
+            return true;
+        }
+
+        if (!winclient->fbwindow()->setFullscreenMonitors(mon[0], mon[1], mon[2], mon[3])) {
+            fbdbg << "Ewmh: ignoring _NET_WM_FULLSCREEN_MONITORS for missing monitors "
                   << ce.data.l[0] << " " << ce.data.l[1] << " "
                   << ce.data.l[2] << " " << ce.data.l[3] << endl;
         }
