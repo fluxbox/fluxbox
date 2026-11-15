@@ -22,6 +22,9 @@
 #include "AtomHandler.hh"
 #include "FbTk/FbString.hh"
 #include "FbTk/Signal.hh"
+#include "FbTk/Timer.hh"
+
+#include <set>
 
 /// Implementes Extended Window Manager Hints ( http://www.freedesktop.org/Standards/wm-spec )
 class Ewmh:public AtomHandler, public FbTk::SignalTracker {
@@ -72,8 +75,15 @@ private:
 
     void setupState(FluxboxWindow &win);
 
+    void stackingChanged(BScreen &screen);
+    void updateStackingLists();
+    void updateClientListStacking(BScreen &screen);
+
     FbTk::FbString getUTF8Property(Atom property);
 
     class EwmhAtoms;
     EwmhAtoms* m_net;
+
+    FbTk::Timer m_stacking_timer;
+    std::set<BScreen *> m_stacking_screens; ///< _NET_CLIENT_LIST_STACKING to redo
 };

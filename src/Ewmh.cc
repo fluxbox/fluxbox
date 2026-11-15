@@ -43,6 +43,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <map>
 #include <new>
 #include <cstring>
 #include <cstdlib>
@@ -504,6 +505,14 @@ enum EwmhMoveResizeDirection {
 Ewmh::Ewmh() {
     setName("ewmh");
     m_net = new EwmhAtoms;
+
+    // timers run only once all pending X events are handled, so a burst
+    // of restacks (e.g. a client flooding ConfigureRequests) writes
+    // _NET_CLIENT_LIST_STACKING once. it also keeps the rebuild out of
+    // the middle of a window's destruction, where the layers emit too.
+    m_stacking_timer.setTimeout(0);
+    m_stacking_timer.fireOnce(true);
+    m_stacking_timer.setFunctor([this]() { updateStackingLists(); });
 }
 
 Ewmh::~Ewmh() {
@@ -644,6 +653,10 @@ void Ewmh::initForScreen(BScreen &screen) {
     updateViewPort(screen);
     updateWorkarea(screen);
 
+    // only remembers the screen; screens get deleted after the event loop
+    // ended (Fluxbox::~Fluxbox()), so no timer runs for a deleted one
+    join(screen.layerManager().stackingSig(),
+         [this, &screen]() { stackingChanged(screen); });
 }
 
 void Ewmh::setupClient(WinClient &winclient) {
@@ -855,11 +868,81 @@ void Ewmh::updateClientList(BScreen &screen) {
     screen.rootWindow().changeProperty(m_net->client_list,
                                        XA_WINDOW, 32,
                                        PropModeReplace, (unsigned char *)wl, num);
-    screen.rootWindow().changeProperty(m_net->client_list_stacking,
-                                       XA_WINDOW, 32,
-                                       PropModeReplace, (unsigned char *)wl, num);
 
     delete [] wl;
+
+    // new and gone clients change _NET_CLIENT_LIST_STACKING as well
+    stackingChanged(screen);
+}
+
+void Ewmh::stackingChanged(BScreen &screen) {
+    m_stacking_screens.insert(&screen);
+    m_stacking_timer.start(); // does nothing if already started
+}
+
+void Ewmh::updateStackingLists() {
+    std::set<BScreen *> screens;
+    screens.swap(m_stacking_screens);
+
+    std::set<BScreen *>::iterator it = screens.begin();
+    for (; it != screens.end(); ++it) {
+        updateClientListStacking(**it);
+    }
+}
+
+void Ewmh::updateClientListStacking(BScreen &screen) {
+
+    if (screen.isShuttingdown()) {
+        return;
+    }
+
+    // the layers hold LayerItems, find the window behind each
+    typedef std::map<const FbTk::LayerItem *, const FluxboxWindow *> ItemWindows;
+    ItemWindows windows;
+    const list<Focusable *> &winlist =
+            screen.focusControl().creationOrderWinList().clientList();
+    list<Focusable *>::const_iterator win_it = winlist.begin();
+    for (; win_it != winlist.end(); ++win_it) {
+        const FluxboxWindow *fbwin = (*win_it)->fbwindow();
+        if (fbwin && fbwin->numClients() > 0) {
+            windows[&fbwin->layerItem()] = fbwin;
+        }
+    }
+
+    // layer 0 is the top one, and each layer lists its items top first
+    vector<Window> stacking;
+    const FbTk::MultLayers &layers = screen.layerManager();
+    for (size_t l = layers.numLayers(); l > 0; --l) {
+        const FbTk::Layer::ItemList &items = layers.getLayer(l - 1)->itemList();
+        FbTk::Layer::ItemList::const_reverse_iterator item_it = items.rbegin();
+        for (; item_it != items.rend(); ++item_it) {
+
+            ItemWindows::const_iterator found = windows.find(*item_it);
+            if (found == windows.end()) {
+                continue; // the slit, the toolbar, ...
+            }
+
+            // the current client is the one shown, the other tabs are
+            // below it
+            const FluxboxWindow &fbwin = *found->second;
+            const WinClient *current = &fbwin.winClient();
+            FluxboxWindow::ClientList::const_iterator client_it = fbwin.clientList().begin();
+            for (; client_it != fbwin.clientList().end(); ++client_it) {
+                if (*client_it != current) {
+                    stacking.push_back((*client_it)->window());
+                }
+            }
+            stacking.push_back(current->window());
+        }
+    }
+
+    unsigned char *data = 0;
+    if (!stacking.empty()) {
+        data = reinterpret_cast<unsigned char *>(&stacking[0]);
+    }
+    screen.rootWindow().changeProperty(m_net->client_list_stacking,
+                                       XA_WINDOW, 32,
+                                       PropModeReplace, data, stacking.size());
 }
 
 void Ewmh::updateWorkspaceNames(BScreen &screen) {
