@@ -92,6 +92,10 @@
 #include <unistd.h>
 #endif // HAVE_UNISTD_H
 
+#ifndef _WIN32
+#include <fcntl.h>
+#endif
+
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif // HAVE_SYS_PARAM_H
@@ -117,6 +121,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <cerrno>
+#include <csignal>
 
 
 using std::cerr;
@@ -175,6 +181,45 @@ int handleXIOErrors(Display* d) {
     std::cout.flush();
     fflush(0);
     _exit(1);
+}
+
+// signals remembered by Fluxbox::postSignal() for the event loop, written
+// by signal handlers only with "= 1"
+volatile sig_atomic_t s_signal_shutdown = 0;
+volatile sig_atomic_t s_signal_x_gone = 0;
+volatile sig_atomic_t s_signal_restart = 0;
+volatile sig_atomic_t s_signal_reconfigure = 0;
+
+volatile sig_atomic_t s_shutdown_started = 0;
+
+// self-pipe: Fluxbox::postSignal() writes a byte to it so that select() in
+// the event loop wakes up even when the signal arrives right before it
+// the ends of the self-pipe, in the order pipe() fills them in
+enum { PIPE_READ_END, PIPE_WRITE_END, PIPE_ENDS };
+int s_signal_pipe[PIPE_ENDS] = { -1, -1 };
+
+void setupSignalPipe() {
+#ifndef _WIN32
+    if (s_signal_pipe[PIPE_READ_END] != -1 || pipe(s_signal_pipe) != 0) {
+        return;
+    }
+    for (int i = 0; i < PIPE_ENDS; ++i) {
+        fcntl(s_signal_pipe[i], F_SETFL, fcntl(s_signal_pipe[i], F_GETFL) | O_NONBLOCK);
+        fcntl(s_signal_pipe[i], F_SETFD, FD_CLOEXEC);
+    }
+#endif
+}
+
+void drainSignalPipe() {
+#ifndef _WIN32
+    if (s_signal_pipe[PIPE_READ_END] == -1) {
+        return;
+    }
+    char buf[64];
+    while (read(s_signal_pipe[PIPE_READ_END], buf, sizeof(buf)) > 0) {
+        ;
+    }
+#endif
 }
 
 /// sets FLUXBOX_RUN, the run dialog the default menu and keys start: the
@@ -355,6 +400,9 @@ Fluxbox::Fluxbox(int argc, char **argv,
     // setup X error handler
     XSetErrorHandler(handleXErrors);
     XSetIOErrorHandler(handleXIOErrors);
+
+    // before main() installs the signal handlers that write to it
+    setupSignalPipe();
 
     //
     // setup timer
@@ -608,6 +656,11 @@ void Fluxbox::eventLoop() {
 
     while (!m_state.shutdown) {
 
+        handlePostedSignals();
+        if (m_state.shutdown) {
+            break;
+        }
+
         if (XPending(disp)) {
             XEvent e;
             XNextEvent(disp, &e);
@@ -623,8 +676,70 @@ void Fluxbox::eventLoop() {
                 handleEvent(&e);
             }
         } else {
-            FbTk::Timer::updateTimers(ConnectionNumber(disp));
+            FbTk::Timer::updateTimers(ConnectionNumber(disp), s_signal_pipe[PIPE_READ_END]);
         }
+    }
+}
+
+void Fluxbox::postSignal(int signum) {
+    switch (signum) {
+#ifndef _WIN32
+    case SIGHUP:
+        // xinit sends HUP when it wants to go down. there is no point in
+        // restoring anything in the screens / workspaces, the connection
+        // to the xserver might drop any moment
+        s_signal_x_gone = 1;
+        break;
+    case SIGUSR1:
+        s_signal_restart = 1;
+        break;
+    case SIGUSR2:
+        s_signal_reconfigure = 1;
+        break;
+    case SIGPIPE:
+#endif
+    case SIGINT:
+    case SIGTERM:
+        s_signal_shutdown = 1;
+        break;
+    default:
+        return;
+    }
+
+#ifndef _WIN32
+    if (s_signal_pipe[PIPE_WRITE_END] != -1) {
+        const int saved_errno = errno;
+        const char c = 0;
+        ssize_t ignored = write(s_signal_pipe[PIPE_WRITE_END], &c, sizeof(c));
+        (void)ignored;
+        errno = saved_errno;
+    }
+#endif
+}
+
+bool Fluxbox::shutdownStarted() {
+    return s_shutdown_started != 0;
+}
+
+void Fluxbox::handlePostedSignals() {
+
+    drainSignalPipe();
+
+    if (s_signal_x_gone) {
+        s_signal_x_gone = 0;
+        shutdown(1);
+    }
+    if (s_signal_shutdown) {
+        s_signal_shutdown = 0;
+        shutdown();
+    }
+    if (s_signal_restart) {
+        s_signal_restart = 0;
+        restart();
+    }
+    if (s_signal_reconfigure) {
+        s_signal_reconfigure = 0;
+        reconfigure();
     }
 }
 
@@ -1210,6 +1325,7 @@ void Fluxbox::shutdown(int x_wants_down) {
 
     Display *dpy = FbTk::App::instance()->display();
     m_state.shutdown = true;
+    s_shutdown_started = 1;
 
 #ifdef HAVE_ALARM
     // give ourself 2 seconds (randomly picked randon number) to shutdown

@@ -46,6 +46,7 @@
 #endif
 
 
+#include <cerrno>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -69,70 +70,44 @@ namespace {
 
 std::unique_ptr<Fluxbox> fluxbox;
 
+// a signal can interrupt fluxbox anywhere, also in the middle of an Xlib call
+// (which holds the display lock) or of malloc(). so only async-signal-safe
+// things happen here: everything else is left to the event loop via
+// Fluxbox::postSignal(), and exits use _exit(), never exit(), which would run
+// destructors that talk to the X server or use already destroyed statics
 void handleSignal(int signum) {
 
-    _FB_USES_NLS;
-    static int re_enter = 0;
+    const int saved_errno = errno;
 
     switch (signum) {
 #ifndef _WIN32
     case SIGCHLD: // we don't want the child process to kill us
         // more than one process may have terminated
-        while (waitpid(-1, 0, WNOHANG | WUNTRACED) > 0);
-        break;
-    case SIGHUP:
-        // xinit sends HUP when it wants to go down. there is no point in
-        // restoring anything in the screens / workspaces, the connection
-        // to the xserver might drop any moment
-        if (fluxbox.get()) { fluxbox->shutdown(1); }
-        break;
-    case SIGUSR1:
-        if (fluxbox.get()) { fluxbox->restart(); }
-        break;
-    case SIGUSR2:
-        if (fluxbox.get()) { fluxbox->reconfigure(); }
+        while (waitpid(-1, 0, WNOHANG | WUNTRACED) > 0) {
+            ;
+        }
         break;
 #endif
     case SIGSEGV:
+    case SIGFPE: // returning would run the faulting instruction again
         abort();
         break;
     case SIGALRM:
         // last resort for shutting down fluxbox. the alarm() is set in
-        // Fluxbox::shutdown()
-        if (fluxbox.get() && fluxbox->isShuttingDown()) {
-            cerr << "fluxbox took longer than expected to shutdown\n";
-            exit(13);
+        // Fluxbox::shutdown() and covers the destruction of fluxbox, too
+        if (Fluxbox::shutdownStarted()) {
+            static const char msg[] = "fluxbox took longer than expected to shutdown\n";
+            ssize_t ignored = write(STDERR_FILENO, msg, sizeof(msg) - 1);
+            (void)ignored;
+            _exit(13);
         }
-        break;
-    case SIGFPE:
-    case SIGINT:
-#ifndef _WIN32
-    case SIGPIPE:
-#endif
-    case SIGTERM:
-        if (fluxbox.get()) { fluxbox->shutdown(); }
         break;
     default:
-        fprintf(stderr,
-                _FB_CONSOLETEXT(BaseDisplay, SignalCaught, 
-                    "%s:      signal %d caught\n",
-                    "signal catch debug message. Include %s for Command<void> and %d for signal number").c_str(),
-                "TODO: m_arg[0]", signum);
-
-        if (! fluxbox->isStartup() && ! re_enter) {
-            re_enter = 1;
-            cerr<<_FB_CONSOLETEXT(BaseDisplay, ShuttingDown, 
-                    "Shutting Down\n",
-                    "Quitting because of signal, end with newline");
-            if (fluxbox.get()) { fluxbox->shutdown(); }
-        }
-
-        cerr << _FB_CONSOLETEXT(BaseDisplay, Aborting, 
-                    "Aborting... dumping core\n",
-                    "Aboring and dumping core, end with newline");
-        abort();
+        Fluxbox::postSignal(signum);
         break;
     }
+
+    errno = saved_errno;
 }
 
 void setupSignalHandling() {
@@ -257,6 +232,12 @@ int main(int argc, char **argv) {
     // destroy fluxbox
     fluxbox.reset(0);
 
+#ifdef HAVE_ALARM
+    // fluxbox is destroyed in time: no more need for the last resort alarm()
+    // of Fluxbox::shutdown()
+    alarm(0);
+#endif
+
     // restore cout and cin streams
     if (outbuf != 0)
         cout.rdbuf(outbuf);
@@ -266,7 +247,6 @@ int main(int argc, char **argv) {
     FbTk::FbStringUtil::shutdown();
 
     if (restarting) {
-        alarm(0);
         if (!restart_argument.empty()) {
             const char *shell = getenv("SHELL");
             if (!shell)

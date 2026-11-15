@@ -172,6 +172,14 @@ public:
     bool isRestarting() const    { return m_state.restarting; }
     bool isShuttingDown() const  { return m_state.shutdown; }
 
+    /// remembers signum for eventLoop() to act on: the only thing a signal
+    /// handler may do with fluxbox (async-signal-safe). handles SIGHUP,
+    /// SIGINT, SIGTERM, SIGPIPE (shutdown), SIGUSR1 (restart) and SIGUSR2
+    /// (reconfigure)
+    static void postSignal(int signum);
+    /// true once shutdown() started, also during ~Fluxbox (async-signal-safe)
+    static bool shutdownStarted();
+
     const std::string &getRestartArgument() const { return m_restart_argument; }
 
     /// get screen from number
@@ -195,6 +203,8 @@ private:
     void load_rc();
     void real_reconfigure();
     void handleEvent(XEvent *xe);
+    /// acts on the signals postSignal() remembered
+    void handlePostedSignals();
     void handleUnmapNotify(XUnmapEvent &ue);
     void handleClientMessage(XClientMessageEvent &ce);
     /// true if a compositing manager owns _NET_WM_CM_Sn of any of our screens
