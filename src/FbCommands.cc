@@ -281,7 +281,7 @@ void ReconfigureFluxboxCmd::execute() {
 REGISTER_COMMAND(reloadstyle, FbCommands::ReloadStyleCmd, void);
 
 void ReloadStyleCmd::execute() {
-    SetStyleCmd cmd(Fluxbox::instance()->getStyleFilename());
+    SetStyleCmd cmd(Fluxbox::instance()->getStyleResource());
     cmd.execute();
 }
 
@@ -292,11 +292,13 @@ SetStyleCmd::SetStyleCmd(const string &filename):m_filename(filename) {
 }
 
 void SetStyleCmd::execute() {
-    if (FbTk::ThemeManager::instance().load(m_filename,
-        Fluxbox::instance()->getStyleOverlayFilename())) {
-        Fluxbox::instance()->reconfigThemes();
-        Fluxbox::instance()->saveStyleFilename(m_filename.c_str());
-        Fluxbox::instance()->save_rc();
+    Fluxbox *fb = Fluxbox::instance();
+    // a relative m_filename is taken from the config folder, but saved as is
+    if (FbTk::ThemeManager::instance().load(fb->resolveConfigFilename(m_filename),
+        fb->getStyleOverlayFilename())) {
+        fb->reconfigThemes();
+        fb->saveStyleFilename(m_filename.c_str());
+        fb->save_rc();
     }
 }
 

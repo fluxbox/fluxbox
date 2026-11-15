@@ -66,7 +66,8 @@ namespace FileUtil {
     std::string findConfigDir(const std::string& name);
 
     /// resolves the config file 'name' for the config folder 'dir':
-    ///  - a bare file name (no '/', not starting with '~') becomes 'dir'/'name'
+    ///  - a relative path (not starting with '/' or '~'), e.g. 'keys' or
+    ///    'styles/minimal', becomes 'dir'/'name' (leading "./" are dropped)
     ///  - a path into 'legacy_dir' becomes the same path into 'dir', if
     ///    'legacy_dir' does not exist (anymore) and differs from 'dir'. This
     ///    keeps configs working which were moved from ~/.fluxbox to

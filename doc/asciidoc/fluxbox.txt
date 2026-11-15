@@ -1301,11 +1301,13 @@ set to "E, F" it will look like "E F [C D] A B" while the icons in [] are
 unordered as usual.
 
 All of the 'location' resources following require a pathname to their specific
-files. This is where you can specify different files. A bare file name without
-any '/' and not starting with '~', e.g. `keys', is taken relative to the folder
-of the init file in use. This applies to *session.appsFile*, *session.keyFile*,
-*session.menuFile*, *session.slitlistFile* and *session.styleOverlay*, whose
-defaults are the bare names `apps', `keys', `menu', `slitlist' and `overlay'.
+files. This is where you can specify different files. A relative path, not
+starting with '/' or '~', e.g. `keys' or `styles/minimal', is taken relative
+to the folder of the init file in use. This applies to *session.appsFile*,
+*session.keyFile*, *session.menuFile*, *session.slitlistFile*,
+*session.styleFile* and *session.styleOverlay*. The defaults of all but
+*session.styleFile* are the bare names `apps', `keys', `menu', `slitlist' and
+`overlay'.
 
 *session.appsFile*: 'location'::
     Location of persistent application settings, or the `apps' file. See the

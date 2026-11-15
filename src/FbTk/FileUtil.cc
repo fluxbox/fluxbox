@@ -145,8 +145,15 @@ std::string FileUtil::resolveConfigName(const std::string& dir,
     if (name.empty()) {
         return name;
     }
-    if (name[0] != '~' && name.find('/') == std::string::npos) {
-        return dir + "/" + name;
+    if (name[0] != '~' && name[0] != '/') {
+        std::string rel = name;
+        while (rel.compare(0, 2, "./") == 0) {
+            rel.erase(0, 2);
+        }
+        if (rel.empty()) {
+            return dir;
+        }
+        return dir + "/" + rel;
     }
 
     if (legacy_dir.empty() || legacy_dir == dir || isDirectory(legacy_dir.c_str())) {

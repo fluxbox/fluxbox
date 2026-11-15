@@ -119,7 +119,7 @@ public:
     std::string getDefaultDataFilename(const char *name) const;
     /// @return the folder of the init file in use
     std::string getConfigDir() const;
-    /// bare file names (no "/", no "~") are relative to getConfigDir(),
+    /// relative paths (no leading "/" or "~") are relative to getConfigDir(),
     /// paths into a moved-away ~/.fluxbox are mapped to getConfigDir(),
     /// see FbTk::FileUtil::resolveConfigName()
     std::string resolveConfigFilename(const std::string& name) const;
@@ -127,7 +127,9 @@ public:
     bool &getPseudoTrans()                             { return *m_config.pseudotrans; }
     bool getIgnoreBorder() const                       { return *m_config.ignore_border; }
     Fluxbox::TabsAttachArea getTabsAttachArea() const  { return *m_config.tabs_attach_area; }
-    const std::string &getStyleFilename() const        { return *m_config.style_file; }
+    /// @return session.styleFile as written in init, unresolved
+    const std::string &getStyleResource() const        { return *m_config.style_file; }
+    std::string getStyleFilename() const               { return resolveConfigFilename(*m_config.style_file); }
     std::string getStyleOverlayFilename() const        { return resolveConfigFilename(*m_config.overlay_file); }
     std::string getMenuFilename() const                { return resolveConfigFilename(*m_config.menu_file); }
     std::string getSlitlistFilename() const            { return resolveConfigFilename(*m_config.slit_file); }
