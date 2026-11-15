@@ -44,6 +44,7 @@
 #include <iostream>
 #include <algorithm>
 #include <map>
+#include <vector>
 #include <new>
 #include <cstring>
 #include <cstdlib>
@@ -1044,16 +1045,16 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
      * names list which is then properly encoded by Xutf8TextListToTextProperty
      * and everyone is happy
      */
-    const char* names[number_of_desks+1];
+    // value-initialized, so the extra last name stays NULL
+    vector<const char*> names(number_of_desks + 1);
 
     for (size_t i = 0; i < number_of_desks; i++) {
         names[i] = workspacenames[i].c_str();
     }
-    names[number_of_desks] = NULL;
 
 #ifdef X_HAVE_UTF8_STRING
     int code = Xutf8TextListToTextProperty(FbTk::App::instance()->display(),
-                                const_cast<char**>(names), number_of_desks+1, XUTF8StringStyle, &text);
+                                const_cast<char**>(&names[0]), names.size(), XUTF8StringStyle, &text);
     if (code != XNoMemory && code != XLocaleNotSupported) {
         XSetTextProperty(FbTk::App::instance()->display(),
                          screen.rootWindow().window(),
@@ -1061,7 +1062,7 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
         XFree(text.value);
     }
 #else
-    if (XStringListToTextProperty(names, number_of_desks+1, &text)) {
+    if (XStringListToTextProperty(const_cast<char**>(&names[0]), names.size(), &text)) {
         XSetTextProperty(FbTk::App::instance()->display(), screen.rootWindow().window(),
                 &text, m_net->desktop_names);
         XFree(text.value);
