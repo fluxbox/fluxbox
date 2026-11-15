@@ -27,6 +27,15 @@
 
 #include <X11/cursorfont.h>
 
+namespace {
+
+// titlebar height when neither window.title.height nor the font give one
+const unsigned int DEFAULT_TITLE_HEIGHT = 16;
+// space between the bevel and the text, above and below it
+const unsigned int TITLE_TEXT_PADDING = 1;
+
+} // end anonymous namespace
+
 FbWinFrameTheme::FbWinFrameTheme(int screen_num, const std::string &extra,
                                  const std::string &altextra):
     FbTk::Theme(screen_num),
@@ -69,6 +78,16 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num, const std::string &extra,
 
 FbWinFrameTheme::~FbWinFrameTheme() {
 
+}
+
+unsigned int FbWinFrameTheme::effectiveTitleHeight() {
+    if (titleHeight() != 0) {
+        return titleHeight();
+    }
+    if (font().height() == 0) {
+        return DEFAULT_TITLE_HEIGHT;
+    }
+    return font().height() + 2 * (bevelWidth() + TITLE_TEXT_PADDING);
 }
 
 bool FbWinFrameTheme::fallback(FbTk::ThemeItem_base &item) {

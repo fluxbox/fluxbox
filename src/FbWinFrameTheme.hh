@@ -71,6 +71,9 @@ public:
     const FbTk::BorderTheme &border() const { return m_border; }
 
     unsigned int titleHeight() const { return *m_title_height; }
+    /// height of the titlebar without its border: window.title.height,
+    /// or if that is 0 the height that fits the font
+    unsigned int effectiveTitleHeight();
     unsigned int bevelWidth() const { return *m_bevel_width; }
     unsigned int handleWidth() const { return *m_handle_width; }
 

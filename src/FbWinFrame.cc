@@ -988,10 +988,7 @@ void FbWinFrame::reconfigureTitlebar() {
 
     int orig_height = m_titlebar.height();
     // resize titlebar to window size with font height
-    int title_height = theme()->font().height() == 0 ? 16 :
-        theme()->font().height() + m_bevel*2 + 2;
-    if (theme()->titleHeight() != 0)
-        title_height = theme()->titleHeight();
+    int title_height = theme()->effectiveTitleHeight();
 
     // if the titlebar grows in size, make sure the whole window does too
     if (orig_height != title_height)
