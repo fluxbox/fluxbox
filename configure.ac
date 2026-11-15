@@ -406,7 +406,7 @@ AC_ARG_ENABLE([timedcache],
 	[], [enable_timedcache=yes]
 )
 AC_MSG_RESULT([$enable_timedcache])
-AS_IF([test "x$enable_timedcached" = "xyes"], [
+AS_IF([test "x$enable_timedcache" = "xyes"], [
 	AC_DEFINE([TIMEDCACHE], [1], [timed cache])
 ])
 
