@@ -1932,18 +1932,17 @@ bool BScreen::getHeadsArea(int top, int bottom, int left, int right,
     // RandR order, which is not the Xinerama order when the primary monitor
     // is not the top left one. Take the box around the given heads instead.
     const int mon[4] = { top, bottom, left, right };
-    int x2 = getHeadX(mon[0]) + getHeadWidth(mon[0]);
-    int y2 = getHeadY(mon[0]) + getHeadHeight(mon[0]);
-    x = getHeadX(mon[0]);
-    y = getHeadY(mon[0]);
-    for (int i = 1; i < 4; ++i) {
-        x = std::min(x, getHeadX(mon[i]));
-        y = std::min(y, getHeadY(mon[i]));
-        x2 = std::max(x2, getHeadX(mon[i]) + getHeadWidth(mon[i]));
-        y2 = std::max(y2, getHeadY(mon[i]) + getHeadHeight(mon[i]));
+    std::vector<FbTk::RectangleUtil::Rect> rects;
+    for (int i = 0; i < 4; ++i) {
+        rects.push_back(FbTk::RectangleUtil::Rect{
+                getHeadX(mon[i]), getHeadY(mon[i]),
+                getHeadWidth(mon[i]), getHeadHeight(mon[i]) });
     }
-    w = x2 - x;
-    h = y2 - y;
+    const FbTk::RectangleUtil::Rect box = FbTk::RectangleUtil::boundingRectangle(rects);
+    x = box.x;
+    y = box.y;
+    w = box.width;
+    h = box.height;
     return w > 0 && h > 0;
 }
 

@@ -192,5 +192,24 @@ Rect gridCell(const Rect &area, unsigned int rows, unsigned int cols,
     return cell;
 }
 
+Rect boundingRectangle(const std::vector<Rect> &rects) {
+
+    if (rects.empty()) {
+        return Rect{ 0, 0, 0, 0 };
+    }
+
+    int x1 = rects[0].x, y1 = rects[0].y;
+    int x2 = rects[0].x + rects[0].width, y2 = rects[0].y + rects[0].height;
+    for (size_t i = 1; i < rects.size(); ++i) {
+        const Rect &r = rects[i];
+        x1 = std::min(x1, r.x);
+        y1 = std::min(y1, r.y);
+        x2 = std::max(x2, r.x + r.width);
+        y2 = std::max(y2, r.y + r.height);
+    }
+
+    return Rect{ x1, y1, x2 - x1, y2 - y1 };
+}
+
 } // namespace RectangleUtil
 } // namespace FbTk

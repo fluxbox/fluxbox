@@ -1639,17 +1639,18 @@ void FluxboxWindow::attachHeadsChangedSig() {
 }
 
 bool FluxboxWindow::coversHead(int head) const {
-    if (head == getOnHead())
+    if (head == getOnHead()) {
         return true;
+    }
     if (!m_state.fullscreen || !m_state.has_fullscreen_monitors ||
-        head < 1 || head > screen().numHeads())
+        head < 1 || head > screen().numHeads()) {
         return false;
+    }
 
-    const int hx = screen().getHeadX(head), hy = screen().getHeadY(head);
-    const int hw = screen().getHeadWidth(head), hh = screen().getHeadHeight(head);
-    const int fx = frame().x(), fy = frame().y();
-    const int fw = frame().width(), fh = frame().height();
-    return fx < hx + hw && hx < fx + fw && fy < hy + hh && hy < fy + fh;
+    return FbTk::RectangleUtil::overlapRectangles(
+            frame().x(), frame().y(), frame().width(), frame().height(),
+            screen().getHeadX(head), screen().getHeadY(head),
+            screen().getHeadWidth(head), screen().getHeadHeight(head));
 }
 
 void FluxboxWindow::setFullscreenLayer() {

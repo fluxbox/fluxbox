@@ -352,6 +352,51 @@ int test_gridCell() {
 }
 
 
+int test_boundingRectangle() {
+
+    printf("testing FbTk::RectangleUtil::boundingRectangle()\n");
+
+    typedef FbTk::RectangleUtil::Rect R;
+    typedef std::vector<R> V;
+
+    struct _t {
+        const char *what;
+        V rects;
+        R truth;
+    };
+
+    const _t tests[] = {
+        { "nothing", V(), { 0, 0, 0, 0 } },
+        { "one", V{ { 10, 20, 30, 40 } }, { 10, 20, 30, 40 } },
+        { "two side by side", V{ { 0, 0, 2560, 1440 }, { 2560, 0, 2560, 1440 } },
+          { 0, 0, 5120, 1440 } },
+        { "same two, right one first", V{ { 2560, 0, 2560, 1440 }, { 0, 0, 2560, 1440 } },
+          { 0, 0, 5120, 1440 } },
+        { "different heights", V{ { 0, 0, 1920, 1080 }, { 1920, -200, 1080, 1920 } },
+          { 0, -200, 3000, 1920 } },
+        { "one inside the other", V{ { 0, 0, 100, 100 }, { 10, 10, 5, 5 } },
+          { 0, 0, 100, 100 } },
+    };
+
+    int failed = 0;
+    for (unsigned int i = 0; i < sizeof(tests)/sizeof(_t); ++i) {
+        const _t &t = tests[i];
+        const R r = FbTk::RectangleUtil::boundingRectangle(t.rects);
+        const bool ok = r.x == t.truth.x && r.y == t.truth.y &&
+                        r.width == t.truth.width && r.height == t.truth.height;
+        printf("  %u: %s: %d,%d %dx%d: %s\n", i, t.what,
+                r.x, r.y, r.width, r.height, ok ? "ok" : "failed");
+        if (!ok) {
+            ++failed;
+        }
+    }
+
+    printf("done.\n");
+
+    return failed;
+}
+
+
 int main(int argc, char **argv) {
 
     int failed = 0;
@@ -361,6 +406,7 @@ int main(int argc, char **argv) {
     failed += test_overlapArea();
     failed += test_largestFreeRectangle();
     failed += test_gridCell();
+    failed += test_boundingRectangle();
 
     return failed ? 1 : 0;
 }
