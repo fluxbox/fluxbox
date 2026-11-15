@@ -257,7 +257,7 @@ Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
     // attach to theme and root window change signal
     join(theme().reconfigSig(), FbTk::MemFun(*this, &Slit::reconfigure));
 
-    join(scr.resizeSig(),
+    join(scr.headsChangedSig(),
          FbTk::MemFun(*this, &Slit::screenSizeChanged));
 
     join(scr.bgChangeSig(),
