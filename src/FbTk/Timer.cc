@@ -148,7 +148,7 @@ void Timer::fireTimeout() {
 }
 
 
-void Timer::updateTimers(int fd) {
+void Timer::updateTimers(int fd, int wakeup_fd) {
 
     fd_set              rfds;
     timeval*            tout;
@@ -156,10 +156,17 @@ void Timer::updateTimers(int fd) {
     TimerList::iterator t;
     bool                overdue = false;
     uint64_t            now;
+    int                 max_fd = fd;
 
 
     FD_ZERO(&rfds);
     FD_SET(fd, &rfds);
+    if (wakeup_fd >= 0) {
+        FD_SET(wakeup_fd, &rfds);
+        if (wakeup_fd > max_fd) {
+            max_fd = wakeup_fd;
+        }
+    }
     tout = NULL;
 
     // search for overdue timers
@@ -182,8 +189,9 @@ void Timer::updateTimers(int fd) {
     // if not overdue, wait for the next xevent via the blocking
     // select(), so OS sends fluxbox to sleep. the select() will
     // time out when the next timer has to be handled
-    if (!overdue && select(fd + 1, &rfds, 0, 0, tout) != 0) {
-        // didn't time out! x events are pending
+    if (!overdue && select(max_fd + 1, &rfds, 0, 0, tout) != 0) {
+        // didn't time out! x events are pending, the wakeup_fd got
+        // written to or a signal interrupted select()
         return;
     }
 

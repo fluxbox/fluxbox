@@ -55,7 +55,9 @@ public:
     void start();
     void stop();
 
-    static void updateTimers(int file_descriptor);
+    /// waits until file_descriptor (or wakeup_fd, if >= 0) gets readable
+    /// or the next timer is due, then runs the due timers
+    static void updateTimers(int file_descriptor, int wakeup_fd = -1);
 
     int isTiming() const;
     int getInterval() const { return m_interval; }
