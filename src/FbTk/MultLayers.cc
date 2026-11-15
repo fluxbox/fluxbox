@@ -31,7 +31,8 @@
 using namespace FbTk;
 
 MultLayers::MultLayers(int numlayers) :
-    m_lock(0)
+    m_lock(0),
+    m_stacking_changed(false)
 {
     for (int i=0; i < numlayers; ++i)
         m_layers.push_back(new Layer(*this, i));
@@ -108,6 +109,24 @@ void MultLayers::moveToLayer(LayerItem &item, int layernum) {
 
     layernum = FbTk::Util::clamp(layernum, 0, static_cast<signed>(m_layers.size()) - 1);
     item.setLayer(*m_layers[layernum]);
+}
+
+void MultLayers::unlock() {
+    if (--m_lock == 0) {
+        restack();
+        if (m_stacking_changed) {
+            m_stacking_changed = false;
+            m_stacking_sig.emit();
+        }
+    }
+}
+
+void MultLayers::stackingChanged() {
+    if (isUpdatable()) {
+        m_stacking_sig.emit();
+    } else {
+        m_stacking_changed = true;
+    }
 }
 
 void MultLayers::restack() {

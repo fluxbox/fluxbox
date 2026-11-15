@@ -188,6 +188,7 @@ Layer::iterator Layer::insert(LayerItem &item, unsigned int pos) {
     itemList().push_front(&item);
     // restack below next window up
     stackBelowItem(item, m_manager.getLowestItemAboveLayer(m_layernum));
+    m_manager.stackingChanged();
     return itemList().begin();
 }
 
@@ -197,6 +198,7 @@ void Layer::remove(LayerItem &item) {
     for (; it != it_end; ++it) {
         if (*it == &item) {
             itemList().erase(it);
+            m_manager.stackingChanged();
             break;
         }
     }
@@ -224,7 +226,7 @@ void Layer::raise(LayerItem &item) {
 
     itemList().push_front(&item);
     stackBelowItem(item, m_manager.getLowestItemAboveLayer(m_layernum));
-
+    m_manager.stackingChanged();
 }
 
 void Layer::tempRaise(LayerItem &item) {
@@ -286,6 +288,7 @@ void Layer::lower(LayerItem &item) {
 
     // and restack our window below that one.
     stackBelowItem(item, *it);
+    m_manager.stackingChanged();
 }
 
 void Layer::raiseLayer(LayerItem &item) {

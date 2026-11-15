@@ -23,6 +23,8 @@
 #ifndef FBTK_MULTLAYERS_HH
 #define FBTK_MULTLAYERS_HH
 
+#include "Signal.hh"
+
 #include <vector>
 #include <cstdlib> // size_t
 
@@ -56,16 +58,25 @@ public:
 
     Layer *getLayer(size_t num);
     const Layer *getLayer(size_t num) const;
+    size_t numLayers() const { return m_layers.size(); }
 
     bool isUpdatable() const { return m_lock == 0; }
     void lock() { ++m_lock; }
-    void unlock() { if (--m_lock == 0) restack(); }
+    void unlock();
+
+    /// the items changed their order: emits stackingSig(), or, while
+    /// locked, once at the last unlock()
+    void stackingChanged();
+    /// emitted when items get added, removed or reordered
+    Signal<> &stackingSig() { return m_stacking_sig; }
 
 private:
     void restack();
 
     std::vector<Layer *> m_layers;
     int m_lock;
+    bool m_stacking_changed;
+    Signal<> m_stacking_sig;
 };
 
 }
