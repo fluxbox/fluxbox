@@ -342,6 +342,17 @@ def run_checks(wm):
             wm.monitors(a) == [0, 0, 0, 1] and wm.geometry(a) == SPAN,
             "%s %s" % (wm.monitors(a), wm.geometry(a)))
 
+    # left and right swapped, as mpv --fs-screen=all sends it when RandR and
+    # Xinerama count the monitors differently: the box around both heads
+    wm.set_monitors(a, 0, 0, 1, 0)
+    r.check("FM11", "swapped left/right is kept as requested",
+            wait_for(wm, lambda: wm.monitors(a) == [0, 0, 1, 0]),
+            wm.monitors(a))
+    r.check("FM11", "swapped left/right still spans both heads",
+            wait_for(wm, lambda: wm.geometry(a) == SPAN), wm.geometry(a))
+    wm.set_monitors(a, 0, 0, 0, 1)
+    wait_for(wm, lambda: wm.monitors(a) == [0, 0, 0, 1])
+
     # focus stealing: C on head 2, which A covers
     wm.activate(a, SOURCE_PAGER)
     wait_for(wm, lambda: wm.active() == a.id)
