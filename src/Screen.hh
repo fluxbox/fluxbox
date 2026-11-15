@@ -432,6 +432,16 @@ public:
     /// @return height of the head
     int getHeadHeight(int head) const;
 
+    /**
+     * Compute the area spanned by the given heads (1-based), as used by
+     * _NET_WM_FULLSCREEN_MONITORS: the top edge of head @a top, the bottom
+     * edge of @a bottom, the left edge of @a left and the right edge of
+     * @a right. Without Xinerama, head 1 is the whole screen.
+     * @return false if a head does not exist or the area is empty
+     */
+    bool getHeadsArea(int top, int bottom, int left, int right,
+                      int &x, int &y, int &w, int &h) const;
+
     ///  @return the new (x,y) for a rectangle fitted on a head
     std::pair<int,int> clampToHead(int head, int x, int y, int w, int h) const;
 

@@ -117,7 +117,11 @@ public:
         shaded(false), fullscreen(false), stuck(false), iconic(false),
         focus_hidden(false), icon_hidden(false),
         maximized(0), layernum(ResourceLayer::NORMAL),
-        x(0), y(0), width(1), height(1) { }
+        x(0), y(0), width(1), height(1),
+        has_fullscreen_monitors(false) {
+        fullscreen_monitors[0] = fullscreen_monitors[1] =
+        fullscreen_monitors[2] = fullscreen_monitors[3] = 0;
+    }
 
     void saveGeometry(int x, int y, unsigned int width, unsigned int height,
                       bool force = false);
@@ -143,6 +147,12 @@ public:
     int maximized, layernum;
     int x, y;
     unsigned int width, height;
+
+    /// _NET_WM_FULLSCREEN_MONITORS: 0-based Xinerama indices of the
+    /// monitors defining the top, bottom, left and right edge of the
+    /// window while it is fullscreen. Kept while not fullscreen, too.
+    bool has_fullscreen_monitors;
+    int fullscreen_monitors[4];
 };
 
 #endif // WINDOWSTATE_HH
