@@ -241,9 +241,11 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
         return;
     }
 
-    // allocate some memory for the icons at client side
-    img_pm->data = static_cast<char*>(malloc(img_pm->bytes_per_line * height));
-    img_mask->data = static_cast<char*>(malloc(img_mask->bytes_per_line * height));
+    // allocate some memory for the icons at client side. zeroed: the
+    // loop below sets only the pixels, not the padding at the end of
+    // each scanline, and XPutImage() sends the padding as well.
+    img_pm->data = static_cast<char*>(calloc(img_pm->bytes_per_line * height, 1));
+    img_mask->data = static_cast<char*>(calloc(img_mask->bytes_per_line * height, 1));
 
 
     const unsigned long* src = best->second;
