@@ -1695,33 +1695,34 @@ void BScreen::initXinerama() {
     XineramaScreenInfo *si = XineramaQueryScreens(display, &number);
 
     if (!si && number == 0) {
+        // Xinerama is (no longer) active: fall through, so the head
+        // areas shrink to one and the struts are redone
         clearXinerama();
-        return;
+    } else if (!si) {
+        /* The call may have actually failed. If this is the first time we
+         * init Xinerama, fall back to turning it off. If not, pretend
+         * nothing happened -- another event will tell us and it will work
+         * then. */
+        if (!m_xinerama.heads.empty()) {
+            return;
+        }
+        clearXinerama();
+    } else {
+        m_xinerama.avail = true;
+
+        fbdbg<<"BScreen::initXinerama(): have Xinerama"<<endl;
+
+        m_xinerama.heads.resize(number);
+        for (int i = 0; i < number; i++) {
+            m_xinerama.heads[i]._x = si[i].x_org;
+            m_xinerama.heads[i]._y = si[i].y_org;
+            m_xinerama.heads[i]._width = si[i].width;
+            m_xinerama.heads[i]._height = si[i].height;
+        }
+        XFree(si);
+
+        fbdbg<<"BScreen::initXinerama(): number of heads ="<<number<<endl;
     }
-
-    m_xinerama.avail = true;
-
-    fbdbg<<"BScreen::initXinerama(): have Xinerama"<<endl;
-
-    /* The call may have actually failed. If this is the first time we init
-     * Xinerama, fall back to turning it off. If not, pretend nothing
-     * happened -- another event will tell us and it will work then. */
-    if (!si) {
-        if (m_xinerama.heads.empty())
-            clearXinerama();
-        return;
-    }
-
-    m_xinerama.heads.resize(number);
-    for (int i = 0; i < number; i++) {
-        m_xinerama.heads[i]._x = si[i].x_org;
-        m_xinerama.heads[i]._y = si[i].y_org;
-        m_xinerama.heads[i]._width = si[i].width;
-        m_xinerama.heads[i]._height = si[i].height;
-    }
-    XFree(si);
-
-    fbdbg<<"BScreen::initXinerama(): number of heads ="<<number<<endl;
 
     /* Reallocate to the new number of heads. */
     int ha_num = numHeads() ? numHeads() : 1;
