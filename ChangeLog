@@ -3,6 +3,55 @@
 -----------------------------
 Changes for 1.next
 
+*2026-11-15:
+    * Bugfix: _NET_CLIENT_LIST_STACKING lists the windows bottom to top
+      and follows raise, lower, layer changes and switching tabs; it held
+      the mapping order, so pagers and e.g. Chromium dropping a tab saw
+      the newest window on top
+    * Bugfix: ArrangeWindows: account for the window borders and fill the
+      whole work area (Thanks Nephiel), no wrap-around window sizes on
+      small heads, StackTop starts in the middle of the work area, and
+      each cell gets the window lying mostly in it
+    * Bugfix: the slit and the toolbar move when monitors are swapped or
+      replaced by one of the same size; their head menus follow
+    * Bugfix: clicking "Toolbar on Head" used a deleted menu item
+    * Bugfix: redo the head areas and struts when Xinerama goes away
+    * Bugfix: the window border counts as inside the window for
+      LeaveNotify, presses on the right and bottom edge of the frame
+      no longer count as ones on the border
+    * Bugfix: uninitialised tooltip flag and _NET_WM_ICON image padding
+      (Thanks Graham Gower)
+    * Build-System: --enable-timedcache works again, so the timed pixmap
+      cache is on by default (--disable-timedcache turns it off)
+    * Build-System: configure ends with the compiled options, as
+      'fluxbox -info' lists them
+    * Build-System: build defaults.hh before defaults.o for single targets
+
+*2026-11-14:
+    * Bugfix: set _NET_WM_VISIBLE_NAME for windows with a title set by the
+      user, so pagers and panels show it (Thanks Glen Whitney)
+    * Code cleanup: compile shared code once instead of in every file,
+      a full build needs 37-45% less CPU
+    * Build-System: optional precompiled header (--enable-pch)
+    * Build-System: install the data folders world readable with a strict
+      umask
+    * Build-System: pass the xrandr cflags to the build, list the xfixes
+      flags in the configure summary
+
+*2026-11-12:
+    * Feature: support the EWMH window types popup menu, tooltip and
+      notification
+    * Improvement: smoother shrinking of window icons, menu icons and
+      style pixmaps; icons no longer get darker edges from their
+      transparent background
+    * Improvement: use a 32 pixel _NET_WM_ICON instead of the smallest one
+    * Improvement: iconbar buttons are redrawn only when their size changes
+    * Bugfix: systray icons were as high as the whole tray and overhung it
+      with systray.borderWidth; tray and iconbar icons now share one size
+      that matches the usual icon theme sizes
+    * Bugfix: fbrun offered completions found in two $PATH folders twice
+    * Bugfix: the tooltip and the move/resize popups are override-redirect
+
 *2026-11-11:
     * Improvement: without a running compositor, alpha for windows,
       menus, toolbar and slit falls back to pseudo-transparency; fluxbox

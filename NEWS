@@ -41,7 +41,14 @@ General Improvements:
       compositor, transparency falls back to pseudo-transparency and
       switches automatically when one starts or stops
     * Smarter toolbar/iconbar layout, iconified windows marked
+    * Sharper icons: smoother shrinking, larger source icons, systray
+      and iconbar icons in one size that fits the toolbar
     * Much faster scaling of style pixmaps
+    * ArrangeWindows uses the whole work area and keeps windows near
+      where they were
+    * Pagers, panels and drag and drop see the real stacking order
+      (_NET_CLIENT_LIST_STACKING) and titles set by the user
+      (_NET_WM_VISIBLE_NAME)
     * UTF-8 and locale handling
     * Updated vim syntax files
 
