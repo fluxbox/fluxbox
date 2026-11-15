@@ -1915,13 +1915,35 @@ bool BScreen::getHeadsArea(int top, int bottom, int left, int right,
     // without Xinerama there is exactly one monitor: the whole screen
     const int heads = numHeads() > 0 ? numHeads() : 1;
     if (top < 1 || top > heads || bottom < 1 || bottom > heads ||
-        left < 1 || left > heads || right < 1 || right > heads)
+        left < 1 || left > heads || right < 1 || right > heads) {
         return false;
+    }
 
     x = getHeadX(left);
     y = getHeadY(top);
     w = getHeadX(right) + getHeadWidth(right) - x;
     h = getHeadY(bottom) + getHeadHeight(bottom) - y;
+    if (w > 0 && h > 0) {
+        return true;
+    }
+
+    // The edges don't make a box, e.g. "left" is right of "right". Clients
+    // get the numbering wrong: mpv --fs-screen=all counts the monitors in
+    // RandR order, which is not the Xinerama order when the primary monitor
+    // is not the top left one. Take the box around the given heads instead.
+    const int mon[4] = { top, bottom, left, right };
+    int x2 = getHeadX(mon[0]) + getHeadWidth(mon[0]);
+    int y2 = getHeadY(mon[0]) + getHeadHeight(mon[0]);
+    x = getHeadX(mon[0]);
+    y = getHeadY(mon[0]);
+    for (int i = 1; i < 4; ++i) {
+        x = std::min(x, getHeadX(mon[i]));
+        y = std::min(y, getHeadY(mon[i]));
+        x2 = std::max(x2, getHeadX(mon[i]) + getHeadWidth(mon[i]));
+        y2 = std::max(y2, getHeadY(mon[i]) + getHeadHeight(mon[i]));
+    }
+    w = x2 - x;
+    h = y2 - y;
     return w > 0 && h > 0;
 }
 

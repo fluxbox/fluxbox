@@ -437,6 +437,8 @@ public:
      * _NET_WM_FULLSCREEN_MONITORS: the top edge of head @a top, the bottom
      * edge of @a bottom, the left edge of @a left and the right edge of
      * @a right. Without Xinerama, head 1 is the whole screen.
+     * If these edges don't make a box (e.g. head @a left is right of
+     * head @a right), the box around the four heads is used instead.
      * @return false if a head does not exist or the area is empty
      */
     bool getHeadsArea(int top, int bottom, int left, int right,
