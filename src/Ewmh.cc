@@ -64,6 +64,12 @@ using std::list;
 
 namespace {
 
+// long_length for XGetWindowProperty(): read the whole property
+const long PROPERTY_MAX_LENGTH = 0x7fffffff;
+
+// each icon in _NET_WM_ICON starts with its width and height
+const unsigned long NET_WM_ICON_HEADER = 2;
+
 /* From Extended Window Manager Hints, draft 1.3:
  *
  * _NET_WM_ICON CARDINAL[][2+n]/32
@@ -149,7 +155,7 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
     //
     // check also for invalid values coming in from "bad" applications
     unsigned long i;
-    for (i = 0; i + 2 < nr_icon_data; i += width * height ) {
+    for (i = 0; i + NET_WM_ICON_HEADER < nr_icon_data; i += width * height ) {
 
         width = raw_data[i++];
         if (width >= nr_icon_data) {
@@ -742,7 +748,7 @@ void Ewmh::setupClient(WinClient &winclient) {
      *
      */
 
-    winclient.property(m_net->wm_window_type, 0, 0x7fffffff, False, XA_ATOM,
+    winclient.property(m_net->wm_window_type, 0, PROPERTY_MAX_LENGTH, False, XA_ATOM,
                        &ret_type, &fmt, &nitems, &bytes_after,
                        &data);
     WindowState::WindowType type = WindowState::TYPE_NORMAL;
@@ -1112,7 +1118,8 @@ void Ewmh::updateViewPort(BScreen &screen) {
     screen.rootWindow().changeProperty(m_net->desktop_viewport,
                                        XA_CARDINAL, 32,
                                        PropModeReplace,
-                                       (unsigned char *)value, 2);
+                                       (unsigned char *)value,
+                                       sizeof(value) / sizeof(value[0]));
 }
 
 void Ewmh::updateGeometry(BScreen &screen) {
@@ -1132,7 +1139,8 @@ void Ewmh::updateGeometry(BScreen &screen) {
     screen.rootWindow().changeProperty(m_net->desktop_geometry,
                                        XA_CARDINAL, 32,
                                        PropModeReplace,
-                                       (unsigned char *)value, 2);
+                                       (unsigned char *)value,
+                                       sizeof(value) / sizeof(value[0]));
 
 }
 
@@ -1221,7 +1229,7 @@ void Ewmh::updateState(FluxboxWindow &win) {
 
         // search the old states for _NET_WM_STATE_SKIP_PAGER and append it
         // to the current state, so it wont get deleted by us.
-        (*it)->property(m_net->wm_state, 0, 0x7fffffff, False, XA_ATOM,
+        (*it)->property(m_net->wm_state, 0, PROPERTY_MAX_LENGTH, False, XA_ATOM,
                                  &ret_type, &fmt, &nitems, &bytes_after,
                                  &data);
         if (data) {
@@ -1715,7 +1723,7 @@ void Ewmh::setupState(FluxboxWindow &win) {
     unsigned long nitems, bytes_after;
     unsigned char *data = 0;
 
-    win.winClient().property(m_net->wm_state, 0, 0x7fffffff, False, XA_ATOM,
+    win.winClient().property(m_net->wm_state, 0, PROPERTY_MAX_LENGTH, False, XA_ATOM,
                              &ret_type, &fmt, &nitems, &bytes_after,
                              &data);
     if (data) {
