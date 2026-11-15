@@ -504,6 +504,45 @@ enum EwmhMoveResizeDirection {
     _NET_WM_MOVERESIZE_CANCEL           = 11    // cancel operation
 };
 
+// data.l[0] of _NET_MOVERESIZE_WINDOW: gravity in the low byte, then
+// one bit per value the client wants changed
+enum EwmhMoveResizeWindowFlags {
+    _NET_MOVERESIZE_WINDOW_GRAVITY = 0xFF,
+    _NET_MOVERESIZE_WINDOW_X       = 1 << 8,
+    _NET_MOVERESIZE_WINDOW_Y       = 1 << 9,
+    _NET_MOVERESIZE_WINDOW_WIDTH   = 1 << 10,
+    _NET_MOVERESIZE_WINDOW_HEIGHT  = 1 << 11
+};
+
+// source indication in client messages
+enum EwmhSourceIndication {
+    EWMH_SOURCE_NONE        = 0,    // client of an older spec
+    EWMH_SOURCE_APPLICATION = 1,
+    EWMH_SOURCE_PAGER       = 2     // pagers, taskbars: acting for the user
+};
+
+// _NET_WM_DESKTOP 0xFFFFFFFF: the window is on all desktops. Xlib
+// sign-extends 32 bit client message data into long, so it reads -1.
+const long EWMH_ALL_DESKTOPS = -1;
+
+// order of the CARDINAL[4] in _NET_FRAME_EXTENTS and _NET_WM_STRUT
+enum EwmhSide {
+    EWMH_LEFT = 0,
+    EWMH_RIGHT,
+    EWMH_TOP,
+    EWMH_BOTTOM,
+    EWMH_NUM_SIDES
+};
+
+// order of the CARDINAL[4] per desktop in _NET_WORKAREA
+enum EwmhGeometry {
+    EWMH_X = 0,
+    EWMH_Y,
+    EWMH_WIDTH,
+    EWMH_HEIGHT,
+    EWMH_NUM_GEOMETRY
+};
+
 Ewmh::Ewmh() {
     setName("ewmh");
     m_net = new EwmhAtoms;
@@ -785,7 +824,7 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
     bool exists;
     unsigned int desktop=static_cast<unsigned int>(win.winClient().cardinalProperty(m_net->wm_desktop, &exists));
     if (exists) {
-        if (desktop == (unsigned int)(-1) && !win.isStuck())
+        if (desktop == static_cast<unsigned int>(EWMH_ALL_DESKTOPS) && !win.isStuck())
             win.stick();
         else
             win.setWorkspace(desktop);
@@ -1115,21 +1154,19 @@ void Ewmh::updateWorkarea(BScreen &screen) {
      * Not sure how to handle xinerama stuff here.
      * So i'm just doing this on the first head.
      */
-    unsigned long *coords = new unsigned long[4*screen.numberOfWorkspaces()];
-    for (unsigned int i=0; i < screen.numberOfWorkspaces()*4; i+=4) {
-        // x, y
-        coords[i] = screen.maxLeft(0);
-        coords[i + 1] = screen.maxTop(0);
-        // width, height
-        coords[i + 2] = screen.maxRight(0) - screen.maxLeft(0);
-        coords[i + 3] = screen.maxBottom(0) - screen.maxTop(0);
-
+    const unsigned int nr_coords = EWMH_NUM_GEOMETRY * screen.numberOfWorkspaces();
+    unsigned long *coords = new unsigned long[nr_coords];
+    for (unsigned int i = 0; i < nr_coords; i += EWMH_NUM_GEOMETRY) {
+        coords[i + EWMH_X] = screen.maxLeft(0);
+        coords[i + EWMH_Y] = screen.maxTop(0);
+        coords[i + EWMH_WIDTH] = screen.maxRight(0) - screen.maxLeft(0);
+        coords[i + EWMH_HEIGHT] = screen.maxBottom(0) - screen.maxTop(0);
     }
     screen.rootWindow().changeProperty(m_net->workarea,
                                        XA_CARDINAL, 32,
                                        PropModeReplace,
                                        (unsigned char *)coords,
-                                       4 * screen.numberOfWorkspaces());
+                                       nr_coords);
 
     delete[] coords;
 }
@@ -1213,7 +1250,7 @@ void Ewmh::updateWorkspace(FluxboxWindow &win) {
     long workspace = win.workspaceNumber();
 
     if (win.isStuck())
-        workspace = -1; // appear on all desktops/workspaces
+        workspace = EWMH_ALL_DESKTOPS;
 
     FluxboxWindow::ClientList::iterator it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator it_end = win.clientList().end();
@@ -1240,7 +1277,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
 
         // if it's stick, make sure it is stuck.
         // otherwise, make sure it isn't stuck
-        if (ce.data.l[0] == -1) {
+        if (ce.data.l[0] == EWMH_ALL_DESKTOPS) {
             if (!fbwin->isStuck())
                 fbwin->stick();
             return true;
@@ -1320,8 +1357,8 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
             return true;
         // ce.window = window to focus
 
-        // ce.data.l[0] == 2 means the request came from a pager
-        if (winclient->fbwindow() && (ce.data.l[0] == 2 ||
+        // ce.data.l[0] = source indication
+        if (winclient->fbwindow() && (ce.data.l[0] == EWMH_SOURCE_PAGER ||
             winclient->fbwindow()->focusRequestFromClient(*winclient))) {
             winclient->focus();
             winclient->fbwindow()->raise();
@@ -1337,15 +1374,16 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         if (winclient == 0 || winclient->fbwindow() == 0)
             return true;
         // ce.data.l[0] = gravity and flags
-        int x = (ce.data.l[0] & (1 << 8)) ? ce.data.l[1] :
+        const long flags = ce.data.l[0];
+        int x = (flags & _NET_MOVERESIZE_WINDOW_X) ? ce.data.l[1] :
             winclient->fbwindow()->x();
-        int y = (ce.data.l[0] & (1 << 9)) ? ce.data.l[2] :
+        int y = (flags & _NET_MOVERESIZE_WINDOW_Y) ? ce.data.l[2] :
             winclient->fbwindow()->y();
-        unsigned int width = (ce.data.l[0] & (1 << 10)) ? ce.data.l[3] :
+        unsigned int width = (flags & _NET_MOVERESIZE_WINDOW_WIDTH) ? ce.data.l[3] :
             winclient->width();
-        unsigned int height = (ce.data.l[0] & (1 << 11)) ? ce.data.l[4] :
+        unsigned int height = (flags & _NET_MOVERESIZE_WINDOW_HEIGHT) ? ce.data.l[4] :
             winclient->height();
-        int win_gravity=ce.data.l[0] & 0xFF;
+        int win_gravity = flags & _NET_MOVERESIZE_WINDOW_GRAVITY;
         winclient->fbwindow()->moveResizeForClient(x, y, width, height,
             win_gravity, winclient->old_bw);
         return true;
@@ -1386,16 +1424,16 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         long title_h = theme->titleHeight() ? theme->titleHeight() + 2*bw : 
                 theme->font().height() + 2*theme->bevelWidth() + 2 + 2*bw;
         long handle_h = theme->handleWidth() + 2*bw;
-        long extents[4];
+        long extents[EWMH_NUM_SIDES];
         // our frames currently don't protrude from left/right
-        extents[0] = bw;
-        extents[1] = bw;
-        extents[2] = title_h;
-        extents[3] = handle_h;
+        extents[EWMH_LEFT] = bw;
+        extents[EWMH_RIGHT] = bw;
+        extents[EWMH_TOP] = title_h;
+        extents[EWMH_BOTTOM] = handle_h;
 
         XChangeProperty(FbTk::App::instance()->display(), ce.window,
             m_net->frame_extents, XA_CARDINAL, 32, PropModeReplace,
-            (unsigned char *)extents, 4);
+            (unsigned char *)extents, EWMH_NUM_SIDES);
 
     } else if (ce.message_type == m_net->wm_moveresize) {
         if (winclient == 0 || winclient->fbwindow() == 0)
@@ -1570,14 +1608,14 @@ void Ewmh::updateStrut(WinClient &winclient) {
     int fmt = 0;
     unsigned long nitems = 0, bytes_after = 0;
     long *data = 0;
-    if (winclient.property(m_net->wm_strut, 0, 4, False, XA_CARDINAL,
+    if (winclient.property(m_net->wm_strut, 0, EWMH_NUM_SIDES, False, XA_CARDINAL,
                                  &ret_type, &fmt, &nitems, &bytes_after,
                                  (unsigned char **) &data) && data) {
 
         int head = winclient.screen().getHead(winclient);
         winclient.setStrut(winclient.screen().requestStrut(head,
-                           data[0], data[1],
-                           data[2], data[3]));
+                           data[EWMH_LEFT], data[EWMH_RIGHT],
+                           data[EWMH_TOP], data[EWMH_BOTTOM]));
         winclient.screen().updateAvailableWorkspaceArea();
     } else {
         winclient.clearStrut();
@@ -1695,17 +1733,17 @@ void Ewmh::updateFrameExtents(FluxboxWindow &win) {
     FluxboxWindow::ClientList::iterator it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator it_end = win.clientList().end();
     for (; it != it_end; ++it) {
-        long extents[4];
+        long extents[EWMH_NUM_SIDES];
         // our frames currently don't protrude from left/right
         int bw = win.frame().window().borderWidth();
-        extents[0] = bw;
-        extents[1] = bw;
-        extents[2] = win.frame().titlebarHeight() + bw;
-        extents[3] = win.frame().handleHeight() + bw;
+        extents[EWMH_LEFT] = bw;
+        extents[EWMH_RIGHT] = bw;
+        extents[EWMH_TOP] = win.frame().titlebarHeight() + bw;
+        extents[EWMH_BOTTOM] = win.frame().handleHeight() + bw;
 
         (*it)->changeProperty(m_net->frame_extents,
                               XA_CARDINAL, 32, PropModeReplace,
-                              (unsigned char *)extents, 4);
+                              (unsigned char *)extents, EWMH_NUM_SIDES);
     }
 }
 
