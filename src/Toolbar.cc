@@ -366,6 +366,14 @@ void Toolbar::lower() {
 
 void Toolbar::screenChanged(BScreen &screen) {
     reconfigure();
+#ifdef XINERAMA
+    // only here, not in reconfigure(): clicking an item of the head menu
+    // reconfigures the toolbar, and reloading would delete that item
+    // while it is still handling the click
+    if (m_xineramaheadmenu) {
+        m_xineramaheadmenu->reloadHeads();
+    }
+#endif // XINERAMA
 }
 
 void Toolbar::relayout() {
@@ -505,12 +513,6 @@ void Toolbar::reconfigure() {
     // we're done with all resizing and stuff now we can request a new
     // area to be reserved on screen
     updateStrut();
-
-#ifdef XINERAMA
-    if (m_xineramaheadmenu)
-        m_xineramaheadmenu->reloadHeads();
-#endif // XINERAMA
-
 }
 
 
@@ -822,6 +824,8 @@ void Toolbar::setupMenus(bool skip_new_placement) {
                                    reconfig_toolbar_and_save_resource));
     menu().insertSubmenu(_FB_XTEXT(Menu, Layer, "Layer...", "Title of Layer menu"), &layerMenu());
 #ifdef XINERAMA
+    // a rebuild of the menu deleted the old head menu with menu().removeAll()
+    m_xineramaheadmenu = 0;
     if (screen().hasXinerama()) {
 
         m_xineramaheadmenu = new XineramaHeadMenu<Toolbar>(screen().menuTheme(),
