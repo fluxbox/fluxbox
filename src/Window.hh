@@ -227,6 +227,21 @@ public:
     void kill();
     /// set fullscreen
     void setFullscreen(bool flag);
+    /**
+     * Set the monitors (0-based Xinerama indices) defining the edges of
+     * the window while fullscreen (_NET_WM_FULLSCREEN_MONITORS).
+     * @return false if the indices are invalid; nothing is changed then
+     */
+    bool setFullscreenMonitors(int top, int bottom, int left, int right);
+    /// go back to fullscreen on a single head
+    void clearFullscreenMonitors();
+    /// drop the fullscreen monitors if they no longer exist (RandR)
+    void validateFullscreenMonitors();
+    bool hasFullscreenMonitors() const { return m_state.has_fullscreen_monitors; }
+    const int *fullscreenMonitors() const { return m_state.fullscreen_monitors; }
+    /// @return true if the window is on @a head or, while fullscreen
+    /// across several monitors, covers it
+    bool coversHead(int head) const;
     /// toggle maximize
     void maximize(int type = WindowState::MAX_FULL);
     /// sets the maximized state
@@ -523,7 +538,9 @@ private:
     void setState(unsigned long stateval, bool setting_up);
     /// set the layer of a fullscreen window
     void setFullscreenLayer();
+    void fullscreenMonitorsChanged();
     void attachWorkAreaSig();
+    void attachHeadsChangedSig();
 
     // modifies left and top if snap is necessary
     void doSnapping(int &left, int &top, bool resize = false);

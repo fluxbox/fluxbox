@@ -1910,6 +1910,21 @@ int BScreen::getHeadHeight(int head) const {
 #endif // XINERAMA
 }
 
+bool BScreen::getHeadsArea(int top, int bottom, int left, int right,
+                           int &x, int &y, int &w, int &h) const {
+    // without Xinerama there is exactly one monitor: the whole screen
+    const int heads = numHeads() > 0 ? numHeads() : 1;
+    if (top < 1 || top > heads || bottom < 1 || bottom > heads ||
+        left < 1 || left > heads || right < 1 || right > heads)
+        return false;
+
+    x = getHeadX(left);
+    y = getHeadY(top);
+    w = getHeadX(right) + getHeadWidth(right) - x;
+    h = getHeadY(bottom) + getHeadHeight(bottom) - y;
+    return w > 0 && h > 0;
+}
+
 pair<int,int> BScreen::clampToHead(int head, int x, int y, int w, int h) const {
 
     // if there are multiple heads, head=0 is not valid

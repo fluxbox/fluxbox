@@ -328,6 +328,17 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
     winclient.setIcon(icon);
 }
 
+// _NET_WM_FULLSCREEN_MONITORS: CARDINAL indices, keep them in int range;
+// whether the monitors exist is checked by the window
+bool toMonitorIndices(const long *l, int mon[4]) {
+    for (int i = 0; i < 4; ++i) {
+        if (l[i] < 0 || l[i] > 0xffff)
+            return false;
+        mon[i] = static_cast<int>(l[i]);
+    }
+    return true;
+}
+
 } // end anonymous namespace
 
 class Ewmh::EwmhAtoms {
@@ -357,6 +368,7 @@ public:
 
 
         wm_moveresize = XInternAtom(disp, "_NET_WM_MOVERESIZE", False);
+        wm_fullscreen_monitors = XInternAtom(disp, "_NET_WM_FULLSCREEN_MONITORS", False);
 
         properties = XInternAtom(disp, "_NET_PROPERTIES", False);
         wm_name = XInternAtom(disp, "_NET_WM_NAME", False);
@@ -436,7 +448,8 @@ public:
 
     // root window messages
     Atom close_window,
-         wm_moveresize;
+         wm_moveresize,
+         wm_fullscreen_monitors;
 
     // application window properties
     Atom properties,
@@ -667,6 +680,7 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net->request_frame_extents,
 
         m_net->wm_moveresize,
+        m_net->wm_fullscreen_monitors,
 
         m_net->frame_extents,
 
@@ -831,6 +845,9 @@ void Ewmh::updateVisibleName(WinClient &winclient) {
 }
 
 void Ewmh::setupFrame(FluxboxWindow &win) {
+    // before setupState(): any state change rewrites (or deletes)
+    // _NET_WM_FULLSCREEN_MONITORS from what we know about the window
+    setupFullscreenMonitors(win);
     setupState(win);
     bool exists;
     unsigned int desktop=static_cast<unsigned int>(win.winClient().cardinalProperty(m_net->wm_desktop, &exists));
@@ -1212,9 +1229,27 @@ void Ewmh::updateState(FluxboxWindow &win) {
     if (win.isFullscreen())
         state.push_back(m_net->wm_state_fullscreen);
 
+    long monitors[4] = { 0, 0, 0, 0 };
+    if (win.hasFullscreenMonitors()) {
+        for (int i = 0; i < 4; ++i)
+            monitors[i] = win.fullscreenMonitors()[i];
+    }
+
     FluxboxWindow::ClientList::iterator it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator it_end = win.clientList().end();
     for (; it != it_end; ++it) {
+
+        /* _NET_WM_FULLSCREEN_MONITORS, CARDINAL[4]/32
+         *
+         * The Window Manager MUST keep this list updated to reflect the
+         * current state of the window.
+         */
+        if (win.hasFullscreenMonitors())
+            (*it)->changeProperty(m_net->wm_fullscreen_monitors, XA_CARDINAL,
+                                  32, PropModeReplace,
+                                  reinterpret_cast<unsigned char*>(monitors), 4);
+        else
+            (*it)->deleteProperty(m_net->wm_fullscreen_monitors);
 
         StateVec client_state(state);
         Atom ret_type;
@@ -1488,6 +1523,22 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
             break;
         }
         return true;
+    } else if (ce.message_type == m_net->wm_fullscreen_monitors) {
+        if (winclient == 0 || winclient->fbwindow() == 0)
+            return true;
+        // data.l[0] = monitor defining the top edge
+        // data.l[1] = monitor defining the bottom edge
+        // data.l[2] = monitor defining the left edge
+        // data.l[3] = monitor defining the right edge
+        // data.l[4] = source indication
+        int mon[4];
+        if (!toMonitorIndices(ce.data.l, mon) ||
+            !winclient->fbwindow()->setFullscreenMonitors(mon[0], mon[1], mon[2], mon[3])) {
+            fbdbg << "Ewmh: ignoring invalid _NET_WM_FULLSCREEN_MONITORS "
+                  << ce.data.l[0] << " " << ce.data.l[1] << " "
+                  << ce.data.l[2] << " " << ce.data.l[3] << endl;
+        }
+        return true;
     }
 
     // we didn't handle the ce.message_type here
@@ -1734,6 +1785,27 @@ void Ewmh::setupState(FluxboxWindow &win) {
 
         XFree(data);
     }
+}
+
+void Ewmh::setupFullscreenMonitors(FluxboxWindow &win) {
+    // the property is read-only for clients, but honor it when it is
+    // already there, e.g. when we restart or replace another WM
+    Atom ret_type;
+    int fmt;
+    unsigned long nitems, bytes_after;
+    unsigned char *data = 0;
+
+    win.winClient().property(m_net->wm_fullscreen_monitors, 0, 4, False,
+                             XA_CARDINAL, &ret_type, &fmt, &nitems,
+                             &bytes_after, &data);
+    if (!data)
+        return;
+
+    int mon[4];
+    if (fmt == 32 && nitems == 4 &&
+        toMonitorIndices(reinterpret_cast<long*>(data), mon))
+        win.setFullscreenMonitors(mon[0], mon[1], mon[2], mon[3]);
+    XFree(data);
 }
 
 void Ewmh::updateFrameExtents(FluxboxWindow &win) {

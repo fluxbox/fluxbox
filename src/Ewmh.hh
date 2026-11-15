@@ -74,6 +74,7 @@ private:
     void updateVisibleName(WinClient &winclient);
 
     void setupState(FluxboxWindow &win);
+    void setupFullscreenMonitors(FluxboxWindow &win);
 
     void stackingChanged(BScreen &screen);
     void updateStackingLists();

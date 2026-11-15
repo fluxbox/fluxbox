@@ -591,8 +591,17 @@ void FluxboxWindow::init() {
             m_state.layernum = twin->layerNum();
         }
         m_workspace_number = twin->workspaceNumber();
-        const int x = twin->frame().x() + int(twin->frame().width() - frame().width())/2;
-        const int y = twin->frame().y() + int(twin->frame().height() - frame().height())/2;
+        int x = twin->frame().x() + int(twin->frame().width() - frame().width())/2;
+        int y = twin->frame().y() + int(twin->frame().height() - frame().height())/2;
+        if (twin->isFullscreen() && twin->hasFullscreenMonitors()) {
+            // the parent spans several monitors: center on one of them,
+            // the one with the pointer if the parent covers it
+            int head = screen().getCurrHead();
+            if (!twin->coversHead(head))
+                head = twin->getOnHead();
+            x = screen().getHeadX(head) + (screen().getHeadWidth(head) - int(frame().width()))/2;
+            y = screen().getHeadY(head) + (screen().getHeadHeight(head) - int(frame().height()))/2;
+        }
         frame().move(x, y);
         sanitizePosition();
         m_placed = true;
@@ -1561,12 +1570,94 @@ void FluxboxWindow::setFullscreen(bool flag) {
     attachWorkAreaSig();
 }
 
+// re-apply the geometry and layer after the fullscreen monitors changed
+// and let the atom handlers update _NET_WM_FULLSCREEN_MONITORS
+void FluxboxWindow::fullscreenMonitorsChanged() {
+    if (!m_initialized)
+        return;
+
+    if (m_state.fullscreen) {
+        frame().applyState();
+        setFullscreenLayer(); // calls stateSig().emit()
+    } else {
+        stateSig().emit(*this);
+    }
+}
+
+bool FluxboxWindow::setFullscreenMonitors(int top, int bottom, int left, int right) {
+    int x, y, w, h;
+    if (!screen().getHeadsArea(top + 1, bottom + 1, left + 1, right + 1,
+                               x, y, w, h))
+        return false;
+
+    m_state.fullscreen_monitors[0] = top;
+    m_state.fullscreen_monitors[1] = bottom;
+    m_state.fullscreen_monitors[2] = left;
+    m_state.fullscreen_monitors[3] = right;
+    m_state.has_fullscreen_monitors = true;
+    attachHeadsChangedSig();
+    fullscreenMonitorsChanged();
+    return true;
+}
+
+void FluxboxWindow::clearFullscreenMonitors() {
+    if (!m_state.has_fullscreen_monitors) {
+        return;
+    }
+
+    m_state.has_fullscreen_monitors = false;
+    attachHeadsChangedSig();
+    fullscreenMonitorsChanged();
+}
+
+void FluxboxWindow::validateFullscreenMonitors() {
+    if (!m_state.has_fullscreen_monitors) {
+        return;
+    }
+
+    // the spec lets us keep indices that still exist, the client is
+    // responsible for recomputing them. drop the ones that don't.
+    int x, y, w, h;
+    const int *mon = m_state.fullscreen_monitors;
+    if (!screen().getHeadsArea(mon[0] + 1, mon[1] + 1, mon[2] + 1, mon[3] + 1,
+                               x, y, w, h)) {
+        clearFullscreenMonitors();
+    } else if (m_initialized && m_state.fullscreen) {
+        frame().applyState();
+    }
+}
+
+// only windows with fullscreen monitors care about the head layout:
+// after a RandR change their monitors may be gone, or have moved
+void FluxboxWindow::attachHeadsChangedSig() {
+    if (m_state.has_fullscreen_monitors) {
+        join(screen().headsChangedSig(),
+             FbTk::MemFunIgnoreArgs(*this, &FluxboxWindow::validateFullscreenMonitors));
+    } else {
+        leave(screen().headsChangedSig());
+    }
+}
+
+bool FluxboxWindow::coversHead(int head) const {
+    if (head == getOnHead())
+        return true;
+    if (!m_state.fullscreen || !m_state.has_fullscreen_monitors ||
+        head < 1 || head > screen().numHeads())
+        return false;
+
+    const int hx = screen().getHeadX(head), hy = screen().getHeadY(head);
+    const int hw = screen().getHeadWidth(head), hh = screen().getHeadHeight(head);
+    const int fx = frame().x(), fy = frame().y();
+    const int fw = frame().width(), fh = frame().height();
+    return fx < hx + hw && hx < fx + fw && fy < hy + hh && hy < fy + fh;
+}
+
 void FluxboxWindow::setFullscreenLayer() {
 
     FluxboxWindow *foc = FocusControl::focusedFbWindow();
     // if another window on the same head is focused, make sure we can see it
     if (isFocused() || !foc || &foc->screen() != &screen() ||
-        getOnHead() != foc->getOnHead() ||
+        !coversHead(foc->getOnHead()) ||
         (foc->winClient().isTransient() &&
          foc->winClient().transientFor()->fbwindow() == this)) {
         moveToLayer(::ResourceLayer::ABOVE_DOCK);
@@ -2136,7 +2227,7 @@ bool FluxboxWindow::focusRequestFromClient(WinClient &from) {
         (cur && (cur->focusProtection() & Focus::Lock))) {
         ret = false;
     } else if (cur && getRootTransientFor(&from) != getRootTransientFor(client)) {
-        ret = !(cur->isFullscreen() && getOnHead() == cur->getOnHead()) &&
+        ret = !(cur->isFullscreen() && cur->coversHead(getOnHead())) &&
               !cur->isTyping();
     }
 
@@ -4034,7 +4125,22 @@ int FluxboxWindow::getOnHead() const {
 }
 
 void FluxboxWindow::setOnHead(int head) {
+    bool monitors_cleared = false;
     if (head > 0 && head <= screen().numHeads()) {
+        // an explicit move to another head overrides the monitors the
+        // client asked for, otherwise applyState() would snap it back
+        if (m_initialized && m_state.has_fullscreen_monitors) {
+            m_state.has_fullscreen_monitors = false;
+            attachHeadsChangedSig();
+            monitors_cleared = true;
+        }
+    }
+    if (monitors_cleared && m_state.fullscreen) {
+        // the frame spans several heads, a relative move could leave its
+        // center on the wrong one: put it on the target head directly
+        frame().moveResize(screen().getHeadX(head), screen().getHeadY(head),
+                           screen().getHeadWidth(head), screen().getHeadHeight(head));
+    } else if (head > 0 && head <= screen().numHeads()) {
         int cur = screen().getHead(fbWindow());
         bool placed = m_placed;
         int x = frame().x(), y = frame().y();
@@ -4060,6 +4166,8 @@ void FluxboxWindow::setOnHead(int head) {
         frame().applyState();
         attachWorkAreaSig();
         stateSig().emit(*this);
+    } else if (monitors_cleared) {
+        stateSig().emit(*this); // update _NET_WM_FULLSCREEN_MONITORS
     }
 }
 
