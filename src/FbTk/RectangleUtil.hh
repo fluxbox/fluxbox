@@ -118,6 +118,19 @@ struct Rect {
 Rect largestFreeRectangle(const std::vector<Rect> &regions,
                           const std::vector<Rect> &free_parts);
 
+/*
+ * One cell of 'area' split into rows x cols cells of the same size. The
+ * division leaves a rest of up to cols - 1 pixels in width and rows - 1
+ * in height; the cells of the last column and of the last row get it, so
+ * the cells cover the area without gaps.
+ * @param area - the rectangle to split
+ * @param rows, cols - the number of rows and columns
+ * @param row, col - the cell, counted from 0 at the top left
+ * @returns the cell, or one with width == height == 0 if rows or cols is 0
+ */
+Rect gridCell(const Rect &area, unsigned int rows, unsigned int cols,
+              unsigned int row, unsigned int col);
+
 } // namespace RectangleUtil
 } // namespace FbTk
 

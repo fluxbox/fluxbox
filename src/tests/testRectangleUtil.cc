@@ -293,6 +293,65 @@ int test_largestFreeRectangle() {
 }
 
 
+int test_gridCell() {
+
+    printf("testing FbTk::RectangleUtil::gridCell()\n");
+
+    typedef FbTk::RectangleUtil::Rect R;
+
+    struct _t {
+        const char *what;
+        R area;
+        unsigned int rows, cols, row, col;
+        R truth;
+    };
+
+    const _t tests[] = {
+        { "1x1 is the area",
+          { 10, 20, 1030, 766 }, 1, 1, 0, 0, { 10, 20, 1030, 766 } },
+        { "2 columns, even: left",
+          { 0, 0, 1030, 766 }, 1, 2, 0, 0, { 0, 0, 515, 766 } },
+        { "2 columns, even: right",
+          { 0, 0, 1030, 766 }, 1, 2, 0, 1, { 515, 0, 515, 766 } },
+        { "3 columns: first",
+          { 0, 0, 1030, 766 }, 1, 3, 0, 0, { 0, 0, 343, 766 } },
+        { "3 columns: middle",
+          { 0, 0, 1030, 766 }, 1, 3, 0, 1, { 343, 0, 343, 766 } },
+        { "3 columns: last gets the rest",
+          { 0, 0, 1030, 766 }, 1, 3, 0, 2, { 686, 0, 344, 766 } },
+        { "3 rows: last gets the rest",
+          { 0, 0, 1030, 766 }, 3, 1, 2, 0, { 0, 510, 1030, 256 } },
+        { "2x3, moved area: bottom right",
+          { 100, 50, 1030, 766 }, 2, 3, 1, 2, { 786, 433, 344, 383 } },
+        { "2x3, moved area: top middle",
+          { 100, 50, 1030, 766 }, 2, 3, 0, 1, { 443, 50, 343, 383 } },
+        { "more columns than pixels",
+          { 0, 0, 2, 2 }, 1, 3, 0, 2, { 0, 0, 2, 2 } },
+        { "no rows",
+          { 0, 0, 1030, 766 }, 0, 3, 0, 0, { 0, 0, 0, 0 } },
+        { "no columns",
+          { 0, 0, 1030, 766 }, 3, 0, 0, 0, { 0, 0, 0, 0 } },
+    };
+
+    int failed = 0;
+    for (unsigned int i = 0; i < sizeof(tests)/sizeof(_t); ++i) {
+        const _t &t = tests[i];
+        const R r = FbTk::RectangleUtil::gridCell(t.area, t.rows, t.cols, t.row, t.col);
+        const bool ok = r.x == t.truth.x && r.y == t.truth.y &&
+                        r.width == t.truth.width && r.height == t.truth.height;
+        printf("  %u: %s: %d,%d %dx%d: %s\n", i, t.what,
+                r.x, r.y, r.width, r.height, ok ? "ok" : "failed");
+        if (!ok) {
+            ++failed;
+        }
+    }
+
+    printf("done.\n");
+
+    return failed;
+}
+
+
 int main(int argc, char **argv) {
 
     int failed = 0;
@@ -301,6 +360,7 @@ int main(int argc, char **argv) {
     failed += test_overlapRectangles();
     failed += test_overlapArea();
     failed += test_largestFreeRectangle();
+    failed += test_gridCell();
 
     return failed ? 1 : 0;
 }

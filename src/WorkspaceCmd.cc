@@ -36,6 +36,7 @@
 
 #include "FbTk/KeyUtil.hh"
 #include "FbTk/CommandParser.hh"
+#include "FbTk/RectangleUtil.hh"
 #include "FbTk/stringstream.hh"
 #include "FbTk/StringUtil.hh"
 
@@ -455,47 +456,52 @@ void ArrangeWindowsCmd::execute() {
     }
 
 
-    int x_offs = screen->maxLeft(head); // window position offset in x
-    int y_offs = screen->maxTop(head); // window position offset in y
-    unsigned int max_width = screen->maxRight(head) - screen->maxLeft(head);
-    unsigned int max_height = screen->maxBottom(head) - screen->maxTop(head);
+    using FbTk::RectangleUtil::Rect;
+    using FbTk::RectangleUtil::gridCell;
 
-    if ((m_tile_method == STACKLEFT) || (m_tile_method == STACKRIGHT)) {
-        max_width = max_width / 2;
-    }
+    // the work area of the head. the stacked modes split it into the half
+    // of the main window and the half the other windows are tiled in, which
+    // gets the odd pixel
+    const int left = static_cast<int>(screen->maxLeft(head));
+    const int top = static_cast<int>(screen->maxTop(head));
+    const Rect area = {
+        left, top,
+        static_cast<int>(screen->maxRight(head)) - left,
+        static_cast<int>(screen->maxBottom(head)) - top
+    };
+    const int half_w = area.width / 2;
+    const int half_h = area.height / 2;
 
-    if ((m_tile_method == STACKTOP) || (m_tile_method == STACKBOTTOM)) {
-        max_height = max_height / 2;
+    Rect tiled = area;
+    Rect main_area = area;
+    switch (m_tile_method) {
+    case STACKLEFT:
+        tiled.width = area.width - half_w;
+        main_area = Rect{ area.x + tiled.width, area.y, half_w, area.height };
+        break;
+    case STACKRIGHT:
+        tiled = Rect{ area.x + half_w, area.y, area.width - half_w, area.height };
+        main_area.width = half_w;
+        break;
+    case STACKTOP:
+        tiled.height = area.height - half_h;
+        main_area = Rect{ area.x, area.y + tiled.height, area.width, half_h };
+        break;
+    case STACKBOTTOM:
+        tiled = Rect{ area.x, area.y + half_h, area.width, area.height - half_h };
+        main_area.height = half_h;
+        break;
+    default:
+        break;
     }
 
     // try to get the same number of rows as columns.
     unsigned int cols = int(sqrt((float)win_count));  // truncate to lower
     unsigned int rows = int(0.99 + float(win_count) / float(cols));
-    if (  (m_tile_method == VERTICAL) ||  // rotate if the user has asked for it or automagically
-          ( (m_tile_method == UNSPECIFIED) && (max_width<max_height)) ) {
+    if (m_tile_method == VERTICAL ||  // rotate if the user has asked for it or automagically
+        (m_tile_method == UNSPECIFIED && tiled.width < tiled.height)) {
         std::swap(cols, rows);
     }
-
-    // Stacked mode only uses half the screen for tiled windows, so adjust
-    // offset to half the screen (horizontal or vertical depending on 
-    // stacking mode)
-    switch (m_tile_method) {
-    case STACKRIGHT:
-        x_offs += static_cast<int>(max_width);
-        break;
-    case STACKBOTTOM:
-        y_offs += static_cast<int>(max_height);
-        break;
-    default:
-        // no change needed for STACKLEFT/STACKTOP
-        break;
-    }
-
-    // Since the placing algorithm loop below modifies the offsets, but we
-    // still need them to position the main window, we save the calculated
-    // values.
-    const int orig_x_offs = x_offs;
-    const int orig_y_offs = y_offs;
 
     unsigned int i;
     unsigned int j;
@@ -504,36 +510,36 @@ void ArrangeWindowsCmd::execute() {
     // TODO: until i resolve the shadedwindow->moveResize() issue to place
     // them in the same columns as the normal windows i just place the shaded
     // windows unchanged ontop of the current head
+    int y_offs = tiled.y;
     for (i = 0, win = shaded_windows.begin(); win != shaded_windows.end(); ++win, ++i) {
+        const int bw2 = 2 * static_cast<int>((*win)->fbWindow().borderWidth());
         if (i & 1) {
-            (*win)->move(x_offs, y_offs);
+            (*win)->move(tiled.x, y_offs);
         } else {
-            (*win)->move(screen->maxRight(head) - (*win)->frame().width() -
-                         2 * (*win)->fbWindow().borderWidth(), y_offs);
+            (*win)->move(area.x + area.width - static_cast<int>((*win)->frame().width()) - bw2,
+                         y_offs);
         }
 
-        y_offs += (*win)->frame().height() + 2 * (*win)->fbWindow().borderWidth();
+        y_offs += static_cast<int>((*win)->frame().height()) + bw2;
     }
 
     // TODO: what if the number of shaded windows is really big and we end up
     // with really little space left for the normal windows? how to handle
     // this?
-    if (!shaded_windows.empty()) {
-        max_height -= i * ((*shaded_windows.begin())->frame().height() +
-                           2 * (*shaded_windows.begin())->fbWindow().borderWidth());
-    }
+    tiled.height = std::max(tiled.y + tiled.height - y_offs, 0);
+    tiled.y = y_offs;
 
-    const unsigned int cal_width = max_width/cols; // width ratio (width of every window)
-    const unsigned int cal_height = max_height/rows; // height ratio (height of every window)
+    // the size of all but the cells in the last column and row
+    const Rect regular = gridCell(tiled, rows, cols, 0, 0);
 
     // Resizes and sets windows positions in columns and rows.
     for (i = 0; i < rows; ++i) {
-        x_offs = orig_x_offs;
         for (j = 0; j < cols && !normal_windows.empty(); ++j) {
 
+            Rect cell = gridCell(tiled, rows, cols, i, j);
 
-            int cell_center_x = x_offs + (x_offs + cal_width) / 2;
-            int cell_center_y = y_offs + (y_offs + cal_height) / 2;
+            int cell_center_x = cell.x + (cell.x + regular.width) / 2;
+            int cell_center_y = cell.y + (cell.y + regular.height) / 2;
             unsigned int closest_dist = ~0;
 
             Workspace::Windows::iterator closest = normal_windows.end();
@@ -550,68 +556,32 @@ void ArrangeWindowsCmd::execute() {
                 }
             }
 
-            int x = x_offs + (*closest)->xOffset();
-            int y = y_offs + (*closest)->yOffset();
-            // signed: a small cell minus tabs and borders may go below 0
-            int w = static_cast<int>(cal_width) - (*closest)->widthOffset();
-            int h = static_cast<int>(cal_height) - (*closest)->heightOffset();
-
-            // the last window of every row gets all the remaining width.
-            if (normal_windows.size() == 1 || j == cols - 1) {
-                w = static_cast<int>(screen->maxRight(head)) - x_offs - (*closest)->widthOffset();
-
-                if (m_tile_method == STACKLEFT) {
-                    w -= static_cast<int>(max_width);
-                }
+            // the last window gets everything that is left.
+            if (normal_windows.size() == 1) {
+                cell.width = tiled.x + tiled.width - cell.x;
+                cell.height = tiled.y + tiled.height - cell.y;
             }
 
-            // the last window of every column also gets all the remaining height.
-            if (normal_windows.size() == 1 || i == rows - 1) {
-                h = static_cast<int>(screen->maxBottom(head)) - y_offs - (*closest)->heightOffset();
-
-                if (m_tile_method == STACKTOP) {
-                    h -= static_cast<int>(max_height);
-                }
-            }
-
-            // mind the width of window borders
+            // the cell holds the external tabs and the window borders too,
+            // which lie outside the frame's width and height. signed: in a
+            // small cell they may leave less than nothing
             const int bw2 = 2 * static_cast<int>((*closest)->fbWindow().borderWidth());
-            w -= bw2;
-            h -= bw2;
+            const int w = cell.width - (*closest)->widthOffset() - bw2;
+            const int h = cell.height - (*closest)->heightOffset() - bw2;
 
-            (*closest)->moveResize(x, y, std::max(w, 1), std::max(h, 1));
+            (*closest)->moveResize(cell.x + (*closest)->xOffset(),
+                                   cell.y + (*closest)->yOffset(),
+                                   std::max(w, 1), std::max(h, 1));
             normal_windows.erase(closest);
-
-            x_offs += static_cast<int>(cal_width);
         }
-
-        y_offs += static_cast<int>(cal_height);
     }
 
     // If using a stacked mechanism we now need to place the main window.
-    if (main_window != NULL){
-        x_offs = screen->maxLeft(head);
-        // mind the width of window borders
+    if (main_window != NULL) {
         const int bw2 = 2 * static_cast<int>(main_window->fbWindow().borderWidth());
-        const unsigned int max_width_b = std::max(static_cast<int>(max_width) - bw2, 1);
-        const unsigned int max_height_b = std::max(static_cast<int>(max_height) - bw2, 1);
-        switch (m_tile_method){
-            case STACKLEFT:
-                main_window->moveResize(x_offs + max_width, orig_y_offs, max_width_b, max_height_b);
-                break;
-            case STACKRIGHT:
-                main_window->moveResize(x_offs, screen->maxTop(head), max_width_b, max_height_b);
-                break;
-            case STACKTOP:
-                main_window->moveResize(x_offs, max_height, max_width_b, max_height_b);
-                break;
-            case STACKBOTTOM:
-                main_window->moveResize(x_offs, screen->maxTop(head), max_width_b, max_height_b);
-                break;
-            default:
-                // Shouldn't happen.
-                break;
-        }
+        main_window->moveResize(main_area.x, main_area.y,
+                                std::max(main_area.width - bw2, 1),
+                                std::max(main_area.height - bw2, 1));
     }
 }
 

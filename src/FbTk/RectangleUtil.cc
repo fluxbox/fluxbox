@@ -167,5 +167,30 @@ Rect largestFreeRectangle(const std::vector<Rect> &regions,
     return best;
 }
 
+Rect gridCell(const Rect &area, unsigned int rows, unsigned int cols,
+              unsigned int row, unsigned int col) {
+
+    Rect cell = { 0, 0, 0, 0 };
+    if (rows == 0 || cols == 0) {
+        return cell;
+    }
+
+    const int w = area.width / static_cast<int>(cols);
+    const int h = area.height / static_cast<int>(rows);
+    cell.x = area.x + static_cast<int>(col) * w;
+    cell.y = area.y + static_cast<int>(row) * h;
+    cell.width = w;
+    cell.height = h;
+
+    // the last column and the last row get the rest of the division
+    if (col + 1 >= cols) {
+        cell.width = area.x + area.width - cell.x;
+    }
+    if (row + 1 >= rows) {
+        cell.height = area.y + area.height - cell.y;
+    }
+    return cell;
+}
+
 } // namespace RectangleUtil
 } // namespace FbTk
