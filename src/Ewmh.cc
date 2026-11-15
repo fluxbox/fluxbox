@@ -209,6 +209,8 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
     // 32 pixel icons tend to have less empty margin. icon_data is
     // sorted by width, then height.
     const unsigned long wanted_size = 32;
+    // the mask has only 1 bit: pixels at least half opaque are drawn
+    const unsigned char alpha_opaque = 128;
     IconContainer::const_iterator best = icon_data.begin();
     for (IconContainer::const_iterator it = icon_data.begin();
          it != icon_data.end(); ++it) {
@@ -294,7 +296,9 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
             XPutPixel(img_pm, x, y, pixel);
 
             // transfer mask data
-            XPutPixel(img_mask, x, y, a > 127 ? 0 : 1);
+            // XYBitmap: XPutImage() draws a 0 bit in the background
+            // of the default GC, which is 1, so 0 means opaque
+            XPutPixel(img_mask, x, y, a >= alpha_opaque ? 0 : 1);
         }
     }
 
