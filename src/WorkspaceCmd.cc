@@ -529,30 +529,49 @@ void ArrangeWindowsCmd::execute() {
     tiled.height = std::max(tiled.y + tiled.height - y_offs, 0);
     tiled.y = y_offs;
 
-    // the size of all but the cells in the last column and row
-    const Rect regular = gridCell(tiled, rows, cols, 0, 0);
-
     // Resizes and sets windows positions in columns and rows.
     for (i = 0; i < rows; ++i) {
         for (j = 0; j < cols && !normal_windows.empty(); ++j) {
 
             Rect cell = gridCell(tiled, rows, cols, i, j);
 
-            int cell_center_x = cell.x + (cell.x + regular.width) / 2;
-            int cell_center_y = cell.y + (cell.y + regular.height) / 2;
-            unsigned int closest_dist = ~0;
+            // the cell goes to the window with the largest share of itself
+            // inside the cell, so windows stay where they mostly are. a big
+            // window touching the cell does not beat a small one lying in
+            // it completely. among windows with the same share (e.g. none
+            // at all) the one closest to the cell wins
+            const int cell_center_x = cell.x + cell.width / 2;
+            const int cell_center_y = cell.y + cell.height / 2;
+            long long best_in_cell = -1; // share = best_in_cell / best_size
+            long long best_size = 1;
+            long long best_dist = 0;
 
             Workspace::Windows::iterator closest = normal_windows.end();
             for (win = normal_windows.begin(); win != normal_windows.end(); ++win) {
 
-                int win_center_x = (*win)->frame().x() + ((*win)->frame().x() + (*win)->frame().width() / 2);
-                int win_center_y = (*win)->frame().y() + ((*win)->frame().y() + (*win)->frame().height() / 2);
-                unsigned int dist = (win_center_x - cell_center_x) * (win_center_x - cell_center_x) +
-                                    (win_center_y - cell_center_y) * (win_center_y - cell_center_y);
+                const FbWinFrame &f = (*win)->frame();
+                const int fbw2 = 2 * static_cast<int>((*win)->fbWindow().borderWidth());
+                const int fw = static_cast<int>(f.width()) + fbw2;
+                const int fh = static_cast<int>(f.height()) + fbw2;
 
-                if (dist < closest_dist) {
+                const long long in_cell = FbTk::RectangleUtil::overlapArea(
+                        cell.x, cell.y, cell.width, cell.height,
+                        f.x(), f.y(), fw, fh);
+                const long long size = std::max(static_cast<long long>(fw) * fh, 1LL);
+                const long long dx = f.x() + fw / 2 - cell_center_x;
+                const long long dy = f.y() + fh / 2 - cell_center_y;
+                const long long dist = dx * dx + dy * dy;
+
+                // in_cell / size against best_in_cell / best_size, without
+                // dividing
+                const long long share = in_cell * best_size;
+                const long long best_share = best_in_cell * size;
+                if (share > best_share ||
+                    (share == best_share && dist < best_dist)) {
                     closest = win;
-                    closest_dist = dist;
+                    best_in_cell = in_cell;
+                    best_size = size;
+                    best_dist = dist;
                 }
             }
 
