@@ -1606,11 +1606,21 @@ void BScreen::renderPosWindow() {
 }
 
 void BScreen::updateSize() {
+    const bool had_xinerama = m_xinerama.avail;
+    const std::vector<XineramaHeadInfo> old_heads = m_xinerama.heads;
+
     // update xinerama layout
     initXinerama();
 
+    // heads may have moved, appeared or vanished even if the root window
+    // kept its size (e.g. two monitors swapped)
+    bool heads_changed = had_xinerama != m_xinerama.avail ||
+                         old_heads != m_xinerama.heads;
+
     // check if window geometry has changed
     if (rootWindow().updateGeometry()) {
+        heads_changed = true;
+
         // reset background
         m_root_theme->reset();
 
@@ -1623,6 +1633,10 @@ void BScreen::updateSize() {
     } else if (m_clear_heads_timer.isTiming()) {
         // still mid-burst
         deferClearHeads();
+    }
+
+    if (heads_changed) {
+        m_heads_changed_sig.emit(*this);
     }
 }
 

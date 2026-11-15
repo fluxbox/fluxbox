@@ -220,6 +220,13 @@ public:
     ScreenSignal &reconfigureSig() { return m_reconfigure_sig; }
     ScreenSignal &resizeSig() { return m_resize_sig; }
     ScreenSignal &bgChangeSig() { return m_bg_change_sig; }
+    /**
+     * head layout signal: heads were added, removed, moved or resized,
+     * or the root window changed its size. Also sent when the root
+     * window kept its size, e.g. when two monitors were swapped. Sent
+     * after the root window geometry is updated.
+     */
+    ScreenSignal &headsChangedSig() { return m_heads_changed_sig; }
     //@}
 
     void propertyNotify(Atom atom);
@@ -501,6 +508,7 @@ private:
     ScreenSignal m_workspacecount_sig; ///< workspace count signal
     ScreenSignal m_currentworkspace_sig; ///< current workspace signal
     ScreenSignal m_workspacenames_sig; ///< workspace names signal
+    ScreenSignal m_heads_changed_sig; ///< head layout signal
 
     FbTk::MultLayers m_layermanager;
 
@@ -559,6 +567,10 @@ private:
         int y() const { return _y; }
         int width() const { return _width; }
         int height() const { return _height; }
+        bool operator==(const XineramaHeadInfo &o) const {
+            return _x == o._x && _y == o._y &&
+                   _width == o._width && _height == o._height;
+        }
     };
     struct {
         bool avail;
