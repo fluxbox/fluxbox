@@ -552,15 +552,16 @@ void ArrangeWindowsCmd::execute() {
 
             int x = x_offs + (*closest)->xOffset();
             int y = y_offs + (*closest)->yOffset();
-            unsigned int w = cal_width - (*closest)->widthOffset();
-            unsigned int h = cal_height - (*closest)->heightOffset();
+            // signed: a small cell minus tabs and borders may go below 0
+            int w = static_cast<int>(cal_width) - (*closest)->widthOffset();
+            int h = static_cast<int>(cal_height) - (*closest)->heightOffset();
 
             // the last window of every row gets all the remaining width.
             if (normal_windows.size() == 1 || j == cols - 1) {
                 w = static_cast<int>(screen->maxRight(head)) - x_offs - (*closest)->widthOffset();
 
                 if (m_tile_method == STACKLEFT) {
-                    w -= max_width;
+                    w -= static_cast<int>(max_width);
                 }
             }
 
@@ -569,15 +570,16 @@ void ArrangeWindowsCmd::execute() {
                 h = static_cast<int>(screen->maxBottom(head)) - y_offs - (*closest)->heightOffset();
 
                 if (m_tile_method == STACKTOP) {
-                    h -= max_height;
+                    h -= static_cast<int>(max_height);
                 }
             }
 
             // mind the width of window borders
-            w -= 2 * (*closest)->fbWindow().borderWidth();
-            h -= 2 * (*closest)->fbWindow().borderWidth();
+            const int bw2 = 2 * static_cast<int>((*closest)->fbWindow().borderWidth());
+            w -= bw2;
+            h -= bw2;
 
-            (*closest)->moveResize(x, y, w, h);
+            (*closest)->moveResize(x, y, std::max(w, 1), std::max(h, 1));
             normal_windows.erase(closest);
 
             x_offs += static_cast<int>(cal_width);
@@ -590,8 +592,9 @@ void ArrangeWindowsCmd::execute() {
     if (main_window != NULL){
         x_offs = screen->maxLeft(head);
         // mind the width of window borders
-        unsigned int max_width_b = max_width - 2 * main_window->fbWindow().borderWidth();
-        unsigned int max_height_b = max_height - 2 * main_window->fbWindow().borderWidth();
+        const int bw2 = 2 * static_cast<int>(main_window->fbWindow().borderWidth());
+        const unsigned int max_width_b = std::max(static_cast<int>(max_width) - bw2, 1);
+        const unsigned int max_height_b = std::max(static_cast<int>(max_height) - bw2, 1);
         switch (m_tile_method){
             case STACKLEFT:
                 main_window->moveResize(x_offs + max_width, orig_y_offs, max_width_b, max_height_b);
