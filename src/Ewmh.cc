@@ -793,6 +793,14 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
 
     updateFrameExtents(win);
 
+    // switching tabs leaves the layers alone, but changes which client is
+    // the top one in _NET_CLIENT_LIST_STACKING. setCurrentClient() emits
+    // the frame's titleSig() for that, focused or not. the signal lives in
+    // win, the slot dies together with it
+    join(win.titleSig(),
+         [this, &win](const std::string &, Focusable &) {
+             stackingChanged(win.screen());
+         });
 }
 
 void Ewmh::updateFrameClose(FluxboxWindow &win) {
