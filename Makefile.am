@@ -145,7 +145,7 @@ clean-local:
 	-rm -rf $(PCH_DIR) $(PCH_HEADER) $(PCH_STAMP)
 endif
 
-uninstall-hook:
+uninstall-hook: uninstall-nls
 	rmdir $(DESTDIR)$(pkgdatadir)
 
 source-doc:
