@@ -1586,14 +1586,15 @@ void FluxboxWindow::fullscreenMonitorsChanged() {
 
 bool FluxboxWindow::setFullscreenMonitors(int top, int bottom, int left, int right) {
     int x, y, w, h;
+    // 0-based Xinerama indices, getHeadsArea() takes 1-based heads
     if (!screen().getHeadsArea(top + 1, bottom + 1, left + 1, right + 1,
                                x, y, w, h))
         return false;
 
-    m_state.fullscreen_monitors[0] = top;
-    m_state.fullscreen_monitors[1] = bottom;
-    m_state.fullscreen_monitors[2] = left;
-    m_state.fullscreen_monitors[3] = right;
+    m_state.fullscreen_monitors[WindowState::FULLSCREEN_TOP] = top;
+    m_state.fullscreen_monitors[WindowState::FULLSCREEN_BOTTOM] = bottom;
+    m_state.fullscreen_monitors[WindowState::FULLSCREEN_LEFT] = left;
+    m_state.fullscreen_monitors[WindowState::FULLSCREEN_RIGHT] = right;
     m_state.has_fullscreen_monitors = true;
     attachHeadsChangedSig();
     fullscreenMonitorsChanged();
@@ -1619,7 +1620,10 @@ void FluxboxWindow::validateFullscreenMonitors() {
     // responsible for recomputing them. drop the ones that don't.
     int x, y, w, h;
     const int *mon = m_state.fullscreen_monitors;
-    if (!screen().getHeadsArea(mon[0] + 1, mon[1] + 1, mon[2] + 1, mon[3] + 1,
+    if (!screen().getHeadsArea(mon[WindowState::FULLSCREEN_TOP] + 1,
+                               mon[WindowState::FULLSCREEN_BOTTOM] + 1,
+                               mon[WindowState::FULLSCREEN_LEFT] + 1,
+                               mon[WindowState::FULLSCREEN_RIGHT] + 1,
                                x, y, w, h)) {
         clearFullscreenMonitors();
     } else if (m_initialized && m_state.fullscreen) {
