@@ -26,6 +26,20 @@
 #include <cstdlib>
 #include <cerrno>
 
+WindowState::WindowState():
+    size_hints(),
+    deco_mask(DECOR_NORMAL),
+    type(TYPE_NORMAL),
+    focused(false),
+    shaded(false), fullscreen(false), stuck(false), iconic(false),
+    focus_hidden(false), icon_hidden(false),
+    maximized(0), layernum(ResourceLayer::NORMAL),
+    x(0), y(0), width(1), height(1),
+    has_fullscreen_monitors(false) {
+    fullscreen_monitors[FULLSCREEN_TOP] = fullscreen_monitors[FULLSCREEN_BOTTOM] =
+    fullscreen_monitors[FULLSCREEN_LEFT] = fullscreen_monitors[FULLSCREEN_RIGHT] = 0;
+}
+
 bool WindowState::useBorder() const {
     return !fullscreen && maximized != MAX_FULL && deco_mask & DECORM_BORDER;
 }
@@ -41,6 +55,18 @@ bool WindowState::useTabs() const {
 
 bool WindowState::useTitlebar() const {
     return !fullscreen && deco_mask & DECORM_TITLEBAR;
+}
+
+bool WindowState::isMaximized() const {
+    return maximized == MAX_FULL;
+}
+
+bool WindowState::isMaximizedHorz() const {
+    return maximized & MAX_HORZ;
+}
+
+bool WindowState::isMaximizedVert() const {
+    return maximized & MAX_VERT;
 }
 
 void WindowState::saveGeometry(int new_x, int new_y,
