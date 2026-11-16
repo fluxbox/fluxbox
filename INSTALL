@@ -9,6 +9,87 @@ and then as root
 
     $ make install
 
+== Requirements
+
+=== Build tools
+
+Fluxbox needs the following tools to build:
+
+  * a C++ compiler with C++14 support (e.g. g++)
+  * GNU make
+  * sed
+  * pkg-config (configure aborts if it is missing)
+
+When building from a git checkout instead of a release tarball you
+also need autoreconf, because the `configure' script has to be
+generated first with ./autogen.sh.
+
+Native language support (NLS) needs `gencat', which is part of glibc.
+
+=== Libraries
+
+Only one library is required to compile fluxbox:
+
+  * libX11 (pkg-config module `x11')
+
+Everything else is optional.  configure enables it when it finds it
+and silently skips it otherwise, so a build without these libraries
+works fine.  Every one of them can also be switched off explicitly
+with a `--disable-*' option (see "Optional Features" below).
+
+  * xft, fontconfig, freetype2 - anti-aliased fonts.  Note that
+    fontconfig is required as soon as xft is found.
+  * xrender                    - rendered gradients and shadows
+  * xpm                        - XPM pixmaps (old-style themes)
+  * xext                       - the XShape extension
+  * xinerama                   - multi-head displays
+  * xrandr >= 1.4.0            - runtime screen/layout changes
+  * imlib2                     - loading background images
+  * fribidi                    - right-to-left text
+
+A minimal build only needs a C++ compiler, make, pkg-config and the
+X11 headers.  Turn the optional features off with:
+
+    $ ./configure --disable-imlib2 --disable-xft --disable-fribidi \
+        --disable-xinerama --disable-xrandr --disable-xext \
+        --disable-xpm --disable-xrender --disable-freetype2
+
+=== Runtime requirements
+
+Fluxbox is a client of the X Window System: it does not start an X
+server itself and needs a running display.  Either
+
+  * install an X server (Xorg, or Xwayland when running under
+    Wayland), or
+  * log in through a display manager, or
+  * install xinit and start fluxbox from a virtual terminal.  Here
+    is a simple way of doing it, as an example.  Note that startx
+    only takes the session client when it is given as a path
+    (starting with / or ./); a bare command name such as `fluxbox'
+    would be passed to the default client (xterm) instead.  Once
+    fluxbox is installed, run either
+
+        $ startx $(which fluxbox)
+
+    to start fluxbox directly, or
+
+        $ startx $(which startfluxbox)
+
+    to run your ~/.fluxbox/startup script first (a default one is
+    created on first use) and fluxbox at the end of it.  If you have
+    only compiled fluxbox so far, run it from the build directory:
+
+        $ startx ./fluxbox
+
+These are optional but useful at runtime:
+
+  * xterm - the default terminal of fluxbox and of the generated menu
+  * core X fonts and fontconfig configuration for the fonts used by
+    the styles
+  * xrdb - for the "Reload .Xdefaults" menu entry
+  * an external wallpaper setter (feh, xsetroot, ...) for fbsetbg
+
+
 == Compilation and Installation
 
    The `configure' shell script attempts to guess correct values for
