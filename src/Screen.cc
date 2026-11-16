@@ -1931,9 +1931,9 @@ bool BScreen::getHeadsArea(int top, int bottom, int left, int right,
     // get the numbering wrong: mpv --fs-screen=all counts the monitors in
     // RandR order, which is not the Xinerama order when the primary monitor
     // is not the top left one. Take the box around the given heads instead.
-    const int mon[4] = { top, bottom, left, right };
+    const int mon[WindowState::FULLSCREEN_EDGES] = { top, bottom, left, right };
     std::vector<FbTk::RectangleUtil::Rect> rects;
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < WindowState::FULLSCREEN_EDGES; ++i) {
         rects.push_back(FbTk::RectangleUtil::Rect{
                 getHeadX(mon[i]), getHeadY(mon[i]),
                 getHeadWidth(mon[i]), getHeadHeight(mon[i]) });

@@ -328,15 +328,29 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
     winclient.setIcon(icon);
 }
 
-// _NET_WM_FULLSCREEN_MONITORS: CARDINAL indices, keep them in int range;
-// whether the monitors exist is checked by the window
-bool toMonitorIndices(const long *l, int mon[4]) {
-    for (int i = 0; i < 4; ++i) {
-        if (l[i] < 0 || l[i] > 0xffff)
+// _NET_WM_FULLSCREEN_MONITORS: one monitor index per edge (top, bottom,
+// left, right), see WindowState::FullscreenEdge
+const int FULLSCREEN_EDGES = WindowState::FULLSCREEN_EDGES;
+
+// the largest monitor index taken from a client. It only keeps the
+// CARDINALs well inside int; whether the monitors exist is checked by the
+// window.
+const long FULLSCREEN_MONITOR_MAX = 0xffff;
+
+bool toMonitorIndices(const long *l, int mon[FULLSCREEN_EDGES]) {
+    for (int i = 0; i < FULLSCREEN_EDGES; ++i) {
+        if (l[i] < 0 || l[i] > FULLSCREEN_MONITOR_MAX)
             return false;
         mon[i] = static_cast<int>(l[i]);
     }
     return true;
+}
+
+bool setFullscreenMonitors(FluxboxWindow &win, const int mon[FULLSCREEN_EDGES]) {
+    return win.setFullscreenMonitors(mon[WindowState::FULLSCREEN_TOP],
+                                     mon[WindowState::FULLSCREEN_BOTTOM],
+                                     mon[WindowState::FULLSCREEN_LEFT],
+                                     mon[WindowState::FULLSCREEN_RIGHT]);
 }
 
 } // end anonymous namespace
@@ -1229,9 +1243,9 @@ void Ewmh::updateState(FluxboxWindow &win) {
     if (win.isFullscreen())
         state.push_back(m_net->wm_state_fullscreen);
 
-    long monitors[4] = { 0, 0, 0, 0 };
+    long monitors[FULLSCREEN_EDGES] = { 0 };
     if (win.hasFullscreenMonitors()) {
-        for (int i = 0; i < 4; ++i)
+        for (int i = 0; i < FULLSCREEN_EDGES; ++i)
             monitors[i] = win.fullscreenMonitors()[i];
     }
 
@@ -1247,7 +1261,8 @@ void Ewmh::updateState(FluxboxWindow &win) {
         if (win.hasFullscreenMonitors())
             (*it)->changeProperty(m_net->wm_fullscreen_monitors, XA_CARDINAL,
                                   32, PropModeReplace,
-                                  reinterpret_cast<unsigned char*>(monitors), 4);
+                                  reinterpret_cast<unsigned char*>(monitors),
+                                  FULLSCREEN_EDGES);
         else
             (*it)->deleteProperty(m_net->wm_fullscreen_monitors);
 
@@ -1524,16 +1539,16 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         }
         return true;
     } else if (ce.message_type == m_net->wm_fullscreen_monitors) {
-        // data.l[0] = monitor defining the top edge
-        // data.l[1] = monitor defining the bottom edge
-        // data.l[2] = monitor defining the left edge
-        // data.l[3] = monitor defining the right edge
-        // data.l[4] = source indication
-        int mon[4];
-        if (!toMonitorIndices(ce.data.l, mon)) {
+        // data.l[FULLSCREEN_TOP ... FULLSCREEN_RIGHT] = the monitor
+        // defining that edge; data.l[FULLSCREEN_EDGES] = source indication
+        const long *l = ce.data.l;
+        int mon[FULLSCREEN_EDGES];
+        if (!toMonitorIndices(l, mon)) {
             fbdbg << "Ewmh: ignoring invalid _NET_WM_FULLSCREEN_MONITORS "
-                  << ce.data.l[0] << " " << ce.data.l[1] << " "
-                  << ce.data.l[2] << " " << ce.data.l[3] << endl;
+                  << l[WindowState::FULLSCREEN_TOP] << " "
+                  << l[WindowState::FULLSCREEN_BOTTOM] << " "
+                  << l[WindowState::FULLSCREEN_LEFT] << " "
+                  << l[WindowState::FULLSCREEN_RIGHT] << endl;
             return true;
         }
 
@@ -1545,18 +1560,23 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
             // not managed yet: e.g. mpv --fs-screen=all sends this once,
             // right before it maps its window. Keep the request in the
             // property, setupFullscreenMonitors() picks it up on manage.
-            long monitors[4] = { mon[0], mon[1], mon[2], mon[3] };
+            long monitors[FULLSCREEN_EDGES] = {
+                mon[WindowState::FULLSCREEN_TOP], mon[WindowState::FULLSCREEN_BOTTOM],
+                mon[WindowState::FULLSCREEN_LEFT], mon[WindowState::FULLSCREEN_RIGHT] };
             XChangeProperty(FbTk::App::instance()->display(), ce.window,
                             m_net->wm_fullscreen_monitors, XA_CARDINAL, 32,
                             PropModeReplace,
-                            reinterpret_cast<unsigned char*>(monitors), 4);
+                            reinterpret_cast<unsigned char*>(monitors),
+                            FULLSCREEN_EDGES);
             return true;
         }
 
-        if (!winclient->fbwindow()->setFullscreenMonitors(mon[0], mon[1], mon[2], mon[3])) {
+        if (!setFullscreenMonitors(*winclient->fbwindow(), mon)) {
             fbdbg << "Ewmh: ignoring _NET_WM_FULLSCREEN_MONITORS for missing monitors "
-                  << ce.data.l[0] << " " << ce.data.l[1] << " "
-                  << ce.data.l[2] << " " << ce.data.l[3] << endl;
+                  << l[WindowState::FULLSCREEN_TOP] << " "
+                  << l[WindowState::FULLSCREEN_BOTTOM] << " "
+                  << l[WindowState::FULLSCREEN_LEFT] << " "
+                  << l[WindowState::FULLSCREEN_RIGHT] << endl;
         }
         return true;
     }
@@ -1815,16 +1835,16 @@ void Ewmh::setupFullscreenMonitors(FluxboxWindow &win) {
     unsigned long nitems, bytes_after;
     unsigned char *data = 0;
 
-    win.winClient().property(m_net->wm_fullscreen_monitors, 0, 4, False,
-                             XA_CARDINAL, &ret_type, &fmt, &nitems,
+    win.winClient().property(m_net->wm_fullscreen_monitors, 0, FULLSCREEN_EDGES,
+                             False, XA_CARDINAL, &ret_type, &fmt, &nitems,
                              &bytes_after, &data);
     if (!data)
         return;
 
-    int mon[4];
-    if (fmt == 32 && nitems == 4 &&
+    int mon[FULLSCREEN_EDGES];
+    if (fmt == 32 && nitems == static_cast<unsigned long>(FULLSCREEN_EDGES) &&
         toMonitorIndices(reinterpret_cast<long*>(data), mon))
-        win.setFullscreenMonitors(mon[0], mon[1], mon[2], mon[3]);
+        setFullscreenMonitors(win, mon);
     XFree(data);
 }
 

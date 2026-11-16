@@ -109,6 +109,16 @@ public:
         TYPE_NOTIFICATION
     };
 
+    /// the edges of _NET_WM_FULLSCREEN_MONITORS, in the order of the
+    /// property and of its client message
+    enum FullscreenEdge {
+        FULLSCREEN_TOP,
+        FULLSCREEN_BOTTOM,
+        FULLSCREEN_LEFT,
+        FULLSCREEN_RIGHT,
+        FULLSCREEN_EDGES ///< the number of edges
+    };
+
     WindowState():
         size_hints(),
         deco_mask(DECOR_NORMAL),
@@ -119,8 +129,8 @@ public:
         maximized(0), layernum(ResourceLayer::NORMAL),
         x(0), y(0), width(1), height(1),
         has_fullscreen_monitors(false) {
-        fullscreen_monitors[0] = fullscreen_monitors[1] =
-        fullscreen_monitors[2] = fullscreen_monitors[3] = 0;
+        fullscreen_monitors[FULLSCREEN_TOP] = fullscreen_monitors[FULLSCREEN_BOTTOM] =
+        fullscreen_monitors[FULLSCREEN_LEFT] = fullscreen_monitors[FULLSCREEN_RIGHT] = 0;
     }
 
     void saveGeometry(int x, int y, unsigned int width, unsigned int height,
@@ -150,9 +160,10 @@ public:
 
     /// _NET_WM_FULLSCREEN_MONITORS: 0-based Xinerama indices of the
     /// monitors defining the top, bottom, left and right edge of the
-    /// window while it is fullscreen. Kept while not fullscreen, too.
+    /// window while it is fullscreen, indexed by FullscreenEdge. Kept
+    /// while not fullscreen, too.
     bool has_fullscreen_monitors;
-    int fullscreen_monitors[4];
+    int fullscreen_monitors[FULLSCREEN_EDGES];
 };
 
 #endif // WINDOWSTATE_HH

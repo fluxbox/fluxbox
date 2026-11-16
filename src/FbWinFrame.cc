@@ -498,9 +498,13 @@ void FbWinFrame::applyState() {
         new_h = m_titlebar.height();
     } else if (m_state.fullscreen) {
         int x, y, w, h;
+        // 0-based Xinerama indices, getHeadsArea() takes 1-based heads
         const int *mon = m_state.fullscreen_monitors;
         if (m_state.has_fullscreen_monitors &&
-            m_screen.getHeadsArea(mon[0] + 1, mon[1] + 1, mon[2] + 1, mon[3] + 1,
+            m_screen.getHeadsArea(mon[WindowState::FULLSCREEN_TOP] + 1,
+                                  mon[WindowState::FULLSCREEN_BOTTOM] + 1,
+                                  mon[WindowState::FULLSCREEN_LEFT] + 1,
+                                  mon[WindowState::FULLSCREEN_RIGHT] + 1,
                                   x, y, w, h)) {
             new_x = x;
             new_y = y;
