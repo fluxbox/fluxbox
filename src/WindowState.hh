@@ -119,19 +119,7 @@ public:
         FULLSCREEN_EDGES ///< the number of edges
     };
 
-    WindowState():
-        size_hints(),
-        deco_mask(DECOR_NORMAL),
-        type(TYPE_NORMAL),
-        focused(false),
-        shaded(false), fullscreen(false), stuck(false), iconic(false),
-        focus_hidden(false), icon_hidden(false),
-        maximized(0), layernum(ResourceLayer::NORMAL),
-        x(0), y(0), width(1), height(1),
-        has_fullscreen_monitors(false) {
-        fullscreen_monitors[FULLSCREEN_TOP] = fullscreen_monitors[FULLSCREEN_BOTTOM] =
-        fullscreen_monitors[FULLSCREEN_LEFT] = fullscreen_monitors[FULLSCREEN_RIGHT] = 0;
-    }
+    WindowState();
 
     void saveGeometry(int x, int y, unsigned int width, unsigned int height,
                       bool force = false);
@@ -144,9 +132,9 @@ public:
     bool useTabs() const;
     bool useTitlebar() const;
 
-    bool isMaximized() const { return maximized == MAX_FULL; }
-    bool isMaximizedHorz() const { return maximized & MAX_HORZ; }
-    bool isMaximizedVert() const { return maximized & MAX_VERT; }
+    bool isMaximized() const;
+    bool isMaximizedHorz() const;
+    bool isMaximizedVert() const;
 
     static int getDecoMaskFromString(const std::string &str);
 
