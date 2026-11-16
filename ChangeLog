@@ -3,6 +3,22 @@
 -----------------------------
 Changes for 1.next
 
+*2026-11-16:
+    * Feature: support _NET_WM_FULLSCREEN_MONITORS, so clients like VMware,
+      FreeRDP (/multimon) and 'mpv --fs-screen=all' go fullscreen across
+      several monitors (FR #272)
+    * Bugfix: fluxbox hung or crashed at exit when it got a signal: the
+      signal handlers only flag the signal now, the event loop does the
+      shutdown, restart or reconfigure; SIGFPE aborts like SIGSEGV
+    * Bugfix: losing the X connection crashed fluxbox in exit()
+    * Bugfix: a failed Exec ran fluxbox's destructors in the forked child
+      and reported success
+    * Bugfix: the _NET_FRAME_EXTENTS estimate used a title height of 0
+      for fonts of height 0, not the 16 pixels the frame gets
+    * Bugfix: _NET_DESKTOP_NAMES used a variable length array, and did
+      not compile without X_HAVE_UTF8_STRING
+    * Code cleanup: name the EWMH protocol constants
+
 *2026-11-15:
     * Bugfix: _NET_CLIENT_LIST_STACKING lists the windows bottom to top
       and follows raise, lower, layer changes and switching tabs; it held

@@ -14,6 +14,8 @@ Features:
     * AutotabPlacement: new windows are tabbed into the focused one
     * Drag tabs to other workspaces, tooltips for tabs
     * Per-head artificial struts (session.screenN.struts[.<head>])
+    * Fullscreen across several monitors (_NET_WM_FULLSCREEN_MONITORS),
+      e.g. VMware, FreeRDP, mpv --fs-screen=all
     * Mark windows and jump back to them (MarkWindow, GotoMarkedWindow)
     * apps file: FocusProtection (None, Lock, Deny, Gain, Refuse),
       IgnoreSizeHints, mixed relative/absolute Position and Dimensions
@@ -68,6 +70,8 @@ Critical Bugfixes:
     * Crashes with some applications (e.g. pcmanfm-qt), without fonts,
       with zero-size fonts, and on ArrangeWindows with shaded windows
     * Crash on Restart after iconified windows changed workspaces
+    * Hangs and crashes at exit on signals (e.g. SIGTERM) or when the X
+      connection is lost
     * Pointer freezes after clicking window borders
     * Hangs and glitches when cycling the focus (alt+tab)
     * Wine windows stuck in withdrawn state
