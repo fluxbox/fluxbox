@@ -535,6 +535,7 @@ what these menus contain or how to configure them, see 'fluxbox(1)'.
 *CustomMenu* 'path'::
 	Opens a custom menu file. This 'path' must be a valid menu file in the same
 	format as detailed by the *ROOT MENU* section of *fluxbox-menu(5)*.
+	A relative 'path' is relative to the config folder.
 
 *HideMenus*::
 	Hide all fluxbox popup menus.
@@ -558,8 +559,9 @@ These commands affect the Window Manager, or more than one window.
 	file, and init file, if they have changed.
 
 *SetStyle* 'path'::
-	Sets the current style to that given in 'path', which must be the full
-	path to a fluxbox style.
+	Sets the current style to that given in 'path'. A relative 'path', e.g.
+	`styles/minimal', is taken relative to the folder of the init file in
+	use, like *session.styleFile* in *fluxbox(1)*.
 
 *ReloadStyle*::
 	Reloads only the current style. Useful after editing a style which is

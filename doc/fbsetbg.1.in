@@ -110,11 +110,17 @@ Display a help message\&.
 .RE
 .SH "FILES"
 .PP
-\fB~/\&.fluxbox/lastwallpaper\fR
+\fB<config folder>/lastwallpaper\fR
 .RS 4
 In this file the wallpaper you set will be stored, for the
 \fB\-l\fR
 option\&.
+The config folder is
+\fB$FLUXBOX_CONFIG_DIR\fR
+if set (by a running fluxbox), else it is located like fluxbox does, see
+\fBXDG_CONFIG_HOME\fR
+in
+\fBfluxbox\fR(1)\&.
 .RE
 .SH "ENVIRONMENT"
 .PP

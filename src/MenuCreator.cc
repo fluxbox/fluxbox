@@ -75,6 +75,10 @@ FbTk::StringConvertor s_stringconvertor(FbTk::StringConvertor::ToFbString);
 list<string> s_encoding_stack;
 list<size_t> s_stacksize_stack;
 
+// folder of each menu file being parsed (innermost last); "" for menus
+// without a file (eg, the builtin ones)
+list<string> s_dir_stack;
+
 
 
 enum {
@@ -170,8 +174,46 @@ void endEncoding() {
 }
 
 
-/* push our encoding-stacksize onto the stack */
-void startFile() {
+/**
+ * Resolve a path given in a menu file: a relative path (not starting with
+ * '/' or '~') is taken relative to the folder of the menu file being
+ * parsed. For menus without a file it is taken relative to the config folder.
+ * Other paths are returned unchanged, except paths into a moved-away
+ * ~/.fluxbox, which are mapped into the config folder (like the paths in init).
+ */
+string resolvePath(const string &path) {
+    if (path.empty()) {
+        return path;
+    }
+    if (path[0] == '/' || path[0] == '~') {
+        Fluxbox *fb = Fluxbox::instance();
+        return fb ? fb->resolveConfigFilename(path) : path;
+    }
+
+    string base;
+    if (!s_dir_stack.empty()) {
+        base = s_dir_stack.back();
+    }
+    if (base.empty() && Fluxbox::instance()) {
+        base = Fluxbox::instance()->getConfigDir();
+    }
+    if (base.empty()) {
+        return path;
+    }
+
+    string name = path;
+    while (name.compare(0, 2, "./") == 0) {
+        name.erase(0, 2);
+    }
+    if (name.empty()) {
+        return base;
+    }
+    return base + '/' + name;
+}
+
+/* push our encoding-stacksize and the folder of the file onto the stack */
+void startFile(const string &dir) {
+    s_dir_stack.push_back(dir);
     if (s_encoding_stack.empty())
         s_stringconvertor.setSource("");
     s_stacksize_stack.push_back(s_encoding_stack.size());
@@ -197,13 +239,14 @@ void endFile() {
         endEncoding();
 
     s_stacksize_stack.pop_back();
+    s_dir_stack.pop_back();
 }
 
 
 void createStyleMenu(FbTk::Menu &parent, const string &label,
                      AutoReloadHelper *reloader, const string &directory) {
     // perform shell style ~ home directory expansion
-    string stylesdir(FbTk::StringUtil::expandFilename(directory));
+    string stylesdir(FbTk::StringUtil::expandFilename(resolvePath(directory)));
 
     if (!FbTk::FileUtil::isDirectory(stylesdir.c_str()))
         return;
@@ -243,7 +286,7 @@ void createRootCmdMenu(FbTk::Menu &parent, const string &label,
                        const string &cmd) {
 
     // perform shell style ~ home directory expansion
-    string rootcmddir(FbTk::StringUtil::expandFilename(directory));
+    string rootcmddir(FbTk::StringUtil::expandFilename(resolvePath(directory)));
 
     if (!FbTk::FileUtil::isDirectory(rootcmddir.c_str()))
         return;
@@ -362,7 +405,7 @@ void translateMenuItem(FbTk::Parser &parse, ParseItem &pitem,
         FbTk::RefCount<FbTk::Command<void> > macro_cmd(FbTk::CommandParser<void>::instance().parse("macrocmd " + str_cmd));
         menu.insertCommand(str_label, macro_cmd);
     } else if (str_key == "style") {
-        menu.insertItem(new StyleMenuItem(str_label, str_cmd));
+        menu.insertItem(new StyleMenuItem(str_label, resolvePath(str_cmd)));
     } else if (str_key == "config") {
         BScreen *screen = Fluxbox::instance()->findScreen(screen_number);
         if (screen != 0)
@@ -377,7 +420,7 @@ void translateMenuItem(FbTk::Parser &parse, ParseItem &pitem,
 
         safe_counter++;
 
-        string newfile = FbTk::StringUtil::expandFilename(str_label);
+        string newfile = FbTk::StringUtil::expandFilename(resolvePath(str_label));
         if (FbTk::FileUtil::isDirectory(newfile.c_str())) {
             // inject every file in this directory into the current menu
             FbTk::Directory dir(newfile.c_str());
@@ -492,7 +535,7 @@ bool getStart(FbMenuParser &parser, string &label, FbTk::StringConvertor &labelc
 bool createFromParser(FbMenuParser &parser, const string &filename,
                       FbTk::Menu &inject_into,
                       AutoReloadHelper *reloader, bool begin) {
-    startFile();
+    startFile(filename.empty() ? string() : FbTk::StringUtil::dirname(filename));
     if (begin) {
         string label;
         if (!getStart(parser, label, s_stringconvertor)) {
@@ -535,7 +578,8 @@ FbMenu *MenuCreator::createMenu(const string &label, int screen_number) {
 bool MenuCreator::createFromFile(const string &filename,
                                  FbTk::Menu &inject_into,
                                  AutoReloadHelper *reloader, bool begin) {
-    string real_filename = FbTk::StringUtil::expandFilename(filename);
+    // a relative name (eg, from CustomMenu) is relative to the config folder
+    string real_filename = FbTk::StringUtil::expandFilename(resolvePath(filename));
 
     FbMenuParser parser(real_filename);
     if (!parser.isLoaded())
