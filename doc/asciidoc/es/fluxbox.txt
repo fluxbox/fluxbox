@@ -1632,7 +1632,7 @@ posible.
 
 BUGS
 ----
-Si se encuentran bugs, por favor visitar el canal de irc #fluxbox en irc.freenode.net.
+Si se encuentran bugs, por favor visitar el canal de irc #fluxbox en irc.libera.chat.
 O pueden suscribirse a alguna de las listas de correo. Se puede encontrar mas informacion
 en el sitio web oficial.
 
