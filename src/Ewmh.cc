@@ -370,7 +370,8 @@ bool setFullscreenMonitors(FluxboxWindow &win, const int mon[FULLSCREEN_EDGES]) 
  */
 enum { SP_LEFT, SP_RIGHT, SP_TOP, SP_BOTTOM,
        SP_LEFT_START, SP_LEFT_END, SP_RIGHT_START, SP_RIGHT_END,
-       SP_TOP_START, SP_TOP_END, SP_BOTTOM_START, SP_BOTTOM_END };
+       SP_TOP_START, SP_TOP_END, SP_BOTTOM_START, SP_BOTTOM_END,
+       SP_COUNT };                // items in _NET_WM_STRUT_PARTIAL
 
 // Pixel ranges on one root-window axis (x for top/bottom struts,
 // y for left/right struts):
@@ -1795,10 +1796,11 @@ void Ewmh::updateStrut(WinClient &winclient) {
 
     // the spec: a client that sets _NET_WM_STRUT_PARTIAL also sets
     // _NET_WM_STRUT for older WMs, and the partial one takes precedence.
-    if (winclient.property(m_net->wm_strut_partial, 0, 12, False, XA_CARDINAL,
+    // a property of the wrong length comes from a confused client: ignore it
+    if (winclient.property(m_net->wm_strut_partial, 0, SP_COUNT, False, XA_CARDINAL,
                            &ret_type, &fmt, &nitems, &bytes_after,
                            (unsigned char **) &data) && data) {
-        if (nitems >= 12) {
+        if (nitems == SP_COUNT && bytes_after == 0) {
             Strut *strut = requestPartialStrut(winclient.screen(), data);
             XFree(data);
             if (strut) {
@@ -1817,7 +1819,7 @@ void Ewmh::updateStrut(WinClient &winclient) {
                                  &ret_type, &fmt, &nitems, &bytes_after,
                                  (unsigned char **) &data) && data) {
 
-        if (nitems >= EWMH_NUM_SIDES) {
+        if (nitems == EWMH_NUM_SIDES && bytes_after == 0) {
             int head = winclient.screen().getHead(winclient);
             winclient.setStrut(winclient.screen().requestStrut(head,
                                data[EWMH_LEFT], data[EWMH_RIGHT],
