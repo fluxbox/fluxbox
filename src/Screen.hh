@@ -469,6 +469,11 @@ public:
                         Strut *next = 0);
     /// remove requested space and destroy strut
     void clearStrut(Strut *strut);
+    /// publish fluxbox's own reservation (head-relative, as for
+    /// requestStrut()) as _NET_WM_STRUT_PARTIAL on 'win', so clients can
+    /// see it; no reservation removes the property
+    void setStrutProperty(FbTk::FbWindow &win, int head,
+                          int left, int right, int top, int bottom) const;
     /// updates max avaible area for the workspace
     void updateAvailableWorkspaceArea();
 

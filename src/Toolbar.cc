@@ -310,6 +310,7 @@ void Toolbar::updateStrut() {
     // we should request space if we're in autohide mode or
     // if the user dont want to request space for toolbar.
     if (doAutoHide() || *m_rc_maximize_over || ! *m_rc_visible) {
+        screen().setStrutProperty(frame.window, getOnHead(), 0, 0, 0, 0);
         if (had_strut)
             screen().updateAvailableWorkspaceArea();
         return;
@@ -343,6 +344,7 @@ void Toolbar::updateStrut() {
         break;
     };
     m_strut = screen().requestStrut(getOnHead(), left, right, top, bottom);
+    screen().setStrutProperty(frame.window, getOnHead(), left, right, top, bottom);
     screen().updateAvailableWorkspaceArea();
 }
 
