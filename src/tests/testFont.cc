@@ -48,7 +48,8 @@ public:
         FbTk::FbWindow(DefaultScreen(this->FbTk::App::display()), 0, 0, 640, 480, KeyPressMask|ExposureMask|StructureNotifyMask),
         m_gc(drawable()),
         m_foreground(foreground.c_str(), screenNumber()),
-        m_background(background.c_str(), screenNumber()) {
+        m_background(background.c_str(), screenNumber()),
+        m_orient(FbTk::ROT0) {
 
         m_gc.setLineAttributes(1, FbTk::GContext::JOINMITER, FbTk::GContext::LINESOLID, FbTk::GContext::CAPNOTLAST);
         m_gc.setForeground(m_foreground);
@@ -92,10 +93,15 @@ public:
 
     void resize(unsigned int width, unsigned int height) {
         FbTk::FbWindow::resize(width, height);
-        unsigned w = width / m_buttons.size();
+        if (m_buttons.empty())
+            return;
+        // one row per text; rotated texts run vertically, so one column each
+        bool rows = m_orient == FbTk::ROT0 || m_orient == FbTk::ROT180;
+        unsigned w = rows ? width : width / m_buttons.size();
+        unsigned h = rows ? height / m_buttons.size() : height;
         size_t i;
         for (i = 0; i < m_buttons.size(); ++i) {
-            m_buttons[i]->moveResize(i * w, 0, w, height);
+            m_buttons[i]->moveResize(rows ? 0 : i * w, rows ? i * h : 0, w, h);
         }
         redraw();
     }
@@ -111,6 +117,7 @@ public:
         button->show();
 
         m_buttons.push_back(button);
+        m_orient = orient;
     }
 
 private:
@@ -118,6 +125,7 @@ private:
     FbTk::GContext m_gc;
     FbTk::Color m_foreground;
     FbTk::Color m_background;
+    FbTk::Orientation m_orient;
 };
 
 
@@ -162,11 +170,12 @@ int main(int argc, char **argv) {
 
     for (a = 0; a < texts_and_fonts.size(); ++a) {
 
+        // split at the last '|', the text itself may contain one
+        const string& arg = texts_and_fonts[a];
+        size_t bar = arg.rfind('|');
         vector<string> tf;
-        FbTk::StringUtil::stringtok(tf, texts_and_fonts[a], "|");
-        if (tf.size() < 2) {
-            tf.push_back("default");
-        }
+        tf.push_back(arg.substr(0, bar));
+        tf.push_back(bar == string::npos ? "default" : arg.substr(bar + 1));
 
         FbTk::Font* f = new FbTk::Font(0);
         if (f->load(tf[1])) {
@@ -176,7 +185,7 @@ int main(int argc, char **argv) {
                 orient = FbTk::ROT0;
             }
 
-            app.addText(FbTk::FbStringUtil::XStrToFb(tf[0]), *f, orient);
+            app.addText(FbTk::FbStringUtil::LocaleStrToFb(tf[0]), *f, orient);
 
         } else {
             cerr<<"Failed to load: "<<tf[1]<<endl;
