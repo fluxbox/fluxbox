@@ -26,6 +26,9 @@
 
 #include <X11/Xft/Xft.h>
 
+#include <set>
+#include <vector>
+
 namespace FbTk {
 
 /// Handles Xft font drawing
@@ -44,6 +47,13 @@ public:
     bool validOrientation(FbTk::Orientation orient);
 
 private:
+    // font that can draw ch: the main one or a fallback found via fontconfig
+    XftFont* fontFor(FcChar32 ch, FbTk::Orientation orient) const;
+    // byte length of the leading run of text that one font draws; sets font;
+    // 0 if text starts with an invalid utf8 byte
+    size_t nextRun(const char* text, size_t len, FbTk::Orientation orient, XftFont*& font) const;
+    void closeFonts();
+
     XftFont *m_xftfonts[4]; // 4 possible orientations
     bool m_xftfonts_loaded[4]; // whether we've tried loading the orientation
     // rotated xft fonts don't give proper extents info, so we keep the "real"
@@ -52,6 +62,11 @@ private:
 
     std::string m_name;
     unsigned int m_maxlength;
+
+    FcPattern* m_pattern; // the requested (unmatched) font, base for fallbacks
+    mutable FcCharSet* m_coverage; // chars all installed fonts have, 0: not asked yet
+    mutable std::vector<XftFont*> m_fallbacks[4];
+    mutable std::set<FcChar32> m_nofont; // covered chars whose fallback failed to open
 };
 
 } // end namespace FbTk

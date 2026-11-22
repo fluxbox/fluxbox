@@ -30,7 +30,7 @@
 namespace FbTk {
 
 XftFontImp::XftFontImp(const char *name, bool utf8):
-    m_utf8mode(utf8), m_name(""), m_maxlength(0x8000) {
+    m_utf8mode(utf8), m_name(""), m_maxlength(0x8000), m_pattern(0), m_coverage(0) {
 
     for (int r = ROT0; r <= ROT270; r++) {
         m_xftfonts[r] = 0;
@@ -42,9 +42,56 @@ XftFontImp::XftFontImp(const char *name, bool utf8):
 }
 
 XftFontImp::~XftFontImp() {
-    for (int r = ROT0; r <= ROT270; r++) 
-        if (m_xftfonts[r] != 0)
-            XftFontClose(App::instance()->display(), m_xftfonts[r]);
+    closeFonts();
+}
+
+void XftFontImp::closeFonts() {
+    Display *disp = App::instance()->display();
+    for (int r = ROT0; r <= ROT270; r++) {
+        m_xftfonts_loaded[r] = false;
+        if (m_xftfonts[r] != 0) {
+            XftFontClose(disp, m_xftfonts[r]);
+            m_xftfonts[r] = 0;
+        }
+        for (size_t i = 0; i < m_fallbacks[r].size(); i++)
+            XftFontClose(disp, m_fallbacks[r][i]);
+        m_fallbacks[r].clear();
+    }
+    m_nofont.clear();
+    if (m_coverage != 0) {
+        FcCharSetDestroy(m_coverage);
+        m_coverage = 0;
+    }
+    if (m_pattern != 0) {
+        FcPatternDestroy(m_pattern);
+        m_pattern = 0;
+    }
+}
+
+namespace {
+
+// matches req (consumed) against the installed fonts and opens the result,
+// rotated for orient
+XftFont* openFont(Display* disp, FcPattern* req, Orientation orient) {
+    XftResult result;
+    FcPattern* match = XftFontMatch(disp, 0, req, &result);
+    FcPatternDestroy(req);
+    if (match == 0)
+        return 0;
+
+    // radians is actually anti-clockwise, so we reverse it
+    double radians = -(orient) * 90 * M_PI / 180;
+    XftMatrix matrix;
+    XftMatrixInit(&matrix);
+    XftMatrixRotate(&matrix, cos(radians), sin(radians));
+    XftPatternAddMatrix(match, XFT_MATRIX, &matrix);
+
+    XftFont* font = XftFontOpenPattern(disp, match);
+    if (font == 0)
+        FcPatternDestroy(match);
+    return font;
+}
+
 }
 
 bool XftFontImp::load(const std::string &name) {
@@ -60,13 +107,11 @@ bool XftFontImp::load(const std::string &name) {
     }
 
     // destroy all old fonts and set new
-    for (int r = ROT0; r <= ROT270; r++) {
-        m_xftfonts_loaded[r] = false;
-        if (m_xftfonts[r] != 0) {
-            XftFontClose(disp, m_xftfonts[r]);
-            m_xftfonts[r] = 0;
-        }
-    }
+    closeFonts();
+
+    m_pattern = XftXlfdParse(name.c_str(), False, False);
+    if (m_pattern == 0)
+        m_pattern = FcNameParse((const FcChar8*)name.c_str());
 
     m_xftfonts[ROT0] = newxftfont;
     m_xftfonts_loaded[ROT0] = true;
@@ -136,17 +181,27 @@ void XftFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char* te
 
     // draw string
 #ifdef HAVE_XFT_UTF8_STRING
-    if (m_utf8mode) {
-        // check the string size,
-        // if the size is zero we use the XftDrawString8 function instead.
-        XGlyphInfo ginfo;
-        XftTextExtentsUtf8(w.display(), m_xftfonts[ROT0], (XftChar8 *)text, len, &ginfo);
-        if (ginfo.xOff != 0) {
-            XftDrawStringUtf8(draw, &xftcolor, font, x, y, (XftChar8 *)text, len);
-            XftColorFree(w.display(), def_visual, def_colmap, &xftcolor);
-            XftDrawDestroy(draw);
-            return;
+    // like Xft: utf8 up to the first invalid byte (truncation cuts by bytes,
+    // so the last char may be partial); undecodable from the start is 8bit
+    FcChar32 first;
+    if (m_utf8mode && FcUtf8ToUcs4((const FcChar8*)text, &first, len) > 0) {
+        // draw run by run, each with a font that has its glyphs, advancing
+        // like Xft does within a run (rotated fonts give rotated offsets)
+        for (size_t i = 0; i < len; ) {
+            XftFont* run_font;
+            size_t n = nextRun(text + i, len - i, orient, run_font);
+            if (n == 0)
+                break;
+            XftDrawStringUtf8(draw, &xftcolor, run_font, x, y, (XftChar8 *)text + i, n);
+            XGlyphInfo ginfo;
+            XftTextExtentsUtf8(w.display(), run_font, (XftChar8 *)text + i, n, &ginfo);
+            x += ginfo.xOff;
+            y += ginfo.yOff;
+            i += n;
         }
+        XftColorFree(w.display(), def_visual, def_colmap, &xftcolor);
+        XftDrawDestroy(draw);
+        return;
     }
 #endif // HAVE_XFT_UTF8_STRING
 
@@ -171,13 +226,20 @@ unsigned int XftFontImp::textWidth(const char* text, unsigned int len) const {
 
 
 #ifdef HAVE_XFT_UTF8_STRING
-    if (m_utf8mode) {
-        XftTextExtentsUtf8(disp, font, (XftChar8 *)text, len, &ginfo);
-        if (ginfo.xOff != 0) {
-            return ginfo.xOff;
+    // same utf8 rule as drawText(), else the locale extents
+    FcChar32 first;
+    if (m_utf8mode && FcUtf8ToUcs4((const FcChar8*)text, &first, len) > 0) {
+        unsigned int width = 0;
+        for (unsigned int i = 0; i < len; ) {
+            XftFont* run_font;
+            size_t n = nextRun(text + i, len - i, ROT0, run_font);
+            if (n == 0)
+                break;
+            XftTextExtentsUtf8(disp, run_font, (XftChar8 *)text + i, n, &ginfo);
+            width += ginfo.xOff;
+            i += n;
         }
-
-        // the utf8 failed, try normal extents
+        return width;
     }
 #endif  //HAVE_XFT_UTF8_STRING
 
@@ -214,27 +276,84 @@ bool XftFontImp::validOrientation(FbTk::Orientation orient) {
     m_xftfonts_loaded[orient] = true;
 
     // otherwise, try to load that orientation
-    // radians is actually anti-clockwise, so we reverse it
-    double radians = -(orient) * 90 * M_PI / 180;
+    if (m_pattern == 0)
+        return false;
 
-    XftMatrix matrix;
-    XftMatrixInit(&matrix);
-    XftMatrixRotate(&matrix, cos(radians), sin(radians));
-
-    Display *disp = App::instance()->display();
-
-    XftPattern * pattern = XftNameParse(m_name.c_str());
-    XftResult result;
-    pattern = XftFontMatch(disp, 0, pattern, &result);
-    XftPatternAddMatrix(pattern, XFT_MATRIX, &matrix);
-    XftFont * new_font = XftFontOpenPattern(disp, pattern);
-
+    XftFont * new_font = openFont(App::instance()->display(),
+                                  FcPatternDuplicate(m_pattern), orient);
     if (new_font == 0)
         return false;
 
     m_xftfonts[orient] = new_font;
 
     return true;
+}
+
+XftFont* XftFontImp::fontFor(FcChar32 ch, Orientation orient) const {
+    Display *disp = App::instance()->display();
+    XftFont* font = m_xftfonts[orient];
+
+    if (XftCharExists(disp, font, ch) || m_pattern == 0 || m_nofont.count(ch))
+        return font;
+
+    for (size_t i = 0; i < m_fallbacks[orient].size(); i++) {
+        if (XftCharExists(disp, m_fallbacks[orient][i], ch))
+            return m_fallbacks[orient][i];
+    }
+
+    // one FcFontSort tells what all installed fonts cover together; a char
+    // outside it skips the costly match below, so a client can't stall us
+    // with a title full of distinct glyph-less code points. computed on the
+    // first miss only: fonts that never miss don't pay for it
+    if (m_coverage == 0) {
+        FcPattern* all = FcPatternDuplicate(m_pattern);
+        FcConfigSubstitute(0, all, FcMatchPattern);
+        FcDefaultSubstitute(all);
+        FcResult result;
+        FcFontSet* fonts = FcFontSort(0, all, FcTrue, &m_coverage, &result);
+        if (fonts != 0)
+            FcFontSetDestroy(fonts);
+        FcPatternDestroy(all);
+        if (m_coverage == 0)
+            m_coverage = FcCharSetCreate(); // no fonts: nothing to fall back to
+    }
+    if (!FcCharSetHasChar(m_coverage, ch))
+        return font;
+
+    // ask fontconfig for the font closest to ours that has ch
+    FcPattern* req = FcPatternDuplicate(m_pattern);
+    FcCharSet* charset = FcCharSetCreate();
+    FcCharSetAddChar(charset, ch);
+    FcPatternAddCharSet(req, FC_CHARSET, charset);
+    FcCharSetDestroy(charset);
+
+    XftFont* fallback = openFont(disp, req, orient);
+    if (fallback != 0 && XftCharExists(disp, fallback, ch)) {
+        m_fallbacks[orient].push_back(fallback);
+        return fallback;
+    }
+    if (fallback != 0)
+        XftFontClose(disp, fallback);
+
+    m_nofont.insert(ch); // don't ask fontconfig again on every redraw
+    return font;
+}
+
+size_t XftFontImp::nextRun(const char* text, size_t len, Orientation orient, XftFont*& font) const {
+    font = 0;
+    size_t i = 0;
+    while (i < len) {
+        FcChar32 ch;
+        int n = FcUtf8ToUcs4((const FcChar8*)text + i, &ch, len - i);
+        if (n <= 0)
+            break;
+        XftFont* f = fontFor(ch, orient);
+        if (font != 0 && f != font)
+            break;
+        font = f;
+        i += n;
+    }
+    return i; // 0: text starts with an invalid byte
 }
 
 
