@@ -334,6 +334,7 @@ void Slit::updateStrut() {
     // no need for area if we're autohiding or set maximize over
     // or if we dont have any clients
     if (doAutoHide() || *m_rc_maximize_over || !m_visible) {
+        screen().setStrutProperty(frame.window, getOnHead(), 0, 0, 0, 0);
         // update screen area if we had a strut before
         if (had_strut)
             screen().updateAvailableWorkspaceArea();
@@ -382,6 +383,7 @@ void Slit::updateStrut() {
     }
 
     m_strut = screen().requestStrut(getOnHead(), left, right, top, bottom);
+    screen().setStrutProperty(frame.window, getOnHead(), left, right, top, bottom);
     screen().updateAvailableWorkspaceArea();
 }
 
