@@ -1290,17 +1290,35 @@ void Ewmh::updateWorkarea(BScreen &screen) {
      *
      */
 
-    /* !!TODO
-     * Not sure how to handle xinerama stuff here.
-     * So i'm just doing this on the first head.
+    /* One rectangle cannot describe the work area of several heads.
+     * Use the common, predictable rule (openbox, xfwm4): the root window
+     * minus the largest reservation on each side. Only heads whose edge
+     * lies on that side of the root count, so a strut on an inner edge
+     * between two heads does not shrink the whole root.
      */
+    const int nh = screen.numHeads();
+    const int sw = screen.width(), sh = screen.height();
+    int left = 0, top = 0, right = sw, bottom = sh;
+    // without Xinerama, head 0 is the whole root window
+    for (int head = (nh ? 1 : 0); head <= nh; ++head) {
+        const HeadGeometry h(screen, head);
+        if (h.x == 0)
+            left = std::max(left, (int)screen.maxLeft(head));
+        if (h.y == 0)
+            top = std::max(top, (int)screen.maxTop(head));
+        if (h.x + h.width == sw)
+            right = std::min(right, (int)screen.maxRight(head));
+        if (h.y + h.height == sh)
+            bottom = std::min(bottom, (int)screen.maxBottom(head));
+    }
+
     const unsigned int nr_coords = EWMH_NUM_GEOMETRY * screen.numberOfWorkspaces();
     unsigned long *coords = new unsigned long[nr_coords];
     for (unsigned int i = 0; i < nr_coords; i += EWMH_NUM_GEOMETRY) {
-        coords[i + EWMH_X] = screen.maxLeft(0);
-        coords[i + EWMH_Y] = screen.maxTop(0);
-        coords[i + EWMH_WIDTH] = screen.maxRight(0) - screen.maxLeft(0);
-        coords[i + EWMH_HEIGHT] = screen.maxBottom(0) - screen.maxTop(0);
+        coords[i + EWMH_X] = left;
+        coords[i + EWMH_Y] = top;
+        coords[i + EWMH_WIDTH] = std::max(right - left, 0);
+        coords[i + EWMH_HEIGHT] = std::max(bottom - top, 0);
     }
     screen.rootWindow().changeProperty(m_net->workarea,
                                        XA_CARDINAL, 32,
