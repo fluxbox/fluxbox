@@ -114,11 +114,11 @@ window.tab.borderColor:              black
 ! ----------- (fluxbox.sourceforge.net)
 
 ! fonts
-window.tab.font:                     -*-gamow-medium-r-*-*-7-*-*-*-*-60-*-*
+window.tab.font: gamow-12
 ! ^ change this to lucidasans-10 if you don't have gamow
 
 
-*.font:                              lucidasans-10
+*.font: lucidasans-12
 
 toolbar.justify:                     left
 window.justify:                      left
@@ -134,3 +134,4 @@ frameWidth:                          0
 
 background: flat
 background.color: white
+! vim: ft=xdefaults
