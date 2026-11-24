@@ -35,7 +35,8 @@ public:
     virtual ~HeadArea();
 
     Strut *requestStrut(int head, int left, int right, int top, int bottom, Strut* next = 0);
-    void clearStrut(Strut *str);
+    /// remove and destroy 'str'; false if this head does not hold it
+    bool clearStrut(Strut *str);
     bool updateAvailableWorkspaceArea();
     const Strut *availableWorkspaceArea() const {
         return m_available_workspace_area.get();

@@ -1273,9 +1273,12 @@ void BScreen::clearStrut(Strut *str) {
     if (str->next())
         clearStrut(str->next());
     int head = str->head() ? str->head() - 1 : 0;
-    /* The number of heads may have changed, be careful. */
-    if (head < (numHeads() ? numHeads() : 1))
-        m_head_areas[head]->clearStrut(str);
+    /* The number of heads may have changed, be careful: the head area
+     * that held 'str' may be gone, or replaced by one that never knew
+     * it. Nothing else owns 'str' then. */
+    if (head >= (numHeads() ? numHeads() : 1) ||
+        !m_head_areas[head]->clearStrut(str))
+        delete str;
     // str is invalid now
 }
 

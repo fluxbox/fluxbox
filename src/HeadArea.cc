@@ -23,7 +23,6 @@
 #include "Strut.hh"
 
 #include <algorithm>
-#include <iostream>
 
 HeadArea::~HeadArea() {
 }
@@ -37,20 +36,19 @@ Strut *HeadArea::requestStrut(int head, int left, int right, int top, int bottom
     return str;
 }
 
-void HeadArea::clearStrut(Strut *str) {
+bool HeadArea::clearStrut(Strut *str) {
     if (str == 0)
-        return;
+        return true;
     // find strut and erase it
     std::list<Strut *>::iterator pos = std::find(m_strutlist.begin(),
                                                  m_strutlist.end(),
                                                  str);
-    if (pos == m_strutlist.end()) {
-        std::cerr << "clearStrut() failed because the strut was not found" << std::endl;
-        return;
-    }
+    if (pos == m_strutlist.end())
+        return false;
 
     m_strutlist.erase(pos);
     delete str;
+    return true;
 }
 
 /// helper class for for_each in HeadArea::updateAvailableWorkspaceArea()
