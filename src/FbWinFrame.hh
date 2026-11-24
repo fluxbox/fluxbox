@@ -262,6 +262,10 @@ private:
     bool showHandle();
     bool setBorderWidth(bool do_move = true);
 
+    // wrapper on m_tab_container.show() to implement only displaying
+    // tabs when there are more than one
+    void maybeShowTabContainer();
+
     // check which corners should be rounded
     int getShape() const;
 
