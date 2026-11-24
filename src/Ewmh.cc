@@ -737,6 +737,21 @@ void Ewmh::initForScreen(BScreen &screen) {
     // ended (Fluxbox::~Fluxbox()), so no timer runs for a deleted one
     join(screen.layerManager().stackingSig(),
          [this, &screen]() { stackingChanged(screen); });
+
+    // struts are kept per head: after a RandR change map them again
+    join(screen.headsChangedSig(),
+         [this](BScreen &scr) { updateStruts(scr); });
+}
+
+void Ewmh::updateStruts(BScreen &screen) {
+    const list<Focusable *> &clients =
+            screen.focusControl().creationOrderList().clientList();
+    for (list<Focusable *>::const_iterator it = clients.begin();
+            it != clients.end(); ++it) {
+        WinClient *client = dynamic_cast<WinClient *>(*it);
+        if (client)
+            updateStrut(*client);
+    }
 }
 
 void Ewmh::setupClient(WinClient &winclient) {

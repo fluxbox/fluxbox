@@ -70,6 +70,7 @@ private:
     void toggleState(FluxboxWindow &win, Atom state);
     void toggleState(FluxboxWindow &win, Atom state, WinClient &client);
     void updateStrut(WinClient &winclient);
+    void updateStruts(BScreen &screen);
     void updateActions(FluxboxWindow &win);
     void updateVisibleName(WinClient &winclient);
 
