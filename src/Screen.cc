@@ -1246,7 +1246,8 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     return win;
 }
 
-Strut *BScreen::requestStrut(int head, int left, int right, int top, int bottom) {
+Strut *BScreen::requestStrut(int head, int left, int right, int top, int bottom,
+                             Strut *next) {
     if (head > numHeads() && head != 1) {
         // head does not exist (if head == 1, then numHeads() == 0,
         // which means no xinerama, but there's a head after all
@@ -1261,7 +1262,6 @@ Strut *BScreen::requestStrut(int head, int left, int right, int top, int bottom)
         end = (numHeads() ? numHeads() : 1);
     }
 
-    Strut* next = 0;
     for (int i = begin; i != end; i++) {
         next = m_head_areas[i]->requestStrut(i+1, left, right, top, bottom, next);
     }
@@ -1277,6 +1277,34 @@ void BScreen::clearStrut(Strut *str) {
     if (head < (numHeads() ? numHeads() : 1))
         m_head_areas[head]->clearStrut(str);
     // str is invalid now
+}
+
+void BScreen::setStrutProperty(FbTk::FbWindow &win, int head,
+                               int left, int right, int top, int bottom) const {
+    static const Atom strut_partial =
+        XInternAtom(win.display(), "_NET_WM_STRUT_PARTIAL", False);
+
+    if (!(left || right || top || bottom)) {
+        win.deleteProperty(strut_partial);
+        return;
+    }
+
+    // root window coordinates; the band covers the head's whole edge,
+    // as fluxbox reserves it
+    const long x = getHeadX(head), y = getHeadY(head);
+    const long w = getHeadWidth(head), h = getHeadHeight(head);
+    long sp[] = {   // _NET_WM_STRUT_PARTIAL, in its order
+        left ? x + left : 0,
+        right ? (width() - (x + w)) + right : 0,
+        top ? y + top : 0,
+        bottom ? (height() - (y + h)) + bottom : 0,
+        y, y + h - 1,   // left_start_y, left_end_y
+        y, y + h - 1,   // right_start_y, right_end_y
+        x, x + w - 1,   // top_start_x, top_end_x
+        x, x + w - 1    // bottom_start_x, bottom_end_x
+    };
+    win.changeProperty(strut_partial, XA_CARDINAL, 32, PropModeReplace,
+                       reinterpret_cast<unsigned char *>(sp), sizeof(sp) / sizeof(sp[0]));
 }
 
 void BScreen::updateAvailableWorkspaceArea() {
