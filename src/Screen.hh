@@ -500,6 +500,8 @@ private:
     void deferClearHeads();
     void placeInvisibleWindows(bool include_docks);
     void clearStrandedDocks();
+    void deferResetBackground();
+    void resetBackground();
     void focusedWinFrameThemeReconfigured();
 
     int getGap(int head, const char type);
@@ -594,6 +596,8 @@ private:
     FbTk::Timer m_clear_heads_timer; ///< waits for a RandR burst to settle
     uint64_t m_clear_heads_burst_start; ///< when the current burst began
     FbTk::Timer m_clear_docks_timer; ///< late pass for docks left off-screen
+    FbTk::Timer m_reset_bg_timer; ///< redo the background once heads settle
+    uint64_t m_reset_bg_burst_start; ///< when the current heads burst began
 
     std::vector<HeadArea*> m_head_areas;
     std::vector<Strut*> m_head_struts;

@@ -222,6 +222,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_state.shutdown = false;
     m_state.managed = false;
     m_clear_heads_burst_start = 0;
+    m_reset_bg_burst_start = 0;
 
     Fluxbox *fluxbox = Fluxbox::instance();
     Display *disp = fluxbox->display();
@@ -296,6 +297,11 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_clear_docks_timer.fireOnce(true);
     FbTk::RefCount<FbTk::Command<void> > clear_docks(new FbTk::SimpleCommand<BScreen>(*this, &BScreen::clearStrandedDocks));
     m_clear_docks_timer.setCommand(clear_docks);
+
+    m_reset_bg_timer.setTimeout(250 * FbTk::FbTime::IN_MILLISECONDS);
+    m_reset_bg_timer.fireOnce(true);
+    FbTk::RefCount<FbTk::Command<void> > reset_bg(new FbTk::SimpleCommand<BScreen>(*this, &BScreen::resetBackground));
+    m_reset_bg_timer.setCommand(reset_bg);
 
 
     _FB_USES_NLS;
@@ -1621,9 +1627,6 @@ void BScreen::updateSize() {
     if (rootWindow().updateGeometry()) {
         heads_changed = true;
 
-        // reset background
-        m_root_theme->reset();
-
         // send resize notify
         m_resize_sig.emit(*this);
         m_workspace_area_sig.emit(*this);
@@ -1636,8 +1639,31 @@ void BScreen::updateSize() {
     }
 
     if (heads_changed) {
+        // wallpaper setters lay the image out per head, and a monitor
+        // coming back often grows the root before its crtc is set up
+        deferResetBackground();
         m_heads_changed_sig.emit(*this);
     }
+}
+
+// one fbsetbg per RandR burst, run with the final head layout
+void BScreen::deferResetBackground() {
+    uint64_t now = FbTk::FbTime::mono();
+    if (!m_reset_bg_timer.isTiming())
+        m_reset_bg_burst_start = now;
+
+    m_reset_bg_timer.stop();
+
+    // don't let a flickering output put this off forever
+    if (now - m_reset_bg_burst_start >= 2 * FbTk::FbTime::IN_SECONDS)
+        resetBackground();
+    else
+        m_reset_bg_timer.start();
+}
+
+void BScreen::resetBackground() {
+    m_reset_bg_timer.stop();
+    m_root_theme->reset();
 }
 
 // RandR changes arrive in bursts, e.g. while a USB-C dock renegotiates,
