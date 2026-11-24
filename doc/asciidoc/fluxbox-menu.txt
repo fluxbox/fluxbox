@@ -74,6 +74,17 @@ You may enter labels, commands, and icons using characters from any *iconv(1)*
 language/locale by specifying the encoding used via the *[encoding]* tag,
 detailed below.
 
+Paths given to *[include]*, *[style]*, *[stylesdir]*, *[stylesmenu]*,
+*[themesdir]*, *[themesmenu]* and *[wallpapers]* may be a full path, may begin
+with *~/*, which will be expanded into your home directory, or may be relative.
+A relative path is relative to the folder of the menu file that contains it,
+so *[include] (submenus/games)* in *~/.fluxbox/menu* reads
+*~/.fluxbox/submenus/games*. In a menu without a file (eg, the builtin root
+menu) and for the *CustomMenu* command it is relative to the config folder
+(see *XDG_CONFIG_HOME* in *fluxbox(1)*).
+Paths into *~/.fluxbox/* are mapped into the config folder, if *~/.fluxbox*
+does not exist (eg, after it was moved to *~/.config/fluxbox*).
+
 Structural Tags
 ~~~~~~~~~~~~~~~
 *[begin]* ('title');;
@@ -105,10 +116,10 @@ Structural Tags
     This ends an *[encoding]* section.
 
 *[include]* ('path');;
-    Parses the file specified by filename inline with the current menu. The
-    'path' can be the full path to a file or it can begin with *~/*, which will
-    be expanded into your home directory. If 'path' is a directory, then all
-    files in that directory are included.
+    Parses the file specified by 'path' inline with the current menu. A
+    relative 'path' is relative to the folder of the including menu file, see
+    above. If 'path' is a directory, then all files in that directory are
+    included.
 
 *[separator]*;;
     This will create a nice separation line. Useful for splitting up sections in
