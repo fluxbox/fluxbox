@@ -1636,7 +1636,7 @@ Deutsche Uebersetzung der Anleitung:
 BUGS
 ----
 Fehler in fluxbox koennen entweder im #fluxbox irc channel
-im irc.freenode.net Netzwerk oder noch besser direkt auf
+im irc.libera.chat Netzwerk oder noch besser direkt auf
 http://sf.net/projects/fluxbox gemeldet werden.
 Zudem gibt es mehrere Mailinglisten. Informationen
 dazu gibt es auf der offiziellen Projektseite.
