@@ -2,7 +2,8 @@ Fluxbox is a windowmanager for X that was based on the Blackbox 0.61.1 code.
 It is very light on resources and easy to handle but yet full of features to
 make an easy, and extremely fast, desktop experience.
 
-Read INSTALL to read about building and installing fluxbox. Read NEWS to see
+Read INSTALL to read about building and installing fluxbox, including the
+build and runtime dependencies you need. Read NEWS to see
 whats new in this release, for copyright information see COPYING. For more
 information go to:
 
