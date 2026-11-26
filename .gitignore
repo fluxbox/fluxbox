@@ -13,7 +13,6 @@ Makefile.in
 /doc/*/*.1
 /doc/*/*.5
 /nls/*/*.cat
-/nls/*/generated-*.m
 /m4/*.m4
 
 # Exact match, if a directory then everything in directory.
